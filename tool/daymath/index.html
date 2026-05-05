@@ -98,7 +98,10 @@
                 }
             });
 
-            document.getElementById("bigNumbers").textContent = bigNumbers.join(" . ");
+            // 重複削除＆昇順ソート
+            const uniqueSorted = [...new Set(bigNumbers)].sort((a, b) => a - b);
+
+            document.getElementById("bigNumbers").textContent = uniqueSorted.join(" . ");
 
             const ul = document.getElementById("results");
             ul.innerHTML = "";
