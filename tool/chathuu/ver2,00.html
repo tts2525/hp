@@ -3,27 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>一人でグループチャット（改良版）</title>
+  <title>一人でグループチャット（改良版2）</title>
   <style>
     :root{
       --me-bg:#dcf8c6;
       --other-bg:#ffffff;
       --accent:#00bfa5;
-      --muted:#9aa0a6;
-      --chat-width:720px;
+      --muted:#7b8794;
+      --chat-width:820px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", Arial, sans-serif;
-      background: linear-gradient(180deg,#f0f4f8 0%, #ffffff 100%);
+      font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", Arial, sans-serif;
+      background: linear-gradient(180deg,#f3f7fb 0%, #ffffff 100%);
       display:flex;
       align-items:center;
       justify-content:center;
       min-height:100vh;
       padding:20px;
     }
-
     .container{
       width:100%;
       max-width:var(--chat-width);
@@ -33,36 +32,29 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
-      height:80vh;
+      height:82vh;
       min-height:560px;
     }
-
     header{
       padding:14px 16px;
       background:linear-gradient(90deg,#00bfa5,#00a0d6);
       color:#fff;
       display:flex;
-      align-items:center;
       gap:12px;
+      align-items:center;
     }
-    header h1{
-      font-size:18px;
-      margin:0;
-      letter-spacing:0.02em;
-    }
+    header h1{font-size:18px;margin:0}
     header .sub{font-size:12px;opacity:0.95}
 
-    /* chat area */
     #chatBox{
       flex:1;
       padding:16px;
       overflow-y:auto;
       background:
-        radial-gradient(circle at 10% 10%, rgba(0,0,0,0.01), transparent 10%),
         linear-gradient(180deg,#f8fbfc,#ffffff);
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:12px;
     }
 
     .message-row{
@@ -70,12 +62,9 @@
       gap:10px;
       align-items:flex-end;
       max-width:100%;
+      width:100%;
     }
 
-    /* other (left) */
-    .msg-other{
-      align-self:flex-start;
-    }
     .avatar{
       width:44px;
       height:44px;
@@ -92,17 +81,16 @@
     }
 
     .bubble{
-      max-width:72%;
+      max-width:74%;
       padding:10px 12px;
       border-radius:16px;
       background:var(--other-bg);
       box-shadow:0 1px 0 rgba(0,0,0,0.03);
       position:relative;
       word-break:break-word;
-      font-size:14px;
-      line-height:1.4;
+      font-size:15px;
+      line-height:1.5;
     }
-
     .bubble.me{
       background:var(--me-bg);
       border-radius:16px 16px 6px 16px;
@@ -116,44 +104,55 @@
       font-size:12px;
       color:var(--muted);
     }
+    .name{font-weight:700;font-size:13px;color:#333;margin-bottom:6px}
 
-    .name{
-      font-weight:700;
-      font-size:13px;
-      color:#333;
-      margin-bottom:6px;
-    }
-
-    /* right (me) */
+    /* 自分の行（右寄せ） */
     .row-me{
-      align-self:flex-end;
-      flex-direction:row-reverse;
+      justify-content:flex-end;
     }
-    .bubble.me{
-      max-width:72%;
+    .row-me .avatar{
+      order:3;
+      margin-left:8px;
+      margin-right:0;
+    }
+    .row-me .bubble-wrap{
+      order:2;
+      align-items:flex-end;
+      display:flex;
+      flex-direction:column;
+      align-self:flex-end;
+    }
+    /* 他人の行（左寄せ） */
+    .msg-other{
+      justify-content:flex-start;
+    }
+    .msg-other .avatar{
+      order:1;
+      margin-right:8px;
+    }
+    .msg-other .bubble-wrap{
+      order:2;
+      align-items:flex-start;
+      display:flex;
+      flex-direction:column;
     }
 
-    /* reply preview */
     .reply-preview{
-      background:rgba(0,0,0,0.03);
+      background:rgba(0,0,0,0.04);
       padding:6px 8px;
       border-radius:8px;
-      font-size:12px;
+      font-size:13px;
       color:#333;
       margin-bottom:8px;
       border-left:3px solid rgba(0,0,0,0.06);
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
+      max-width:100%;
     }
 
-    /* timestamp */
-    .time{
-      color:var(--muted);
-      font-size:11px;
-    }
+    .time{color:var(--muted);font-size:11px}
 
-    /* input area */
     .composer{
       padding:12px;
       border-top:1px solid #eef2f4;
@@ -168,7 +167,7 @@
       border-radius:20px;
       border:1px solid #e6eef0;
       outline:none;
-      font-size:14px;
+      font-size:15px;
     }
     .composer button{
       background:var(--accent);
@@ -180,21 +179,12 @@
       font-weight:700;
       box-shadow:0 4px 10px rgba(0,191,165,0.12);
     }
-    .composer button:active{transform:translateY(1px)}
-    .small{
-      font-size:12px;color:var(--muted)
-    }
-
-    /* mobile tweaks */
+    .composer input:focus{box-shadow:0 0 0 3px rgba(0,191,165,0.12)}
     @media (max-width:520px){
       :root{--chat-width:100%}
       .avatar{width:36px;height:36px;font-size:13px}
       .bubble{font-size:15px}
     }
-
-    /* accessibility focus */
-    .composer input:focus{box-shadow:0 0 0 3px rgba(0,191,165,0.12)}
-    .sr-only{position:absolute;left:-9999px}
   </style>
 </head>
 <body>
@@ -203,146 +193,133 @@
       <div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-weight:700">G</div>
       <div>
         <h1>一人でグループチャット</h1>
-        <div class="sub">おじさん構文で自動会話を楽しもう</div>
+        <div class="sub">おじさん構文を自然に、会話の幅を広げました</div>
       </div>
     </header>
 
-    <main id="chatBox" aria-live="polite" aria-atomic="false">
-      <!-- メッセージがここに入る -->
-    </main>
+    <main id="chatBox" aria-live="polite" aria-atomic="false"></main>
 
     <form id="messageForm" class="composer" autocomplete="off" aria-label="メッセージ送信フォーム">
-      <input id="userMessage" type="text" placeholder="メッセージを入力（Enterで送信）" aria-label="メッセージ入力">
+      <input id="userMessage" type="text" placeholder="メッセージを入力（Enterで送信、Shift+Enterで改行）" aria-label="メッセージ入力">
       <button type="submit" aria-label="送信">送信</button>
     </form>
   </div>
 
   <script>
-    // --- キャラ定義（名前・色・口調テンプレ） ---
+    // キャラ定義
     const characters = [
-      {
-        name: "徳川",
-        color: "#ff7043",
-        tones: [
-          "おはようさんだヨ〜、{text}よ〜＾＾",
-          "おぢさん、{text}って思ったヨ（笑）",
-          "花子ちゃん、{text}だゾ〜（笑）"
-        ]
-      },
-      {
-        name: "源頼朝",
-        color: "#42a5f5",
-        tones: [
-          "おう、{text}だな。わっはっは",
-          "それは良い、{text}じゃないかい？",
-          "頼朝も賛成だヨ、{text}よ"
-        ]
-      },
-      {
-        name: "福井 太郎",
-        color: "#7e57c2",
-        tones: [
-          "おじさん的にはね、{text}って感じだよ〜",
-          "ふむふむ、{text}かぁ、なるほどね〜",
-          "おぢさん、{text}でウキウキだヨ"
-        ]
-      },
-      {
-        name: "ツイ廃",
-        color: "#26a69a",
-        tones: [
-          "マジで{text}！？ｗｗｗ",
-          "それな〜、{text}って感じ〜",
-          "ツイ廃的には{text}が神"
-        ]
-      },
-      {
-        name: "アンパン 太郎",
-        color: "#ffca28",
-        tones: [
-          "アンパンマンも言ってたよ、{text}だって",
-          "おじさん、{text}でニコニコだヨ",
-          "おぢさん、{text}って言ってみたヨ"
-        ]
+      {name:"徳川", color:"#ff7043", styleBias:"やや丁寧"},
+      {name:"源頼朝", color:"#42a5f5", styleBias:"ぶっきらぼう"},
+      {name:"福井 太郎", color:"#7e57c2", styleBias:"世話焼き"},
+      {name:"ツイ廃", color:"#26a69a", styleBias:"テンション高め"},
+      {name:"アンパン 太郎", color:"#ffca28", styleBias:"おちゃめ"}
+    ];
+
+    // 文章断片を大量に用意して組み合わせることで多様性を確保
+    const openings = [
+      "あのさ", "ねえねえ", "ところで", "そういえば", "おっと", "おはよう", "こんばんは", "やあ"
+    ];
+    const subjects = [
+      "今日の天気", "最近の話題", "その話", "あの映画", "ランチのこと", "旅行の予定", "仕事の愚痴", "趣味のこと"
+    ];
+    const verbs = [
+      "どう思う？", "いいよね", "気になるんだよね", "最高だよ", "ちょっと聞いてよ", "教えてほしいな", "行ってみたいな"
+    ];
+    const fillers = [
+      "ちなみに", "そうそう", "ところでね", "実はね", "余談だけど", "それとね"
+    ];
+    const closings = [
+      "だよ〜", "だゾ", "だヨ", "かな〜", "ね", "よ", "ぞ", "よ（笑）", "だよん"
+    ];
+    const emojis = ["😄","😂","😅","😎","🥰","🤔","😲","😋","🎶","🌤️","🌧️","🍜","🍺","🧳","✨","💦","🙇‍♂️"];
+    const ojisanPhrases = [
+      "おぢさんはそう思うヨ", "おじさん、そういうの好きだよ", "花子ちゃん元気かい？", "わっはっは、懐かしいなぁ",
+      "また今度飲みに行こうぜ", "無理しないでね、ほんと", "おじさん、ちょっと照れるなぁ"
+    ];
+
+    // より自然な日本語を作るためのテンプレート群
+    const templates = [
+      "{opening}、{subject}が{verb}{emoji}",
+      "{opening}、{subject}って{verb}{emoji}",
+      "{subject}、{verb} {closing}{emoji}",
+      "{filler} {subject}があってね、{verb} {closing}{emoji}",
+      "{opening}、{subject}についてだけど、{verb} {ojisan}",
+      "{subject}ね、{verb} {closing} {emoji}",
+      "{opening}！{subject}が{verb} {ojisan} {emoji}"
+    ];
+
+    // ユーティリティ
+    function randomPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+    function nowTime(){ const d=new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+    function escapeHtml(str){ return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+    // 文章生成（多様性重視）
+    function generateSentenceNatural(){
+      const tpl = randomPick(templates);
+      const opening = Math.random()<0.6 ? randomPick(openings) : "";
+      const subject = randomPick(subjects);
+      const verb = randomPick(verbs);
+      const filler = Math.random()<0.4 ? randomPick(fillers) : "";
+      const closing = Math.random()<0.7 ? randomPick(closings) : "";
+      const emoji = Math.random()<0.65 ? " " + randomPick(emojis) : "";
+      const ojisan = Math.random()<0.35 ? randomPick(ojisanPhrases) : "";
+      let s = tpl
+        .replace("{opening}", opening)
+        .replace("{subject}", subject)
+        .replace("{verb}", verb)
+        .replace("{filler}", filler)
+        .replace("{closing}", closing)
+        .replace("{emoji}", emoji)
+        .replace("{ojisan}", ojisan);
+      // 微調整：不要な句読点や空白を整える
+      s = s.replace(/、\s+、/g,"、").replace(/\s+/g," ").trim();
+      // ときどき短い一言を混ぜる
+      if(Math.random() < 0.12){
+        s += "　" + randomPick(["ほんとだよね","まじで","うんうん","それな"]);
       }
-    ];
-
-    // --- メッセテンプレ・語尾バリエーション・絵文字 ---
-    const baseMessages = [
-      "それってどういうこと？",
-      "すごく面白いよ！",
-      "懐かしい話だね",
-      "私もその経験があるよ",
-      "え？それ本当に？",
-      "面白いことがあったら教えて！",
-      "今日は何をした？",
-      "おすすめのレストラン知ってる？",
-      "旅行に行くならどこ？",
-      "最近のハマりごとは？",
-      "今コーヒー飲んでるよ",
-      "猫派？犬派？",
-      "今週末は何する？"
-    ];
-    const emojis = ["😄","😂","😅","😎","🥰","🤔","😲","😋","🎶","🌤️","🌧️","🍜","🍺","🧳"];
-    const endings = ["よ〜","だゾ","だヨ","かな〜","ね","だね","よ","ぞ","よ（笑）","な〜"];
-
-    // --- ユーティリティ ---
-    function nowTime(){
-      const d = new Date();
-      const hh = String(d.getHours()).padStart(2,"0");
-      const mm = String(d.getMinutes()).padStart(2,"0");
-      return `${hh}:${mm}`;
+      return s;
     }
 
-    function randomPick(arr){
-      return arr[Math.floor(Math.random()*arr.length)];
-    }
-
-    // --- メッセージ生成（キャラ口調＋おじさん構文） ---
-    function generateCharacterMessage(char){
-      // ベース文を選び、口調テンプレに埋める
-      const base = randomPick(baseMessages);
-      const emoji = Math.random() < 0.6 ? " " + randomPick(emojis) : "";
-      const ending = Math.random() < 0.6 ? randomPick(endings) : "";
-      const toneTemplate = randomPick(char.tones);
-      // 口調テンプレに base を埋める
-      let text = toneTemplate.replace("{text}", base + ending + emoji);
-      // ときどき長文を作る（バリエーション）
-      if(Math.random() < 0.25){
-        text += "　" + randomPick(["ほんとだヨ〜","また今度ね","それでね…","ちなみにね〜"]);
+    // キャラ口調を付与（語尾や語彙を少し変える）
+    function applyCharacterTone(char, baseText){
+      // キャラごとのクセを少し付ける
+      let text = baseText;
+      if(char.name === "徳川"){
+        text = text.replace(/ね$/,"ね〜").replace(/かな〜/,"かな〜、だよ");
+      } else if(char.name === "源頼朝"){
+        text = text.replace(/ね$/,"ぜ").replace(/かな〜/,"かな、だな");
+      } else if(char.name === "福井 太郎"){
+        text = text + "　おじさんはそう思うよ";
+      } else if(char.name === "ツイ廃"){
+        text = text + "ｗｗｗ";
+      } else if(char.name === "アンパン 太郎"){
+        text = text.replace(/ね$/,"ねっ♪").replace(/だよ〜/,"だよ〜っ");
+      }
+      // ときどきおじさん構文を混ぜる（自然に）
+      if(Math.random() < 0.28){
+        text += "　" + randomPick(ojisanPhrases);
       }
       return text;
     }
 
-    // --- DOM操作 ---
+    // DOM作成
     const chatBox = document.getElementById("chatBox");
     const messageForm = document.getElementById("messageForm");
     const userMessage = document.getElementById("userMessage");
 
-    // メッセージ要素を作る
     function createMessageElement({who, name, color, text, time, isMe=false, replyTo=null}){
       const row = document.createElement("div");
       row.className = "message-row " + (isMe ? "row-me" : "msg-other");
       row.setAttribute("data-who", name);
 
-      // avatar
       const avatar = document.createElement("div");
       avatar.className = "avatar";
       avatar.style.background = color;
       avatar.textContent = name.slice(0,2);
 
-      // bubble
       const bubbleWrap = document.createElement("div");
-      bubbleWrap.style.display = "flex";
-      bubbleWrap.style.flexDirection = "column";
-      bubbleWrap.style.alignItems = isMe ? "flex-end" : "flex-start";
+      bubbleWrap.className = "bubble-wrap";
 
-      const bubble = document.createElement("div");
-      bubble.className = "bubble" + (isMe ? " me" : "");
-      bubble.setAttribute("role","article");
-      bubble.setAttribute("aria-label", name + "のメッセージ: " + text);
-
-      // 名前（他人のみ）
       if(!isMe){
         const nameEl = document.createElement("div");
         nameEl.className = "name";
@@ -350,7 +327,11 @@
         bubbleWrap.appendChild(nameEl);
       }
 
-      // 返信プレビュー
+      const bubble = document.createElement("div");
+      bubble.className = "bubble" + (isMe ? " me" : "");
+      bubble.setAttribute("role","article");
+      bubble.setAttribute("aria-label", name + "のメッセージ: " + text);
+
       if(replyTo){
         const preview = document.createElement("div");
         preview.className = "reply-preview";
@@ -358,22 +339,20 @@
         bubble.appendChild(preview);
       }
 
-      // メインテキスト
       const textEl = document.createElement("div");
       textEl.innerHTML = escapeHtml(text).replace(/\n/g,"<br>");
       bubble.appendChild(textEl);
 
-      // メタ（時間）
       const meta = document.createElement("div");
       meta.className = "meta";
       const timeEl = document.createElement("div");
       timeEl.className = "time";
       timeEl.textContent = time;
       meta.appendChild(timeEl);
-
       bubbleWrap.appendChild(bubble);
       bubbleWrap.appendChild(meta);
 
+      // 配置：自分は右端にavatar、他人は左端にavatar
       if(isMe){
         row.appendChild(bubbleWrap);
         row.appendChild(avatar);
@@ -381,21 +360,9 @@
         row.appendChild(avatar);
         row.appendChild(bubbleWrap);
       }
-
       return row;
     }
 
-    // XSS対策の簡易エスケープ
-    function escapeHtml(str){
-      return String(str)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-    }
-
-    // スクロールを底に合わせる（新着が見えるように）
     function scrollToBottom(smooth=true){
       if(smooth){
         chatBox.scrollTo({top: chatBox.scrollHeight, behavior: "smooth"});
@@ -404,34 +371,31 @@
       }
     }
 
-    // --- 自動会話ロジック ---
+    // 自動会話
     let autoRunning = true;
-
-    // ランダムにキャラが発言する（グループ感）
     function scheduleAutoMessage(minDelay=1200, maxDelay=5000){
       const delay = Math.floor(Math.random()*(maxDelay-minDelay)) + minDelay;
       setTimeout(()=>{
         if(!autoRunning) return;
         postAutoMessage();
-        // 次をスケジュール
         scheduleAutoMessage(1000, 6000);
       }, delay);
     }
 
     function postAutoMessage(){
       const char = randomPick(characters);
-      const text = generateCharacterMessage(char);
+      const base = generateSentenceNatural();
+      const text = applyCharacterTone(char, base);
       const time = nowTime();
 
-      // ときどき「あなた」への返信っぽくする
+      // ときどきあなたへの返信っぽくする
       let replyTo = null;
-      if(Math.random() < 0.35){
-        // 最近のあなたの発言を引用（あれば）
-        const myMsgs = Array.from(chatBox.querySelectorAll('[data-who="あなた"] .bubble'));
+      if(Math.random() < 0.36){
+        const myMsgs = Array.from(chatBox.querySelectorAll('[data-who="あなた"] .bubble div'));
         if(myMsgs.length){
           const last = myMsgs[myMsgs.length-1];
-          const previewText = last.querySelector('div') ? last.querySelector('div').textContent.slice(0,40) : "";
-          replyTo = {name:"あなた", text: previewText};
+          const previewText = last.textContent ? last.textContent.slice(0,48) : "";
+          if(previewText) replyTo = {name:"あなた", text: previewText};
         }
       }
 
@@ -448,12 +412,12 @@
       scrollToBottom();
     }
 
-    // --- 初期プリセットメッセージを少し入れる ---
+    // 初期メッセージ
     function seedInitialMessages(){
       const seeds = [
-        {who:"徳川", text:"おはようさんだヨ〜、今日はいい天気だね〜😄"},
-        {who:"源頼朝", text:"おう、今日はのんびりしようぜ"},
-        {who:"福井 太郎", text:"おじさん、コーヒー飲んでるよ☕️"},
+        {who:"徳川", text:"おはようございます〜、今日はいい日になりそうだね😄"},
+        {who:"源頼朝", text:"おう、のんびりいこうぜ"},
+        {who:"福井 太郎", text:"コーヒー飲んでるよ、よかったら一緒にどう？☕️"}
       ];
       seeds.forEach(s=>{
         const char = characters.find(c=>c.name===s.who) || characters[0];
@@ -470,36 +434,32 @@
       scrollToBottom(false);
     }
 
-    // --- 送信処理（あなた） ---
+    // 送信処理
     messageForm.addEventListener("submit", (e)=>{
       e.preventDefault();
       const raw = userMessage.value || "";
       const text = raw.trim();
-      if(!text) return; // 空メッセージ防止
+      if(!text) return;
 
-      // あなたのメッセージを追加
       const myEl = createMessageElement({
         who: "あなた",
         name: "あなた",
-        color: "#999",
+        color: "#9aa0a6",
         text,
         time: nowTime(),
         isMe:true
       });
-      // マークしておく（data-who）
       myEl.setAttribute("data-who","あなた");
       chatBox.appendChild(myEl);
       scrollToBottom();
 
-      // 送信後、短い遅延で自動的に誰かが返信っぽくする
+      // 送信後にランダムなキャラが短時間で返信っぽくする
       setTimeout(()=>{
-        // 返信者を選ぶ（ランダム）
         const replier = randomPick(characters);
-        // 返信文はあなたの発言を参照して生成
-        const replyBase = generateCharacterMessage(replier);
-        // 返信っぽくするためにあなたの一部を引用
+        const base = generateSentenceNatural();
+        // あなたの一部を引用して自然な返信にする
         const quoted = text.length > 40 ? text.slice(0,40) + "…" : text;
-        const replyText = replyBase + "（返信:「" + quoted + "」）";
+        const replyText = applyCharacterTone(replier, base + "（返信:「" + quoted + "」）");
         const el = createMessageElement({
           who: replier.name,
           name: replier.name,
@@ -511,14 +471,13 @@
         });
         chatBox.appendChild(el);
         scrollToBottom();
-      }, Math.floor(Math.random()*1200)+600);
+      }, Math.floor(Math.random()*1200)+500);
 
-      // 入力をクリア
       userMessage.value = "";
       userMessage.focus();
     });
 
-    // --- キーボードでEnter送信（Shift+Enterで改行） ---
+    // Enter送信、Shift+Enterで改行
     userMessage.addEventListener("keydown", (e)=>{
       if(e.key === "Enter" && !e.shiftKey){
         e.preventDefault();
@@ -526,29 +485,26 @@
       }
     });
 
-    // --- 初期化 ---
-    seedInitialMessages();
-    scheduleAutoMessage(800, 3000);
-
-    // --- 追加の改善: 自動停止/再開（タブ非アクティブ時は抑制） ---
+    // タブ非アクティブ時は自動会話を抑制
     document.addEventListener("visibilitychange", ()=>{
       if(document.hidden){
         autoRunning = false;
       } else {
         autoRunning = true;
-        // 少し遅らせて再開
         setTimeout(()=>scheduleAutoMessage(800,3000), 600);
       }
     });
 
-    // --- 追加: 画面リサイズでスクロールを安定化 ---
+    // リサイズでスクロール安定化
     let resizeTimer;
     window.addEventListener("resize", ()=>{
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(()=>scrollToBottom(false), 200);
     });
 
-    // --- 初期フォーカス ---
+    // 初期化
+    seedInitialMessages();
+    scheduleAutoMessage(800, 3000);
     userMessage.focus();
   </script>
 </body>
