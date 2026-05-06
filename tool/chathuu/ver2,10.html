@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>一人でグループチャットver2.10</title>
+<title>一人グループチャットver2.10</title>
 <style>
   :root{
     --me-bg:#dcf8c6; --other-bg:#fff; --accent:#00bfa5; --muted:#7b8794;
@@ -52,7 +52,7 @@
       <div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-weight:700">G</div>
       <div>
         <h1>一人でグループチャット-ver2.10</h1>
-        <div class="small">返信欄の修正・会話バリエーション大幅増強</div>
+        <div class="small">一人でグループチャットを楽しめる革命的アプリ</div>
       </div>
     </header>
 
@@ -178,9 +178,6 @@ function applyCharacterTone(char, baseText){
   return text;
 }
 
-/* -------------------------
-   DOM生成・レンダリング
-   ------------------------- */
 const chatBox = document.getElementById('chatBox');
 const messageForm = document.getElementById('messageForm');
 const userMessage = document.getElementById('userMessage');
@@ -281,9 +278,6 @@ function renderMessages(){
   attachObserversToMessages();
 }
 
-/* -------------------------
-   IntersectionObserver（既読検出）とスクロール判定
-   ------------------------- */
 let observer = null;
 function attachObserversToMessages(){
   if(observer) observer.disconnect();
@@ -335,9 +329,6 @@ function scrollToBottom(smooth=true){
   else chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-/* -------------------------
-   メッセージ操作（送信・自動発言・編集・削除・返信・いいね）
-   ------------------------- */
 let editingId = null;
 let replyToId = null;
 
