@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>一人グループチャットver2.10</title>
+<title>一人でグループチャットver2.20 (No Storage)</title>
 <style>
   :root{
     --me-bg:#dcf8c6; --other-bg:#fff; --accent:#00bfa5; --muted:#7b8794;
@@ -51,8 +51,8 @@
     <header>
       <div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-weight:700">G</div>
       <div>
-        <h1>一人でグループチャット-ver2.10</h1>
-        <div class="small">一人でグループチャットを楽しめる革命的アプリ</div>
+        <h1>一人でグループチャット-ver2.20</h1>
+        <div class="small">保存なし・会話パターン増強・返信欄修正済</div>
       </div>
     </header>
 
@@ -68,15 +68,15 @@
 
 <script>
 /* -------------------------
-   データモデルと永続化
+   データモデル（ローカルストレージなし）
    ------------------------- */
-const STORAGE_KEYS = { MESSAGES: 'chat_messages_v2', TEMPLATES: 'chat_templates_v2' };
 let messages = []; 
 let templates = []; 
 const MAX_MESSAGES = 800;
+const DEFAULT_PLACEHOLDER = "メッセージを入力（Enterで送信、Shift+Enterで改行）";
 
-// 初期テンプレ（バリエーション増強）
-function initDefaultTemplates(){
+// テンプレート初期化
+function initTemplates(){
   const base = [
     "{opening}、{subject}が{verb}{emoji}",
     "{opening}、{subject}って{verb}{emoji}",
@@ -87,27 +87,26 @@ function initDefaultTemplates(){
     "最近{subject}が{verb}から、なんだか{verb}{closing}{emoji}",
     "{opening}、{filler}{subject}って{verb}？{emoji}",
     "{subject}の件、{verb}{closing}！{emoji}",
-    "{filler}{subject}のこと考えてたら、急に{verb}って思って{closing}{emoji}"
+    "{filler}{subject}のこと考えてたら、急に{verb}って思って{closing}{emoji}",
+    "ぶっちゃけ{subject}に関しては{verb}よね{emoji}",
+    "{opening}、ちょっと聞きたいんだけど{subject}って{verb}？",
+    "{subject}のせいで{verb}だわ（笑）{emoji}"
   ];
   templates = base.map((t,i)=>({id:'tpl_'+i, tpl:t, weight:1}));
-  saveTemplates();
 }
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEYS.MESSAGES);
-    messages = raw ? JSON.parse(raw) : [];
-  }catch(e){ messages = []; }
-  try{
-    const raw2 = localStorage.getItem(STORAGE_KEYS.TEMPLATES);
-    templates = raw2 ? JSON.parse(raw2) : [];
-    if(!templates || templates.length===0) initDefaultTemplates();
-  }catch(e){ initDefaultTemplates(); }
-}
-function saveMessages(){ try{ localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages)); }catch(e){} }
-function saveTemplates(){ try{ localStorage.setItem(STORAGE_KEYS.TEMPLATES, JSON.stringify(templates)); }catch(e){} }
 
 /* -------------------------
-   キャラ定義・断片（バリエーション増強）
+   保存・読込処理（何もしないように変更）
+   ------------------------- */
+function loadState(){
+  messages = [];
+  initTemplates();
+}
+function saveMessages(){} 
+function saveTemplates(){} 
+
+/* -------------------------
+   キャラ定義・断片
    ------------------------- */
 const characters = [
   {name:"徳川", color:"#ff7043"},
@@ -117,13 +116,13 @@ const characters = [
   {name:"アンパン 太郎", color:"#ffca28"}
 ];
 
-const openings = ["あのさ","ねえねえ","ところで","そういえば","おっと","おはよう","こんばんは","やあ","さて","やっほー","お疲れ様！","聞いて聞いて","ちょっといい？","いま暇？","ふと思ったんだけど","突然ごめん","そういや","ヤバい","えっと"];
-const subjects = ["今日の天気","最近の話題","その話","あの映画","ランチ","旅行の予定","仕事のこと","趣味のこと","音楽","晩ごはん","昨日のテレビ","新しいスマホ","週末の予定","推しのこと","仕事の進捗","飼ってるペット","近所の猫","最近読んだ本","ダイエット","運動不足","睡眠不足","天気痛","最近のAI","新しいカフェ","コンビニの新作","ゲーム","投資","節約"];
-const verbs = ["どう思う？","いいよね","気になるんだよね","最高だよ","ちょっと聞いてよ","教えてほしいな","行ってみたいな","やってみたら？","気になっててさ","どうしたもんかと思って","おすすめある？","教えて！","最高すぎない？","微妙だったんだよね","ハマってるんだ","試してみたい","どうにかならないかな","解決したい","ヤバくない？","笑っちゃった","泣ける","感動した","疲れた","癒やされたい"];
-const fillers = ["ちなみに","そうそう","ところでね","実はね","余談だけど","それとね","ぶっちゃけ","ここだけの話","前にも言ったかもだけど","どうでもいいかもだけど","思い過ごしかもしれないけど","あとさ","ていうか"];
-const closings = ["だよ〜","だゾ","だヨ","かな〜","ね","よ","ぞ","よ（笑）","だよん","だよね","かも","と思うんだ","なーって","どう？","だわ","って感じ","だったりする？","かもね","なぁ","っすね"];
-const emojis = ["😄","😂","😅","😎","🥰","🤔","😲","😋","🎶","🌤️","🌧️","🍜","🍺","🧳","✨","💦","🙇‍♂️","🎉","🔥","👍","👀","🥺","🤯","☕","🍰","🎮","🚀","🐱","🐶","🛌"];
-const ojisanPhrases = ["おぢさんはそう思うヨ","おじさん、そういうの好きだよ","花子ちゃん元気かい？","わっはっは、懐かしいなぁ","また今度飲みに行こうぜ","無理しないでね、ほんと","今日も一日お疲れ様！","ナンチャッテ！","おじさん、最近腰が痛くてねぇ","若いって素晴らしいネ","おぢさんも混ぜてほしいナ","今度カラオケ行こうヨ","ビールがうまい季節だねぇ"];
+const openings = ["あのさ","ねえねえ","ところで","そういえば","おっと","おはよう","こんばんは","やあ","さて","やっほー","お疲れ様！","聞いて聞いて","ちょっといい？","いま暇？","ふと思ったんだけど","突然ごめん","そういや","ヤバい","えっと","こんちゃ"];
+const subjects = ["今日の天気","最近の話題","その話","あの映画","ランチ","旅行の予定","仕事のこと","趣味のこと","音楽","晩ごはん","昨日のテレビ","新しいスマホ","週末の予定","推しのこと","仕事の進捗","飼ってるペット","近所の猫","最近読んだ本","ダイエット","運動不足","睡眠不足","天気痛","最近のAI","新しいカフェ","コンビニの新作","ゲーム","投資","節約","YouTube","推し活","散歩","掃除"];
+const verbs = ["どう思う？","いいよね","気になるんだよね","最高だよ","ちょっと聞いてよ","教えてほしいな","行ってみたいな","やってみたら？","気になっててさ","どうしたもんかと思って","おすすめある？","教えて！","最高すぎない？","微妙だったんだよね","ハマってるんだ","試してみたい","どうにかならないかな","解決したい","ヤバくない？","笑っちゃった","泣ける","感動した","疲れた","癒やされたい","笑える","納得いかない","楽しみすぎる","不安だなぁ"];
+const fillers = ["ちなみに","そうそう","ところでね","実はね","余談だけど","それとね","ぶっちゃけ","ここだけの話","前にも言ったかもだけど","どうでもいいかもだけど","思い過ごしかもしれないけど","あとさ","ていうか","というか","それより"];
+const closings = ["だよ〜","だゾ","だヨ","かな〜","ね","よ","ぞ","よ（笑）","だよん","だよね","かも","と思うんだ","なーって","どう？","だわ","って感じ","だったりする？","かもね","なぁ","っすね","だねっ"];
+const emojis = ["😄","😂","😅","😎","🥰","🤔","😲","😋","🎶","🌤️","🌧️","🍜","🍺","🧳","✨","💦","🙇‍♂️","🎉","🔥","👍","👀","🥺","🤯","☕","🍰","🎮","🚀","🐱","🐶","🛌","🍱","📱","💡"];
+const ojisanPhrases = ["おぢさんはそう思うヨ","おじさん、そういうの好きだよ","花子ちゃん元気かい？","わっはっは、懐かしいなぁ","また今度飲みに行こうぜ","無理しないでね、ほんと","今日も一日お疲れ様！","ナンチャッテ！","おじさん、最近腰が痛くてねぇ","若いって素晴らしいネ","おぢさんも混ぜてほしいナ","今度カラオケ行こうヨ","ビールがうまい季節だねぇ","たまには贅沢もしなきゃネ"];
 
 /* -------------------------
    ユーティリティ
@@ -134,7 +133,7 @@ function randomPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 /* -------------------------
-   重み付きテンプレ選択と生成
+   文章生成
    ------------------------- */
 function weightedPick(list){
   const total = list.reduce((s,i)=>s+(i.weight||1),0);
@@ -158,11 +157,10 @@ function generateBaseSentence(){
   const ojisan = Math.random()<0.28 ? randomPick(ojisanPhrases) : "";
   let s = tpl.replace("{opening}", opening).replace("{subject}", subject).replace("{verb}", verb).replace("{filler}", filler).replace("{closing}", closing).replace("{emoji}", emoji).replace("{ojisan}", ojisan);
   s = s.replace(/、\s+、/g,"、").replace(/\s+/g," ").trim();
-  if(Math.random() < 0.12) s += "　" + randomPick(["ほんとだよね","まじで","うんうん","それな","わかる","間違いない","確かに"]);
+  if(Math.random() < 0.15) s += "　" + randomPick(["ほんとだよね","まじで","うんうん","それな","わかる","間違いない","確かに","そうかもね"]);
   return {text:s, templateId: tplObj.id};
 }
 
-/* キャラ口調適用（個性強化） */
 function applyCharacterTone(char, baseText){
   let text = baseText;
   if(char.name === "徳川"){ text = text.replace(/ね$/,"ね〜").replace(/よ$/,"よ〜"); }
@@ -170,14 +168,15 @@ function applyCharacterTone(char, baseText){
   else if(char.name === "福井 太郎"){ text += "　おじさんはそう思うよ"; }
   else if(char.name === "ツイ廃"){ text += "ｗｗｗ".repeat(Math.floor(Math.random()*3)+1); if(Math.random()<0.3)text="草。"+text; }
   else if(char.name === "アンパン 太郎"){ text = text.replace(/ね$/,"ねっ♪").replace(/よ$/,"よっ☆"); }
-  
-  // 徳川とアンパン太郎以外はおじさん構文を混ぜる確率を残す
   if(char.name !== "アンパン 太郎" && char.name !== "徳川" && Math.random() < 0.18) {
       text += "　" + randomPick(ojisanPhrases);
   }
   return text;
 }
 
+/* -------------------------
+   DOM生成
+   ------------------------- */
 const chatBox = document.getElementById('chatBox');
 const messageForm = document.getElementById('messageForm');
 const userMessage = document.getElementById('userMessage');
@@ -228,19 +227,16 @@ function createMessageElement(msg){
     const timeEl = document.createElement('div'); timeEl.className='time'; timeEl.textContent = msg.time;
     meta.appendChild(timeEl);
 
-    // 既読表示
     const readEl = document.createElement('div'); readEl.className='small';
     if(msg.readBy && msg.readBy['あなた']) readEl.textContent = '既読';
     meta.appendChild(readEl);
 
-    // いいね表示
     const likeEl = document.createElement('div'); likeEl.className='like-count';
     likeEl.textContent = (msg.likes && msg.likes>0) ? '👍 '+msg.likes : '';
     meta.appendChild(likeEl);
 
     bubbleWrap.appendChild(meta);
 
-    // 操作ボタン群
     const controls = document.createElement('div'); controls.className='controls';
     if(msg.who === 'あなた'){
       const editBtn = document.createElement('button'); editBtn.className='btn'; editBtn.textContent='編集';
@@ -258,26 +254,22 @@ function createMessageElement(msg){
     bubbleWrap.appendChild(controls);
   }
 
-  if(msg.who === 'あなた'){
-    row.appendChild(bubbleWrap);
-    row.appendChild(avatar);
-  } else {
-    row.appendChild(avatar);
-    row.appendChild(bubbleWrap);
-  }
+  if(msg.who === 'あなた'){ row.appendChild(bubbleWrap); row.appendChild(avatar); }
+  else { row.appendChild(avatar); row.appendChild(bubbleWrap); }
   return row;
 }
 
 function renderMessages(){
   chatBox.innerHTML = '';
   const fragment = document.createDocumentFragment();
-  messages.forEach(m=>{
-    fragment.appendChild(createMessageElement(m));
-  });
+  messages.forEach(m=>{ fragment.appendChild(createMessageElement(m)); });
   chatBox.appendChild(fragment);
   attachObserversToMessages();
 }
 
+/* -------------------------
+   制御系
+   ------------------------- */
 let observer = null;
 function attachObserversToMessages(){
   if(observer) observer.disconnect();
@@ -299,7 +291,6 @@ function markAsRead(msgId, who){
   msg.readBy = msg.readBy || {};
   if(!msg.readBy[who]){
     msg.readBy[who] = true;
-    saveMessages();
     const el = chatBox.querySelector(`[data-id="${msgId}"] .meta .small`);
     if(el) el.textContent = '既読';
   }
@@ -329,13 +320,15 @@ function scrollToBottom(smooth=true){
   else chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+/* -------------------------
+   アクション
+   ------------------------- */
 let editingId = null;
 let replyToId = null;
 
 function addMessage(msg){
   messages.push(msg);
-  if(messages.length > MAX_MESSAGES) messages = messages.slice(messages.length - MAX_MESSAGES);
-  saveMessages();
+  if(messages.length > MAX_MESSAGES) messages = messages.shift();
   renderMessages();
   handleNewMessageUI();
 }
@@ -351,12 +344,10 @@ messageForm.addEventListener('submit', (e)=>{
     if(msg){
       msg.text = text;
       msg.edited = true;
-      saveMessages();
       editingId = null;
       messageForm.querySelector('button').textContent = '送信';
-      replyToId = null;
       userMessage.value = '';
-      userMessage.placeholder = 'メッセージを入力（Enterで送信、Shift+Enterで改行）'; // プレースホルダーをリセット
+      userMessage.placeholder = DEFAULT_PLACEHOLDER;
       renderMessages();
       scrollToBottom(true);
     }
@@ -368,7 +359,7 @@ messageForm.addEventListener('submit', (e)=>{
   userMessage.value = '';
   userMessage.focus();
   replyToId = null;
-  userMessage.placeholder = 'メッセージを入力（Enterで送信、Shift+Enterで改行）'; // ★ここでプレースホルダーをリセット★
+  userMessage.placeholder = DEFAULT_PLACEHOLDER; // 返信プレースホルダーをリセット
   
   setTimeout(()=>autoReplyToUser(msg), Math.floor(Math.random()*1200)+500);
 });
@@ -387,7 +378,6 @@ function deleteMessage(msgId){
   const msg = messages.find(m=>m.id===msgId);
   if(!msg) return;
   msg.deleted = true;
-  saveMessages();
   renderMessages();
 }
 
@@ -404,11 +394,10 @@ function likeMessage(msgId){
   const msg = messages.find(m=>m.id===msgId);
   if(!msg) return;
   msg.likes = (msg.likes||0) + 1;
-  saveMessages();
   renderMessages();
   if(msg.templateId){
     const tpl = templates.find(t=>t.id===msg.templateId);
-    if(tpl){ tpl.weight = (tpl.weight || 1) + 0.4; saveTemplates(); }
+    if(tpl){ tpl.weight = (tpl.weight || 1) + 0.4; }
   }
 }
 
@@ -420,8 +409,6 @@ function autoReplyToUser(userMsg){
   text += `（返信:「${quoted}」）`;
   const msg = { id: uid('msg'), who: replier.name, text, time: nowTime(), replyToId: userMsg.id, edited:false, deleted:false, readBy:{}, templateId: base.templateId, likes:0 };
   addMessage(msg);
-  const tpl = templates.find(t=>t.id===base.templateId);
-  if(tpl){ tpl.weight = (tpl.weight || 1) + 0.6; saveTemplates(); }
 }
 
 let autoRunning = true;
@@ -430,7 +417,7 @@ function scheduleAutoMessage(minDelay=1200, maxDelay=5000){
   setTimeout(()=>{
     if(!autoRunning) return;
     postAutoMessage();
-    scheduleAutoMessage(1000, 6000);
+    scheduleAutoMessage(1500, 7000);
   }, delay);
 }
 function postAutoMessage(){
@@ -442,30 +429,26 @@ function postAutoMessage(){
 }
 
 /* -------------------------
-   初期化・復元・UIイベント
+   初期化
    ------------------------- */
-function seedIfEmpty(){
-  if(messages.length === 0){
-    const seeds = [
-      {who:"徳川", text:"おはようございます〜、今日はいい日になりそうだね😄"},
-      {who:"源頼朝", text:"おう、今日はのんびりしようぜ"},
-      {who:"福井 太郎", text:"コーヒー飲んでるよ、よかったら一緒にどう？☕️"}
-    ];
-    seeds.forEach(s=>{
-      messages.push({ id: uid('msg'), who: s.who, text: s.text, time: nowTime(), replyToId:null, edited:false, deleted:false, readBy:{}, templateId:null, likes:0 });
-    });
-    saveMessages();
-  }
+function seedInitial(){
+  const seeds = [
+    {who:"徳川", text:"おはよう！今日も元気にやっていきましょう〜😄"},
+    {who:"源頼朝", text:"おう、調子はどうだぜ？"},
+    {who:"ツイ廃", text:"起きたｗｗｗねむすぎ草。"}
+  ];
+  seeds.forEach(s=>{
+    messages.push({ id: uid('msg'), who: s.who, text: s.text, time: nowTime(), replyToId:null, edited:false, deleted:false, readBy:{}, templateId:null, likes:0 });
+  });
 }
 
 function init(){
   loadState();
-  seedIfEmpty();
+  seedInitial();
   renderMessages();
-  scheduleAutoMessage(800, 3000);
+  scheduleAutoMessage(1000, 4000);
   document.addEventListener('visibilitychange', ()=>{
     autoRunning = !document.hidden;
-    if(autoRunning) scheduleAutoMessage(800,3000);
   });
   chatBox.addEventListener('scroll', ()=>{
     if(isUserAtBottom()){
