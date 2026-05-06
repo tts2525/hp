@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <title>1人でチャット!!</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="=device-width, initial-scale=1.0">
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="１人でチャット!!" />
+    <meta property="og:site_name" content="TTS-HP" />
+    <meta name="twitter:card" content="Summary Card" />
+    <meta name="twitter:site" content="@tts2525" />
+    <link rel="icon" type="image/jpg" href="/ttshome/1678453241image.jpg">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystem, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0077aa;
+            margin: 15px 0 5px;
+        }
+
+       3 {
+            text-align: center;
+            color: #333;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto px;
+            padding: 0 10px 20px;
+        }
+
+        #chatBox {
+            width: 100%;
+            height: 70vh;
+            min-height: 420px;
+            border: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #e5ddd5;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* メンバー一覧（簡易）        #membersBar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            padding: 4px 2px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .member-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #ffffff88;
+        }
+
+        .member-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* メッセージ行コンテナ */
+        .message-row {
+            display: flex;
+            margin: 4px 0;
+        }
+
+        .message-row.me {
+            justify-content: flex-end;
+        }
+
+        .message-row.other {
+            justify-content: flex-start;
+        }
+
+        /* アイコン */
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+           -color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #fff;
+            margin: 0 6px;
+            flex-shrink: 0;
+        }
+
+        .avatar-me {
+            background-color: #34b7f1;
+        }
+
+        /* 吹き出し本体 */
+        .bubble {
+            max-width: 70vw;
+            padding: 6px 10px 4px;
+ border-radius: 8px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .bubble-me {
+            background-color: #dcf8c6;
+            border-bottom-right-radius: 2px;
+        }
+
+        .bubble-other {
+            background-color: #fff;
+            border-bottom-left-radius: 2px;
+        }
+
+        .name {
+            font-size: 0.75rem;
+            margin-bottom:2px;
+            font-weight: 600;
+        }
+
+        .text {
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .time {
+            font-size: 0.7rem;
+            text-align: right;
+            margin-top: 2px;
+            color: #777;
+        }
+
+        /* 名前の色 */
+        .name-tokugawa {
+            color: #0066cc;
+        }
+
+        .name-minamoto {
+            color: #008000;
+        }
+
+        .name-fukui {
+            color: #b5651d;
+        }
+
+        .name-twihai {
+            color: #aa00aa;
+        }
+
+        .name-anpan {
+            color: #d35400;
+        }
+
+        .name-me {
+            color: #34b7f1;
+               /* フッターフォーム */
+        #messageForm {
+            width: 100%;
+            margin: 8px auto 0;
+            display: flex;
+            gap: 6px;
+        }
+
+        #userMessage {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        #userMessage:focus {
+            border-color: #0099cc;
+            box-shadow: 0 0 3px rgba(0, 153, 204, 0.3);
+        }
+
+        button {
+            padding: 6px 16px;
+            background-color: #0099cc;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background-color: #0077aa;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #777;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>一人でグルチャット</h1>
+    <h3>おじさん構文生成システム搭載（独自開発！）</h3>
+
+    <div class="container">
+        <div id="membersBar">
+            メンバー:
+            <div class="member-chip">
+                <span class="member-dot" style="background:#34b7f1;"></span> あなた
+            </div>
+            <div class="member-chip">
+                <span class="member-dot" style="background:#0066cc;"></span> 徳川
+            </div>
+            <div class="member-chip">
+                <span class="member-dot" style="background:#008000;"></span> 源頼朝
+            </div>
+            <div class="member-chip">
+                <span class="member-dot" style="background:#b5651d;"></span> 福井 太郎
+            </div>
+            <div class="member-chip">
+                <span class="member-dot" style="background:#aa00aa;"></span> ツイ廃
+            </div>
+            <div class="member-chip">
+                <span class="member-dot" style="background:#d35400;"></span> アンパン 太郎
+            </div>
+        </div>
+
+ <div id="chatBox">
+            <!-- メッセージがここに追加される -->
+        </div>
+
+        <form id="messageForm">
+            <input type="text" id="userMessage" placeholder="メッセージを入力 (Enterで送信 / Shift+Enterで改行)" required>
+            <button type="submit">送信</button>
+        </form>
+        <div class="hint">
+            Enterで送信 / Shift+Enterで改行。<br>
+            みんなが勝手にしゃべり続けます。
+        </div>
+    </div>
+
+    <script>
+        /********** おじさん構文用の単語リスト **********/
+        const wordLists = [
+            ["オハヨー!", "花子ちゃんオハヨー!😂🤣🤗", "お疲れ様〜😎(^o^)", "コンバンワ🥰🥰～"],
+            ["何してるのかい、❓", "元気カ、イ❓🎶(*/ω＼*)", "今日はどうしてるノ❓"],
+            ["あれ😅、朝と夜間違えたのかな🤷👨", "おぢさんはまだ起きてますヨ💤", "こんな時間まで起きてるなんて若いネ～＾＾"],
+            ["連絡くれナイから😓(┬┬﹏┬┬)", "おぢさんは家🏠、で、ヒトリ😭😅😅", "さみしく1人でテレビ📺見てるヨ…"],
+            ["カナシイな～＾＾😢（笑）", "会いたい、ナ(*/ω＼*)(^人^)😅", "こんどお茶でもしよウヨ☕️"],
+            ["ランチ、でも🍚ド、ウ❓（笑）", "ちょっと😎電話📞できるか、ナ（￣ー￣?）", "旅行🧳いカ、ナイ❓(?_?)（笑）"],
+            ["今日、は雨ダネ!😓¬_¬", "今日、は晴れダネ🌤🌤（笑）", "きょう、も、😀😄(❁´◡`❁)"],
+            ["楽しい😂😂❤️", "綺麗な^_^^_^", "美しい😍😍😂",かわいいo(*^＠^*)o😍"],
+            ["花子チャン😂😂🤣、", "花子ちゃん💕😘（笑）🎶、", "いつもありがとネ😊😊"],
+            ["今から寝ようと思ってたのに、(つ∀-)ｵﾔｽﾐｰ😎目が覚めちゃったヨ😅😂😂", "ご飯おいしかったヨ❗😋😋", "もうお布団入ったカ🥱"],
+            ["あいたいな🎈🎈🥰(￣y▽,￣)╭ ", "と,o(*^＠^*)o遊びたい🎶😂😂", "いっしょに写真撮りたいネ📸"],
+            ["会社をサボるなんて、☆*: .｡. o(≧▽≦)o｡.:*☆😅ダメだゾ🤣", "こんな遅い🌃になにしてるの❓🙄😂", "おじさんは元気だヨ💪", "今度遊ばなイ❓😀"]
+        ];
+
+        functionOjisanSentence() {
+            const partCount =2 + Math.floor(Math.random() * 3); // 2〜4パート
+            let sentence = "";
+            for (let i = 0; i < partCount; i++) {
+                const listIndex = Math.floor(Math.random() * wordLists.length);
+                const wordIndex = Math.floor(Math.random() * wordLists[listIndex].length);
+                sentence += wordLists[listIndex][wordIndex];
+            }
+            return sentence;
+        }
+
+        /********** キャラごとのメッセージ **********/
+        const characterMessages = {
+            "徳川": [
+                "天下泰平とはいえ、現代のほうが忙しそうじゃな…📱",
+                "城下町の散歩でもせぬか？…いや、今はショッピングモールか😂",
+                "家臣たちがLINE覚えたら大変じゃな🤣",
+                "忠義とは何か、じっくり語り合いたいものじゃ…",
+                "今日の会議も長かったのう…評定より長いぞ😅",
+                "そなた、ちゃんと休んでおるか？働きすぎはよくないぞ☕️",
+                "現代の兵糧（コンビニ飯）、なかなか侮れぬな…🍙",
+                "最近の若者は早寝早起きしておるかの？",
+                "将軍もたまにはゴロゴロしたくなるのじゃ…🤤",
+                "あの頃よりも、いまのほうが情報戦が激しそうじゃな📡"
+            ],
+            "源頼朝": [
+                "いやいや、現代の合戦はトレンド争いなんだよな〜✨",
+                "鎌倉殿もTwitterやってたらバズってたかな？🤔",
+                "鎌倉まで通勤電車で通うの、地味につらそう😂",
+                "武士もつらいけど、社畜もなかなかだな…💼",
+                "最近の鎌倉は観光客多いらしいな～行きたい😎",
+                "源氏の白旗より、通知の白丸のほうが怖くない？📲",
+                "エゴサしてたら眠れなくなったわ…😇",
+                "歴史の教科書に自分の名前あるの、やっぱ不思議だよなぁ",
+                "武士の情けで、今日は早く寝ろ😴",
+               鎌倉殿の13人、ちゃんと全部見た？👀"
+            ],
+            "福井 太郎": [
+                "今日はあんや、仕事はかどったけ？💻",
+                "福井は雪すごいやけど、そっちはどうね？⛄️                "ソースカツ丼食べたくなってきたわ…🤤",
+                "北陸新幹線、乗ってみたいのぉ🚄",
+                "なんかさー、急に青春時代思い出してしまったわ😌",
+                "はよ帰ってゴロゴロしたいわ～",
+                "あんまり無理しすぎんようにしなよ？",
+                "ゲームでもしながらダラダラしたい気分わ🎮",
+                "あ、そうそう、最近面白いマンガ見つけてん📚",
+                "ラーメン食べこって話、まだ生きてる？🍜"
+            ],
+            "ツイ廃": [
+                "さっきの話、マジでバズりそうなんだけどｗｗｗ",
+                "通知止まらん…誰か助けて…📱",
+                "それ、タイムラインで見た気がする…ジャヴ…😇",
+                "エゴサしてたら日が暮れてたんだが？😂",
+                "インプレッションが全てじゃないって分かってるけどさ…",
+                "最近X(旧Twitter)の仕様変更ついけない😇",
+                "いいねよりリプくれ派です🙋‍♂️",
+                "TLがカオスで脳が溶けてる…",
+                "寝る寝る詐欺してたらこんな時間なんだが🌙",
+                "今日も供給が良すぎて感謝🙏"
+            ],
+            "アンパン 太郎": [
+                "さっきパン屋寄ったんだけど、限定クリームパン優勝してた🍞",
+                "お腹すいてきた…夜食どうしよう🤔",
+                "あんパンと牛乳の組み合わせ、ガチで最強説🥛",
+                "おいしいもの食べてるときが一番幸せだよね😌",
+                "最近ちょっと太ったかも…まぁいっか😂",
+                "ラーメンかカレーか焼肉か…迷う～😋",
+                "おすすめのパン屋あったら教！🥐",
+                "コンビニの新作スイーツチェックした？🍰",
+                "食べ放題って言葉に弱いんだよねぇ…",
+                "お腹空いてない？なにか食べた？🍙"
+            ]
+        };
+
+        /********** 共通の雑談メッージ（誰でも） **********/
+        const commonMessages = [
+            "それってどういうこと？🤔",
+            "あなたの話、すごく面白いよ！😄",
+            "なんだか懐かしい話だね🥲",
+            "私もその経験があるよ！😊",
+            "え？それ本当に？😲",
+            "面白いことがあったら教えて！🤗",
+            "ふーん、それは初めて聞いた！😯",
+            "今日は何をした？🙂",
+            "最近読んだ本の話を聞かせて！📚",
+            "私は今、コーヒーを飲んでるよ☕️",
+            "ちなみに、私は猫派だよ！🐱",
+            "昨日の夜、星を見た？🌟",
+            "今週末は何の予定？📅",
+           旅行に行くなら、どこに行きたい？🌍            "私の好きな映画はインセプションだよ🎥",
+            "最近、新しい趣味を見つけたんだ",
+            "あなたの好きな音楽は何？🎵",
+            "最後に笑ったのはいつ？😂",
+            "季節の変わり、体調管理大丈夫？😷",
+            "一緒にゲームしよう！🎮",
+            "最近見た映画はどうだった？🎞️",
+            "おすすめのレストラン知ってる？🍽️",
+            "一番好きな休日の過ごし方は🏖️",
+            "なんとなく、今日はいい日な気がするんだ😊",
+            "たまにはゆっくり休んでね😌",
+            "愛してますよ！！",
+            "僕の家はどこですか?",
+            generateOjisanSentence(),
+            generateOjisanSentence(),
+            generateOjisanSentence()
+        ];
+
+        const names = ["徳川", "源頼朝", "福井 太郎", "ツイ廃", "アンパン 太郎"];
+
+        const chatBox = document.getElementById("chatBox");
+        const messageForm = document.getElementById("messageForm");
+        const userMessageInput = document.getElementById("userMessage");
+
+        let lastUserMessageTime =0;
+        let botTimerId = null;
+        let botActive = true;
+
+        /********** 時刻フォーマット **********/
+        function formatTime(date = new Date()) {
+            const = String(date.getHours()).padStart(2, "0");
+            const m = String(date.getMinutes()).padStart(2, "0");
+            return `${h}:${m}`;
+        }
+
+        /********** メッセージ追加（共通） **********/
+        function appendMessageElement(el) {
+            const isAtBottom = chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 5;
+            chatBox.appendChild(el);
+            if (isAtBottom) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function add({ name,, type }) {
+            const row = document.createElement("div");
+            row.classList.add("message-row");
+            row.classList.add(type === "me" ? "me" :other");
+
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble");
+            bubble.classList.add(type === "me" ? "bubble-me" : "bubble-other");
+
+            const nameSpan = document.createElement("div");
+            nameSpan.classList.add("name");
+
+            const timeSpan = document.createElement("div");
+            timeSpan.classList.add("time");
+            timeSpan.textContent = formatTime();
+
+            const textDiv = document.createElement("div");
+            textDiv.classList.add("text");
+            textDivContent = text;
+
+            if (type === "") {
+                nameSpan.textContent = "あなた";
+                nameSpan.classList.add("name-me");
+                bubble.appendChild(nameSpan);
+                bubble.appendChild(text);
+                bubble.appendChild(timeSpan);
+                row.appendChild(bubble);
+                const avatar = document.createElement("div");
+                avatar.classList.add("avatar", "avatar-me");
+                avatar.textContent = "あな";
+                row.appendChild(avatar);
+            } else {
+                // 他メンバー
+                let nameClass = "";
+                let avatarColor = "#999";
+                let avatarLabel = "";
+
+                if (name === "徳川") {
+                    nameClass = "name-tokugawa";
+                    avatarColor = "#0066cc";
+                    avatarLabel = "徳";
+                } else if (name === "源頼朝") {
+                    nameClass = "name-minamoto";
+                    avatarColor = "#008000";
+                    avatarLabel = "源";
+                } else if (name === "福井 太郎") {
+                    nameClass = "name-fukui";
+                    avatarColor = "#b5651d";
+ avatarLabel = "福";
+                } else if (name === "ツイ廃") {
+                    nameClass = "name-twihai";
+                    avatarColor = "#aa00aa";
+                    avatarLabel = "廃";
+                } else if (name === "アンパン 太郎") {
+                    nameClass = "name-anpan";
+                    avatarColor = "#d35400";
+                    avatarLabel = "あ";
+                }
+
+                const avatar = document.createElement("div");
+                avatar.classList.add("avatar");
+                avatar.style.backgroundColor = avatarColor;
+                avatar.textContent = avatarLabel || name[0];
+
+                nameSpan.textContent = name;
+                if (nameClass) nameSpan.classList.add(nameClass);
+
+                bubble.append(nameSpan);
+                bubble.appendChild(text);
+                bubble.appendChild(timeSpan);
+
+                row.appendChild(avatar);
+                row.appendChild(bubble);
+            }
+
+            appendMessageElement(row);
+        }
+
+        /********** ボットメッセージ生成 **********/
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function createRandomBotMessage() {
+            const name = getRandomElement(names);
+            const charMsgs characterMessages[name] || [];
+            let text;
+            if (Math.random() < 0.3) {
+                // 30% くらいでおじさん構文
+                text = generateOjisanSentence();
+            } else if (Math.random() < 0.5 && charMsgs.length > 0) {
+                // キャラ固有のメッセージ
+                text = getRandomElement(charMsgs);
+            } else {
+                // 共通メッセージ
+                text = getRandomElement(commonMessages);
+            }
+            return { name, text };
+        }
+
+        /********** ボットの自動投稿 **********/
+        function scheduleNextBotMessage() {
+            if (!botActive) return;
+
+            const now = Date.now();
+            let delay;
+            // ユーザー発言の5秒以内は控えめに
+            if (now - lastUserMessageTime < 5000) {
+                delay = 3000 + Math.random() * 4000; // 3〜7秒
+            } else {
+                delay = 1000 + Math.random() * 3000; // 1〜4秒
+            }
+
+            botTimerId = setTimeout(() => {
+                // 再度チェック（直近でユーザー発言があったかもしれない）
+                const now2 = Date.now();
+ if (now2 - lastUserMessageTime < 1500) {
+                    scheduleNextBotMessage();
+                    return;
+                }
+
+                const { name, text } = createRandomBotMessage();
+                addMessage({ name, text, type: "other" });
+                scheduleNextBotMessage();
+            }, delay);
+        }
+
+        /********** ユーザー発言に対する「返信」っぽい挙動 **********/
+        function scheduleReplyToUser(userText) {
+            // 一人が軽く返事する感じ
+            const delay = 800 + Math.random() * 2000; // 0.8〜2.8秒
+            setTimeout(() => {
+                const name = getRandomElement(names);
+                let reply;
+
+                // 超簡易：ユーザー発言に単語を差し込む
+                const trimmed = userText.trim();
+                if (trimmed.length > 0 && Math.random() < 0.6) {
+                    const words = trimmed.split(/\s+/);
+                    const pick = getRandomElement(words);
+                    reply = `${pick}って、なんかいいね😄`;
+                    if (pick.length > 15) {
+                        reply = "さっきの話、なんか深かった…🤔";
+                    }
+                } else {
+                    const charMsgs = characterMessages[name] || [];
+                    if (charMsgs.length > 0 && Math.random() < 0.6) {
+                        reply = getRandomElement(charMsgs);
+                    } else {
+                        reply = getRandomElement(commonMessages);
+                    }
+                }
+
+                addMessage({ name, text: reply, type: "other" });
+            }, delay);
+        }
+
+        /********** フォーム送信処理 **********/
+        messageForm.addEventListener("submit", functione) {
+            e.preventDefault();
+            const text = userMessageInput.value;
+            if (text.trim() === "") return;
+
+            addMessage({ name: "あなた", text, type: "me" });
+            lastUserMessageTime = Date.now();
+            userMessageInput.value = "";
+            userMessageInput.focus();
+
+            scheduleReplyToUser(text);
+        });
+
+        // Enterで送信 / Shift+Enterで改行
+        userMessageInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                messageForm.requestSubmit();
+            }
+        });
+
+        /********** 初期化 **********/
+        // 最初にちょっとだけメッセージを流しておく
+        function initChat() {
+            const initialCount = 3 + Math.floor(Math.random() * 3); // 3〜5件
+            for (let i = 0; i < initialCount; i++) {
+                const { name, text } = createRandomBotMessage();
+                addMessage({ name, text, type: "other" });
+            }
+        }
+
+        initChat();
+        scheduleNextBotMessage();
+    </script>
+</body>
+
+</html>
