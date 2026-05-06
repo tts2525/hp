@@ -394,7 +394,7 @@
             <h3 style="margin-bottom: 15px; color: #333; font-size: 14px;">学習するユニットを選択</h3>
             <div class="unit-selector" id="unitButtonsContainer"></div>
 
-            <div class="mode-selector" id="modeSelector" style="display: none;">
+            <div class="mode-selector" id="modeSelector">
                 <button class="mode-btn active" data-mode="all">
                     <strong>全問出題</strong><br>
                     <span style="font-size: 12px; opacity: 0.8;">すべての問題</span>
@@ -405,7 +405,7 @@
                 </button>
             </div>
 
-            <button class="btn btn-primary" id="startBtn" disabled style="width: 100%;">
+            <button class="btn btn-primary" id="startBtn" style="width: 100%;">
                 学習を開始
             </button>
         </div>
@@ -529,26 +529,54 @@
             renderUnitButtons() {
                 const container = document.getElementById('unitButtonsContainer');
                 container.innerHTML = '';
-                
+
+                // 「すべて」ボタン
+                const allBtn = document.createElement('button');
+                allBtn.className = 'unit-btn active';
+                allBtn.textContent = 'すべて';
+                allBtn.dataset.unitIndex = 'all';
+                allBtn.addEventListener('click', () => this.toggleUnit('all', allBtn));
+                container.appendChild(allBtn);
+
                 this.units.forEach((unit, index) => {
                     const btn = document.createElement('button');
                     btn.className = 'unit-btn';
                     btn.textContent = unit.unit;
                     btn.dataset.unitIndex = index;
-                    btn.addEventListener('click', () => this.selectUnit(index, btn));
+                    btn.addEventListener('click', () => this.toggleUnit(index, btn));
                     container.appendChild(btn);
                 });
+
+                this.selectedUnitIndices = 'all';
             },
 
-            selectUnit(index, btn) {
-                document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.currentUnit = this.units[index];
-                this.currentMode = 'all';
-                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                document.querySelector('[data-mode="all"]').classList.add('active');
-                document.getElementById('modeSelector').style.display = 'grid';
-                document.getElementById('startBtn').disabled = false;
+            toggleUnit(index, btn) {
+                if (index === 'all') {
+                    // すべて選択
+                    this.selectedUnitIndices = 'all';
+                    document.querySelectorAll('.unit-btn').forEach(b => {
+                        b.classList.toggle('active', b.dataset.unitIndex === 'all');
+                    });
+                } else {
+                    // 個別選択（複数可）
+                    const allBtn = document.querySelector('[data-unit-index="all"]') ||
+                                   Array.from(document.querySelectorAll('.unit-btn')).find(b => b.textContent === 'すべて');
+                    allBtn.classList.remove('active');
+
+                    btn.classList.toggle('active');
+
+                    const selected = Array.from(document.querySelectorAll('.unit-btn'))
+                        .filter(b => b.classList.contains('active') && b.dataset.unitIndex !== 'all')
+                        .map(b => parseInt(b.dataset.unitIndex));
+
+                    if (selected.length === 0) {
+                        // 何も選ばれていなければ「すべて」に戻す
+                        allBtn.classList.add('active');
+                        this.selectedUnitIndices = 'all';
+                    } else {
+                        this.selectedUnitIndices = selected;
+                    }
+                }
             },
 
             setupEventListeners() {
@@ -566,14 +594,35 @@
                 document.getElementById('giveUpBtn').addEventListener('click', () => this.giveUp());
                 document.getElementById('retryBtn').addEventListener('click', () => this.retryQuiz());
                 document.getElementById('backBtn').addEventListener('click', () => this.backToSelection());
+
+                document.addEventListener('keydown', (e) => {
+                    const quizActive = document.getElementById('quizContainer').classList.contains('active');
+                    if (!quizActive) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const nextBtn = document.getElementById('nextBtn');
+                        if (!nextBtn.disabled) this.nextQuestion();
+                    }
+                    if (['1','2','3','4'].includes(e.key)) {
+                        if (this.answered) return;
+                        const idx = parseInt(e.key) - 1;
+                        const opts = document.querySelectorAll('.option');
+                        if (opts[idx] && !opts[idx].disabled) opts[idx].click();
+                    }
+                });
             },
 
             startQuiz() {
-                // 問題リストを作成
-                let questions = [...this.currentUnit.words];
+                // 対象ユニットの単語をまとめる
+                const targetUnits = this.selectedUnitIndices === 'all'
+                    ? this.units
+                    : this.selectedUnitIndices.map(i => this.units[i]);
+                // generateOptions用に全単語プールも保持
+                this.allWords = targetUnits.flatMap(u => u.words);
+
+                let questions = [...this.allWords];
 
                 if (this.currentMode === 'mistakes') {
-                    // 間違えた問題のみを抽出
                     questions = questions.filter(q => this.mistakes.has(q.id));
                     if (questions.length === 0) {
                         alert('間違えた問題がまだありません！\n全問出題でチャレンジしてください。');
@@ -589,6 +638,10 @@
                 this.score = 0;
                 this.sessionMistakes.clear();
 
+                const label = this.selectedUnitIndices === 'all'
+                    ? 'すべてのユニット'
+                    : this.selectedUnitIndices.map(i => this.units[i].unit).join(' + ');
+                document.getElementById('quizUnitTitle').textContent = label;
                 document.getElementById('unitSelector').style.display = 'none';
                 document.getElementById('quizContainer').classList.add('active');
                 document.getElementById('quizComplete').classList.remove('show');
@@ -625,6 +678,7 @@
                     container.appendChild(btn);
                 });
 
+                document.getElementById('giveUpBtn').style.display = '';
                 document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
                 document.getElementById('nextBtn').disabled = true;
             },
@@ -656,12 +710,16 @@
                         this.sessionMistakes.add(question.id);
                         btn.classList.remove('selected');
                         btn.classList.add('incorrect');
-                        document.querySelector('.option.correct').classList.add('correct');
+                        // 正解のボタンを緑表示
+                        document.querySelectorAll('.option').forEach(b => {
+                            if (b.textContent === correctAnswer) b.classList.add('correct');
+                        });
                         document.getElementById('feedback').classList.add('show', 'incorrect');
                         document.getElementById('feedbackTitle').textContent = '✗ 不正解です。';
                     }
 
                     document.getElementById('nextBtn').disabled = false;
+                    document.getElementById('giveUpBtn').style.display = isCorrect ? '' : 'none';
                 }, 300);
             },
 
@@ -729,10 +787,7 @@
                 document.getElementById('quizContainer').classList.remove('active');
                 document.getElementById('quizComplete').classList.remove('show');
                 document.getElementById('unitSelector').style.display = 'block';
-                document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
-                this.currentUnit = null;
-                document.getElementById('modeSelector').style.display = 'none';
-                document.getElementById('startBtn').disabled = true;
+                this.renderUnitButtons();
             },
 
             generateOptions(question) {
