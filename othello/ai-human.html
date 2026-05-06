@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTHELLO — 自動対局</title>
+<title>OTHELLO — 自動対局 & AI強化版</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -17,13 +17,15 @@
     --bg: #0d0d0d;
     --surface: #161616;
     --surface2: #1e1e1e;
-    --border: #333; /* 枠線を少し明るく */
-    --text-primary: #ffffff; /* 文字を白く */
-    --text-secondary: #aaaaaa; /* サブテキストを見やすく */
-    --accent: #e5c05e; /* アクセントカラーを少し明るく */
+    --border: #333;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --accent: #e5c05e;
     --accent-dim: #907639;
     --danger: #d9534f;
     --valid: rgba(255, 230, 100, 0.4);
+    --gauge-black: #555555;
+    --gauge-white: #e5c05e;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,7 +33,7 @@
   body {
     background: var(--bg);
     color: var(--text-primary);
-    font-family: 'DM Mono', monospace;
+    font-family: 'DM Mono', "Noto Sans JP", sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -41,7 +43,6 @@
     overflow-x: hidden;
   }
 
-  /* 背景グレインエフェクト */
   body::before {
     content: '';
     position: fixed;
@@ -54,11 +55,7 @@
 
   .everything { position: relative; z-index: 1; width: 100%; max-width: 900px; }
 
-  /* ヘッダー */
-  header {
-    text-align: center;
-    margin-bottom: 30px;
-  }
+  header { text-align: center; margin-bottom: 30px; }
   .logo {
     font-family: 'Playfair Display', serif;
     font-size: 48px;
@@ -68,319 +65,115 @@
     line-height: 1;
   }
   .logo span { color: var(--accent); }
-  .tagline {
-    font-size: 12px;
-    letter-spacing: 0.3em;
-    color: var(--text-secondary);
-    margin-top: 10px;
-    text-transform: uppercase;
-  }
+  .tagline { font-size: 12px; letter-spacing: 0.3em; color: var(--text-secondary); margin-top: 10px; text-transform: uppercase; }
 
-  /* メインレイアウト */
-  .main {
-    display: grid;
-    grid-template-columns: 220px 1fr 220px;
-    gap: 32px;
-    align-items: start;
-  }
+  .main { display: grid; grid-template-columns: 220px 1fr 220px; gap: 32px; align-items: start; }
 
-  /* プレイヤーパネル */
-  .player-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+  .player-panel, .side-log { display: flex; flex-direction: column; gap: 16px; }
 
   .player-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.3s, box-shadow 0.3s;
   }
-  .player-card.active {
-    border-color: var(--accent-dim);
-    box-shadow: 0 0 24px rgba(229, 192, 94, 0.15);
-  }
-  .player-card.black-card.active {
-    border-color: #666;
-    box-shadow: 0 0 24px rgba(255,255,255,0.1);
-  }
+  .player-card.active { border-color: var(--accent-dim); box-shadow: 0 0 24px rgba(229, 192, 94, 0.15); }
+  .player-card.black-card.active { border-color: #666; box-shadow: 0 0 24px rgba(255,255,255,0.1); }
 
-  .player-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    margin-bottom: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  }
-  .player-icon.black {
-    background: radial-gradient(circle at 38% 35%, #666, #111);
-    border: 2px solid #444;
-  }
-  .player-icon.white {
-    background: radial-gradient(circle at 38% 35%, #fff, #d8d4cc);
-    border: 2px solid #ccc;
-  }
+  .player-icon { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  .player-icon.black { background: radial-gradient(circle at 38% 35%, #666, #111); border: 2px solid #444; }
+  .player-icon.white { background: radial-gradient(circle at 38% 35%, #fff, #d8d4cc); border: 2px solid #ccc; }
 
-  .player-label {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .player-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 12px;
-  }
-  .player-score {
-    font-size: 44px;
-    font-weight: 300;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 8px;
-  }
+  .player-label { font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; }
+  .player-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+  .player-score { font-size: 44px; font-weight: 300; color: var(--accent); line-height: 1; margin-bottom: 8px; }
   .player-score.score-black { color: #ccc; }
 
   .ai-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--text-secondary);
+    display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px 10px; font-size: 11px; letter-spacing: 0.1em; color: var(--text-secondary);
   }
-  .ai-badge.human {
-    color: #88c0d0;
-  }
-  .ai-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-  }
+  .ai-badge.human { color: #88c0d0; }
+  .ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
   .human .ai-dot { background: #88c0d0; animation: none; }
   
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-  /* 盤面 */
   .board-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
 
+  /* 盤面 */
   .board-wrapper {
-    background: var(--board-border);
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow:
-      0 0 0 1px #333,
-      0 20px 60px rgba(0,0,0,0.6),
-      inset 0 0 30px rgba(0,0,0,0.3);
+    background: var(--board-border); border-radius: 10px; padding: 10px;
+    box-shadow: 0 0 0 1px #333, 0 20px 60px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.3);
   }
+  .board { display: grid; grid-template-columns: repeat(8, 1fr); gap: 1px; background: var(--board-line); border-radius: 4px; overflow: hidden; }
 
-  .board {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 1px;
-    background: var(--board-line);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .cell {
-    width: 56px;
-    height: 56px;
-    background: var(--board-green);
-    cursor: default; /* デフォルトはクリック不可カーソル */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: background 0.15s;
-  }
-  /* 置ける場所だけポインターに */
+  .cell { width: 56px; height: 56px; background: var(--board-green); cursor: default; display: flex; align-items: center; justify-content: center; position: relative; transition: background 0.15s; }
   .cell.valid { cursor: pointer; }
   .cell.valid:hover { background: var(--cell-hover); }
-  .cell.valid::after {
-    content: '';
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--valid);
-    border: 1px solid rgba(255,230,100,0.5);
-  }
+  .cell.valid::after { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--valid); border: 1px solid rgba(255,230,100,0.5); }
 
-  .piece {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    position: absolute;
-    /* CSSアニメーション強化 */
-    transform-style: preserve-3d;
-    transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-  }
-  .piece.black {
-    background: radial-gradient(circle at 38% 32%, #5a5a5a, #0d0d0d);
-    border: 1.5px solid #333;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.05);
-  }
-  .piece.white {
-    background: radial-gradient(circle at 38% 32%, #ffffff, #d5d0c8);
-    border: 1.5px solid #bbb;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.8);
-  }
-  
-  /* 新しく置かれたときのアニメーション */
-  .piece.new {
-    animation: dropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  }
-  /* ひっくり返るアニメーション */
-  .piece.flip {
-    animation: flipPiece 0.5s ease-in-out forwards;
-  }
+  .piece { width: 44px; height: 44px; border-radius: 50%; position: absolute; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1); }
+  .piece.black { background: radial-gradient(circle at 38% 32%, #5a5a5a, #0d0d0d); border: 1.5px solid #333; box-shadow: 0 3px 10px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.05); }
+  .piece.white { background: radial-gradient(circle at 38% 32%, #ffffff, #d5d0c8); border: 1.5px solid #bbb; box-shadow: 0 3px 10px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.8); }
+  .piece.new { animation: dropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+  .piece.flip { animation: flipPiece 0.5s ease-in-out forwards; }
 
-  @keyframes dropIn {
-    0% { transform: scale(0.1) translateY(-40px); opacity: 0; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
-  }
-  @keyframes flipPiece {
-    0% { transform: scaleX(1) scale(1); }
-    50% { transform: scaleX(0) scale(1.1); }
-    100% { transform: scaleX(1) scale(1); }
-  }
+  @keyframes dropIn { 0% { transform: scale(0.1) translateY(-40px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+  @keyframes flipPiece { 0% { transform: scaleX(1) scale(1); } 50% { transform: scaleX(0) scale(1.1); } 100% { transform: scaleX(1) scale(1); } }
 
-  /* コントロール */
+  /* UI コントロール・設定関連 */
   .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .btn {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    padding: 10px 16px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+  .btn { font-family: inherit; font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
   .btn:hover:not(:disabled) { border-color: var(--accent-dim); color: var(--text-primary); }
-  .btn.primary {
-    background: var(--accent-dim);
-    border-color: var(--accent);
-    color: #fff;
-  }
+  .btn.primary { background: var(--accent-dim); border-color: var(--accent); color: #fff; }
   .btn.primary:hover:not(:disabled) { background: var(--accent); color: #000; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* 速度スライダー */
-  .speed-control {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: -5px;
+  .settings-group {
+    display: flex; flex-direction: column; gap: 10px; font-size: 12px; color: var(--text-secondary); margin-top: 5px;
+    background: var(--surface); padding: 12px 20px; border-radius: 8px; border: 1px solid var(--border); width: 100%;
   }
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 120px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-  }
+  .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+  select { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; font-family: inherit; }
+  
+  input[type=range] { -webkit-appearance: none; width: 100px; height: 4px; background: var(--border); border-radius: 2px; outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); cursor: pointer; }
 
-  /* ログパネル */
-  .side-log { display: flex; flex-direction: column; gap: 16px; }
+  /* 形勢判断ゲージ */
+  .eval-gauge-container { width: 100%; margin-top: 5px; }
+  .eval-label-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+  .eval-bar-bg { width: 100%; height: 8px; background: var(--gauge-white); border-radius: 4px; overflow: hidden; display: flex; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); }
+  .eval-bar-fill { height: 100%; background: var(--gauge-black); transition: width 0.5s ease-out; }
 
-  .log-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-  }
-  .log-title {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .move-log {
-    max-height: 220px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-  .move-entry {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    animation: fadeIn 0.3s;
-  }
+  /* ログ＆ステータス */
+  .log-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .log-title { font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .move-log { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .move-entry { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-secondary); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.3s; }
   @keyframes fadeIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
-  .move-piece {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
+  .move-piece { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
   .move-piece.b { background: #555; border: 1px solid #777; }
   .move-piece.w { background: #ddd; border: 1px solid #ccc; }
   .move-coord { color: var(--accent); font-weight: 600; width: 24px; }
-  .move-flips { color: var(--text-primary); font-size: 11px; }
 
-  /* ゲームステータス */
-  .status-msg {
-    text-align: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-primary);
-    min-height: 28px;
-    transition: color 0.3s;
-  }
+  .status-msg { text-align: center; font-size: 18px; font-weight: 600; color: var(--text-primary); min-height: 28px; transition: color 0.3s; }
   .status-msg.thinking { color: var(--accent); }
   .status-msg.alert { color: var(--danger); }
 
-  /* グラフ */
   .score-graph { margin-top: 8px; }
   .graph-bar-row { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
   .graph-label { font-size: 12px; color: var(--text-secondary); width: 14px; text-align: right; }
   .graph-bar-bg { flex: 1; height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
-  .graph-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .graph-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s; }
   .fill-black { background: #666; }
   .fill-white { background: var(--accent); }
 
-  /* モバイル対応 */
+  /* アドバイスボックス */
+  .advice-box { display: none; margin-top: 20px; padding: 16px; background: rgba(229, 192, 94, 0.1); border: 1px solid var(--accent-dim); border-radius: 8px; color: var(--text-primary); font-size: 14px; line-height: 1.6; text-align: left; }
+  .advice-box strong { color: var(--accent); }
+
   @media (max-width: 750px) {
     .main { grid-template-columns: 1fr; }
-    .player-panel { flex-direction: row; }
-    .player-card { flex: 1; }
+    .player-panel { flex-direction: row; flex-wrap: wrap; }
+    .player-card { flex: 1; min-width: 140px; }
     .cell { width: 42px; height: 42px; }
     .piece { width: 34px; height: 34px; }
     .logo { font-size: 36px; }
@@ -391,11 +184,11 @@
 <div class="everything">
   <header>
     <div class="logo">OTH<span>E</span>LLO</div>
-    <div class="tagline">Human vs AI</div>
+    <div class="tagline">Human vs AI engine</div>
   </header>
 
   <div class="main">
-    <!-- 黒プレイヤー -->
+    <!-- 左パネル：黒プレイヤー -->
     <div class="player-panel">
       <div class="player-card black-card active" id="card-black">
         <div class="player-icon black"></div>
@@ -422,26 +215,56 @@
       </div>
     </div>
 
-    <!-- 盤面 -->
+    <!-- 中央パネル：盤面・コントロール -->
     <div class="board-section">
       <div class="status-msg" id="status">先攻か後攻を選んで開始してください</div>
+      
+      <!-- 形勢判断ゲージ -->
+      <div class="eval-gauge-container">
+        <div class="eval-label-row">
+          <span>黒優勢</span>
+          <span>形勢判断 (Eval)</span>
+          <span>白優勢</span>
+        </div>
+        <div class="eval-bar-bg">
+          <div class="eval-bar-fill" id="eval-bar" style="width: 50%;"></div>
+        </div>
+      </div>
+
       <div class="board-wrapper">
         <div class="board" id="board"></div>
       </div>
+      
       <div class="controls">
         <button class="btn primary" id="btn-start-b">▶ 先手(黒)で開始</button>
         <button class="btn primary" id="btn-start-w">▶ 後手(白)で開始</button>
         <button class="btn" id="btn-hint" disabled>💡 ヒント</button>
         <button class="btn" id="btn-reset">↺ リセット</button>
       </div>
-      <div class="speed-control">
-        <span>AI速度</span>
-        <input type="range" id="speed" min="1" max="5" value="3">
-        <span id="speed-label">普通</span>
+      
+      <div class="settings-group">
+        <div class="setting-row">
+          <span>🤖 AIの強さ(先読み)</span>
+          <select id="ai-level">
+            <option value="1">レベル1 (1手読み: 激弱)</option>
+            <option value="3" selected>レベル2 (3手読み: 普通)</option>
+            <option value="5">レベル3 (5手読み: 強い)</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span>⏱️ AIの思考速度</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="range" id="speed" min="1" max="5" value="3">
+            <span id="speed-label" style="width:30px;">普通</span>
+          </div>
+        </div>
       </div>
+
+      <!-- 対局終了後のアドバイス枠 -->
+      <div class="advice-box" id="advice-box"></div>
     </div>
 
-    <!-- ログ -->
+    <!-- 右パネル：白プレイヤー＆ログ -->
     <div class="side-log">
       <div class="player-card" id="card-white">
         <div class="player-icon white"></div>
@@ -464,24 +287,30 @@ const EMPTY = 0, BLACK = 1, WHITE = 2;
 const DIRS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
 const COLS = 'ABCDEFGH';
 
-// AIを賢くするための盤面評価値（角を重んじ、角の隣を避ける）
+// より厳密な盤面評価値（X打ち、C打ちのペナルティを強化）
 const BOARD_WEIGHT = [
-  [ 120, -20,  20,   5,   5,  20, -20,  120],
-  [ -20, -40,  -5,  -5,  -5,  -5, -40,  -20],
+  [ 120, -60,  20,   5,   5,  20, -60,  120],
+  [ -60, -80,  -5,  -5,  -5,  -5, -80,  -60],
   [  20,  -5,  15,   3,   3,  15,  -5,   20],
   [   5,  -5,   3,   3,   3,   3,  -5,    5],
   [   5,  -5,   3,   3,   3,   3,  -5,    5],
   [  20,  -5,  15,   3,   3,  15,  -5,   20],
-  [ -20, -40,  -5,  -5,  -5,  -5, -40,  -20],
-  [ 120, -20,  20,   5,   5,  20, -20,  120]
+  [ -60, -80,  -5,  -5,  -5,  -5, -80,  -60],
+  [ 120, -60,  20,   5,   5,  20, -60,  120]
 ];
 
+// 角の座標
+const CORNERS = [[0,0], [0,7], [7,0], [7,7]];
+
 let board, currentTurn, gameActive;
-let humanPlayer = null; // 黒か白か未決定
+let humanPlayer = null;
 let lastMove = null;
-let lastFlips = [];
 let hintMove = null;
 let aiTimer = null;
+
+// 分析用データ（アドバイス用）
+let humanCornerGifts = 0; // 角を相手に取られた回数
+let turnCount = 0;
 
 // ===== 初期化 =====
 function initGame() {
@@ -493,22 +322,28 @@ function initGame() {
   gameActive = false;
   humanPlayer = null;
   lastMove = null;
-  lastFlips = [];
   hintMove = null;
+  humanCornerGifts = 0;
+  turnCount = 0;
   clearTimeout(aiTimer);
   
   document.getElementById('move-log').innerHTML = '';
   document.getElementById('btn-hint').disabled = true;
   document.getElementById('btn-start-b').style.display = 'block';
   document.getElementById('btn-start-w').style.display = 'block';
+  document.getElementById('advice-box').style.display = 'none';
   
   setStatusMsg("先手(黒)か後手(白)を選んで開始してください");
   createBoardDOM();
   renderBoard();
+  updateEvalGauge();
+}
+
+function cloneBoard(b) {
+  return b.map(row => [...row]);
 }
 
 // ===== UI構築・更新 =====
-// 盤面を一度だけ作成し、中身だけ更新することでアニメーションを成立させる
 function createBoardDOM() {
   const el = document.getElementById('board');
   el.innerHTML = '';
@@ -529,45 +364,31 @@ function renderBoard() {
   for (let r=0; r<8; r++) {
     for (let c=0; c<8; c++) {
       const cell = document.getElementById(`cell-${r}-${c}`);
-      
-      // クラスリセット
       cell.className = 'cell';
       
-      // 有効手ハイライト
-      if (valid.some(([vr,vc])=>vr===r&&vc===c)) {
-        cell.classList.add('valid');
-      }
-      // ヒントハイライト
+      if (valid.some(([vr,vc])=>vr===r&&vc===c)) cell.classList.add('valid');
       if (hintMove && hintMove[0]===r && hintMove[1]===c) {
         cell.style.boxShadow = "inset 0 0 0 3px cyan";
       } else {
         cell.style.boxShadow = "none";
       }
 
-      // 石の更新
       let piece = cell.querySelector('.piece');
       if (board[r][c] !== EMPTY) {
         const colorClass = board[r][c] === BLACK ? 'black' : 'white';
         if (!piece) {
           piece = document.createElement('div');
           piece.className = `piece ${colorClass}`;
-          // 新しく置かれた石にアニメーション付与
-          if (lastMove && lastMove[0]===r && lastMove[1]===c) {
-            piece.classList.add('new');
-          }
+          if (lastMove && lastMove[0]===r && lastMove[1]===c) piece.classList.add('new');
           cell.appendChild(piece);
         } else {
-          // 色が変わっていたらひっくり返すアニメーション
-          if (!piece.classList.contains(colorClass)) {
-            piece.className = `piece ${colorClass} flip`;
-          }
+          if (!piece.classList.contains(colorClass)) piece.className = `piece ${colorClass} flip`;
         }
       } else {
         if (piece) cell.removeChild(piece);
       }
     }
   }
-  
   updateScoreAndCards();
 }
 
@@ -591,7 +412,6 @@ function updateScoreAndCards() {
     document.getElementById('pct-white').innerText = wp + '%';
   }
 
-  // ターン表示
   document.getElementById('card-black').classList.toggle('active', currentTurn === BLACK);
   document.getElementById('card-white').classList.toggle('active', currentTurn === WHITE);
 }
@@ -619,12 +439,8 @@ function getFlips(b, r, c, color) {
   for (const [dr,dc] of DIRS) {
     const line = [];
     let nr=r+dr, nc=c+dc;
-    while (nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===3-color) {
-      line.push([nr,nc]); nr+=dr; nc+=dc;
-    }
-    if (line.length && nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===color) {
-      flips.push(...line);
-    }
+    while (nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===3-color) { line.push([nr,nc]); nr+=dr; nc+=dc; }
+    if (line.length && nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===color) flips.push(...line);
   }
   return flips;
 }
@@ -637,25 +453,94 @@ function validMoves(b, color) {
   return moves;
 }
 
-// 評価関数に基づく賢いAI
-function chooseBestMove(color) {
-  const moves = validMoves(board, color);
-  if (!moves.length) return null;
-
-  let bestMove = moves[0];
-  let bestScore = -Infinity;
-
-  for (const [r, c] of moves) {
-    // 置く場所自体の重み + 裏返せる石の数を少し加味
-    const flipsCount = getFlips(board, r, c, color).length;
-    let score = BOARD_WEIGHT[r][c] + (flipsCount * 2);
-    
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = [r, c];
+// 盤面評価関数（形勢判断・AI思考のコア）
+function evaluateBoard(b, color) {
+  let score = 0;
+  let oppColor = 3 - color;
+  
+  // 1. 位置の重み付け評価
+  for(let r=0; r<8; r++) {
+    for(let c=0; c<8; c++) {
+      if(b[r][c] === color) score += BOARD_WEIGHT[r][c];
+      else if(b[r][c] === oppColor) score -= BOARD_WEIGHT[r][c];
     }
   }
-  return bestMove;
+  
+  // 2. 着手可能数（モビリティ）の評価
+  let myMoves = validMoves(b, color).length;
+  let oppMoves = validMoves(b, oppColor).length;
+  score += (myMoves - oppMoves) * 15; // 序盤・中盤は打てる手が多い方が強い
+
+  return score;
+}
+
+// 形勢判断ゲージの更新
+function updateEvalGauge() {
+  // 黒視点での評価値を計算
+  let score = evaluateBoard(board, BLACK);
+  
+  // スコアを勝率（0〜1）に変換 (シグモイド関数)
+  let winProb = 1 / (1 + Math.exp(-score / 150));
+  let percentBlack = Math.max(5, Math.min(95, winProb * 100)); // 極端になりすぎないよう制限
+  
+  document.getElementById('eval-bar').style.width = percentBlack + '%';
+}
+
+// アルファベータ法（数手先読みアルゴリズム）
+function alphaBeta(b, depth, alpha, beta, isMaximizing, color, currentEvalTurn) {
+  if (depth === 0) return { score: evaluateBoard(b, color) };
+  
+  let moves = validMoves(b, currentEvalTurn);
+  
+  // パス判定
+  if (moves.length === 0) {
+    let nextTurn = 3 - currentEvalTurn;
+    if (validMoves(b, nextTurn).length === 0) {
+      // 終局時は石の数だけで判断
+      let myCnt = 0, oppCnt = 0;
+      b.flat().forEach(v => { if(v===color) myCnt++; else if(v===3-color) oppCnt++; });
+      return { score: myCnt > oppCnt ? 10000 : -10000 };
+    }
+    // 片方だけパスなら手番を切り替えてそのまま探索
+    return alphaBeta(b, depth - 1, alpha, beta, !isMaximizing, color, nextTurn);
+  }
+
+  let bestMove = moves[0];
+  if (isMaximizing) {
+    let maxEval = -Infinity;
+    for (let [r, c] of moves) {
+      let newB = cloneBoard(b);
+      let flips = getFlips(newB, r, c, currentEvalTurn);
+      newB[r][c] = currentEvalTurn;
+      flips.forEach(([fr,fc]) => newB[fr][fc] = currentEvalTurn);
+      
+      let evalResult = alphaBeta(newB, depth - 1, alpha, beta, false, color, 3 - currentEvalTurn);
+      if (evalResult.score > maxEval) {
+        maxEval = evalResult.score;
+        bestMove = [r, c];
+      }
+      alpha = Math.max(alpha, evalResult.score);
+      if (beta <= alpha) break; // ベータカット
+    }
+    return { score: maxEval, move: bestMove };
+  } else {
+    let minEval = Infinity;
+    for (let [r, c] of moves) {
+      let newB = cloneBoard(b);
+      let flips = getFlips(newB, r, c, currentEvalTurn);
+      newB[r][c] = currentEvalTurn;
+      flips.forEach(([fr,fc]) => newB[fr][fc] = currentEvalTurn);
+      
+      let evalResult = alphaBeta(newB, depth - 1, alpha, beta, true, color, 3 - currentEvalTurn);
+      if (evalResult.score < minEval) {
+        minEval = evalResult.score;
+        bestMove = [r, c];
+      }
+      beta = Math.min(beta, evalResult.score);
+      if (beta <= alpha) break; // アルファカット
+    }
+    return { score: minEval, move: bestMove };
+  }
 }
 
 // ===== ゲーム進行 =====
@@ -672,43 +557,45 @@ function executeMove(r, c, flips) {
   board[r][c] = currentTurn;
   flips.forEach(([fr,fc]) => board[fr][fc] = currentTurn);
   
+  // 相手（AI）が角を取ったかトラッキング（アドバイス用）
+  if (currentTurn !== humanPlayer) {
+    if (CORNERS.some(([cr,cc]) => r === cr && c === cc)) {
+      humanCornerGifts++;
+    }
+  }
+
   lastMove = [r, c];
-  lastFlips = flips;
+  turnCount++;
   
   addLog(currentTurn, r, c, flips.length);
   renderBoard();
+  updateEvalGauge(); // 形勢判断ゲージの更新
   
-  // 処理を見せるために少し待ってからターン進行
   setTimeout(advanceTurn, 400);
 }
 
-// ターン進行とパス判定
 function advanceTurn() {
   currentTurn = 3 - currentTurn;
   let moves = validMoves(board, currentTurn);
   
   if (moves.length === 0) {
-    // 現在のプレイヤーがパス
     const nextTurn = 3 - currentTurn;
     const nextMoves = validMoves(board, nextTurn);
     
     if (nextMoves.length === 0) {
-      // 両者パスでゲーム終了
       gameActive = false;
       showResult();
       return;
     } else {
-      // パスして相手の番へ
       setStatusMsg(`${currentTurn === BLACK ? '黒' : '白'}はパスです`, true);
-      renderBoard(); // ターン表示を更新
+      renderBoard();
       setTimeout(() => {
         currentTurn = nextTurn;
         proceedCurrentTurn();
-      }, 1800);
+      }, 1500);
       return;
     }
   }
-  
   proceedCurrentTurn();
 }
 
@@ -718,8 +605,7 @@ function proceedCurrentTurn() {
     setStatusMsg("AI思考中...", false, true);
     document.getElementById('btn-hint').disabled = true;
     
-    // スピード調整 (1:遅い 〜 5:速い)
-    const delayMap = [1500, 1000, 600, 250, 50];
+    const delayMap = [1500, 1000, 600, 200, 10];
     const speed = delayMap[document.getElementById('speed').value - 1];
     
     aiTimer = setTimeout(aiTurn, speed);
@@ -731,14 +617,20 @@ function proceedCurrentTurn() {
 
 function aiTurn() {
   if (!gameActive || currentTurn === humanPlayer) return;
-  const move = chooseBestMove(currentTurn);
-  if (move) {
-    const flips = getFlips(board, move[0], move[1], currentTurn);
-    executeMove(move[0], move[1], flips);
+  
+  // AIの深さを取得
+  const depth = parseInt(document.getElementById('ai-level').value);
+  
+  // アルファベータ法で最善手を探索
+  const result = alphaBeta(board, depth, -Infinity, Infinity, true, currentTurn, currentTurn);
+  
+  if (result.move) {
+    const flips = getFlips(board, result.move[0], result.move[1], currentTurn);
+    executeMove(result.move[0], result.move[1], flips);
   }
 }
 
-// ===== 勝敗判定 =====
+// ===== 勝敗判定とAIアドバイス =====
 function showResult() {
   let b = 0, w = 0;
   board.forEach(row => row.forEach(val => {
@@ -746,9 +638,12 @@ function showResult() {
     if(val === WHITE) w++;
   }));
   
-  renderBoard(); // 最終状態の描画
+  renderBoard();
   document.getElementById('btn-hint').disabled = true;
   
+  let humanWon = (humanPlayer === BLACK && b > w) || (humanPlayer === WHITE && w > b);
+  let isDraw = (b === w);
+
   if (b > w) {
     setStatusMsg(`黒の勝利！ (${b} 対 ${w})`);
   } else if (w > b) {
@@ -756,14 +651,32 @@ function showResult() {
   } else {
     setStatusMsg(`引き分け (${b} 対 ${w})`);
   }
+
+  // AIからのアドバイス生成
+  let advice = "";
+  if (humanWon) {
+    advice = "<strong>【AIからのアドバイス】</strong><br>素晴らしい対局でした！見事な打ち筋でAIを圧倒しましたね。次はAIのレベルを上げて挑戦してみてください。";
+  } else if (isDraw) {
+    advice = "<strong>【AIからのアドバイス】</strong><br>大接戦でしたね！互角の勝負でした。中盤で相手に選択肢を与えないように打つと、勝利が見えてくるはずです。";
+  } else {
+    if (humanCornerGifts >= 2) {
+      advice = "<strong>【AIからのアドバイス】</strong><br>角（四隅）を複数回取られてしまったのが痛手となりました。角の斜め隣（X打ち）や隣（C打ち）には、不用意に打たないように意識してみましょう！";
+    } else {
+      advice = "<strong>【AIからのアドバイス】</strong><br>惜しい対局でした。オセロは序盤〜中盤に「自分の石を少なく保つ（相手に打たせる）」のがコツです。次に打てる場所（モビリティ）を増やすことを意識してみてください！";
+    }
+  }
+
+  const adviceBox = document.getElementById('advice-box');
+  adviceBox.innerHTML = advice;
+  adviceBox.style.display = 'block';
 }
 
 // ===== イベントリスナー =====
 function startGame(playerColor) {
   humanPlayer = playerColor;
   gameActive = true;
+  humanCornerGifts = 0;
   
-  // バッジ表記の更新
   const bBadge = document.getElementById('badge-black');
   const wBadge = document.getElementById('badge-white');
   
@@ -775,6 +688,7 @@ function startGame(playerColor) {
   
   document.getElementById('btn-start-b').style.display = 'none';
   document.getElementById('btn-start-w').style.display = 'none';
+  document.getElementById('advice-box').style.display = 'none';
   
   proceedCurrentTurn();
 }
@@ -785,7 +699,9 @@ document.getElementById('btn-reset').addEventListener('click', initGame);
 
 document.getElementById('btn-hint').addEventListener('click', () => {
   if (currentTurn !== humanPlayer || !gameActive) return;
-  hintMove = chooseBestMove(currentTurn);
+  // ヒントはAIと同じロジック（深さ3）で算出
+  const result = alphaBeta(board, 3, -Infinity, Infinity, true, currentTurn, currentTurn);
+  hintMove = result.move;
   renderBoard();
 });
 
@@ -794,7 +710,6 @@ document.getElementById('speed').addEventListener('input', (e) => {
   document.getElementById('speed-label').innerText = speedLabels[e.target.value - 1];
 });
 
-// 起動
 initGame();
 </script>
 </body>
