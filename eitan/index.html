@@ -608,31 +608,25 @@
                 const progress = ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
                 document.getElementById('progressFill').style.width = progress + '%';
 
+                // 状態リセット（ボタン生成前に必ず行う）
+                this.selectedAnswer = null;
+                this.answered = false;
+
                 // オプションをユニット内の他の単語から自動生成
                 const shuffledOptions = this.shuffleArray(this.generateOptions(question));
                 const container = document.getElementById('optionsContainer');
                 container.innerHTML = '';
 
-                shuffledOptions.forEach((option, index) => {
+                shuffledOptions.forEach((option) => {
                     const btn = document.createElement('button');
                     btn.className = 'option';
                     btn.textContent = option;
                     btn.addEventListener('click', () => this.selectOption(btn, option, question.meaning));
-                    if (this.answered) {
-                        btn.disabled = true;
-                        if (option === question.meaning) {
-                            btn.classList.add('correct');
-                        } else if (btn === this.selectedAnswer) {
-                            btn.classList.add('incorrect');
-                        }
-                    }
                     container.appendChild(btn);
                 });
 
                 document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
                 document.getElementById('nextBtn').disabled = true;
-                this.selectedAnswer = null;
-                this.answered = false;
             },
 
             selectOption(btn, option, correctAnswer) {
