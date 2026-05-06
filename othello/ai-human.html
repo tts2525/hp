@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTHELLO — 自動対局</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --board-green: #1a4d1a;
+    --board-line: #2a6a2a;
+    --board-border: #0f2f0f;
+    --cell-hover: #256325;
+    --black-piece: #111111;
+    --white-piece: #f5f0e8;
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --text-primary: #f0ece4;
+    --text-secondary: #888;
+    --accent: #c8a84b;
+    --accent-dim: #7a6430;
+    --danger: #c05050;
+    --valid: rgba(255, 230, 100, 0.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* 背景グレインエフェクト */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .everything { position: relative; z-index: 1; width: 100%; max-width: 900px; }
+
+  /* ヘッダー */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .logo span { color: var(--accent); }
+  .tagline {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+
+  /* メインレイアウト */
+  .main {
+    display: grid;
+    grid-template-columns: 220px 1fr 220px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* プレイヤーパネル */
+  .player-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .player-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .player-card.active {
+    border-color: var(--accent-dim);
+    box-shadow: 0 0 24px rgba(200, 168, 75, 0.12);
+  }
+  .player-card.black-card.active {
+    border-color: #555;
+    box-shadow: 0 0 24px rgba(255,255,255,0.06);
+  }
+
+  .player-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .player-icon.black {
+    background: radial-gradient(circle at 38% 35%, #555, #111);
+    border: 2px solid #333;
+  }
+  .player-icon.white {
+    background: radial-gradient(circle at 38% 35%, #fff, #d8d4cc);
+    border: 2px solid #ccc;
+  }
+
+  .player-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .player-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .player-score {
+    font-size: 40px;
+    font-weight: 300;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .player-score.score-black { color: #aaa; }
+
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+  }
+  .ai-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* AIレベル選択 */
+  .ai-select-group { margin-top: 8px; }
+  .ai-select-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .ai-levels {
+    display: flex;
+    gap: 4px;
+  }
+  .ai-level-btn {
+    flex: 1;
+    padding: 5px 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .ai-level-btn:hover { border-color: var(--accent-dim); color: var(--text-primary); }
+  .ai-level-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* 盤面 */
+  .board-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+  .board-wrapper {
+    background: var(--board-border);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow:
+      0 0 0 1px #333,
+      0 20px 60px rgba(0,0,0,0.6),
+      inset 0 0 30px rgba(0,0,0,0.3);
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 1px;
+    background: var(--board-line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .cell {
+    width: 56px;
+    height: 56px;
+    background: var(--board-green);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .cell:hover { background: var(--cell-hover); }
+  .cell.valid::after {
+    content: '';
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--valid);
+    border: 1px solid rgba(255,230,100,0.5);
+  }
+
+  /* 星マーク */
+  .cell[data-star]::before {
+    content: '';
+    position: absolute;
+    width: 5px; height: 5px;
+    background: var(--board-line);
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .piece {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    position: absolute;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .piece.black {
+    background: radial-gradient(circle at 38% 32%, #5a5a5a, #0d0d0d);
+    border: 1.5px solid #333;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.05);
+  }
+  .piece.white {
+    background: radial-gradient(circle at 38% 32%, #ffffff, #d5d0c8);
+    border: 1.5px solid #bbb;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.4), inset 0 1px 3px rgba(255,255,255,0.8);
+  }
+  .piece.new {
+    animation: dropIn 0.4s cubic-bezier(.34,1.4,.64,1);
+  }
+  .piece.flip {
+    animation: flipPiece 0.4s ease-in-out;
+  }
+  @keyframes dropIn {
+    from { transform: scale(0.1) translateY(-30px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  @keyframes flipPiece {
+    0% { transform: scaleX(1); }
+    50% { transform: scaleX(0); }
+    100% { transform: scaleX(1); }
+  }
+
+  /* コントロール */
+  .controls { display: flex; gap: 10px; }
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn:hover { border-color: var(--accent-dim); color: var(--text-primary); }
+  .btn.primary {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn.primary:hover { background: var(--accent); color: #000; }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* 速度スライダー */
+  .speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+
+  /* ログパネル */
+  .side-log { display: flex; flex-direction: column; gap: 16px; }
+
+  .log-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .log-title {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .move-log {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .move-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .move-piece {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .move-piece.b { background: #555; border: 1px solid #777; }
+  .move-piece.w { background: #ddd; border: 1px solid #ccc; }
+  .move-coord { color: var(--accent-dim); font-weight: 400; }
+  .move-flips { color: var(--text-secondary); }
+
+  /* ゲームステータス */
+  .status-msg {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--text-secondary);
+    min-height: 24px;
+    transition: color 0.3s;
+  }
+  .status-msg.thinking { color: var(--accent); }
+  .status-msg.gameover { color: var(--text-primary); }
+
+  /* AI思考インジケーター */
+  .thinking-dots::after {
+    content: '';
+    animation: dots 1.2s steps(4) infinite;
+  }
+  @keyframes dots {
+    0%   { content: ''; }
+    25%  { content: '.'; }
+    50%  { content: '..'; }
+    75%  { content: '...'; }
+  }
+
+  /* グラフ */
+  .score-graph { margin-top: 8px; }
+  .graph-bar-row { display: flex; gap: 2px; align-items: center; margin-bottom: 5px; }
+  .graph-label { font-size: 10px; color: var(--text-secondary); width: 14px; text-align: right; }
+  .graph-bar-bg { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .graph-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .fill-black { background: #555; }
+  .fill-white { background: var(--accent); }
+
+  /* モバイル対応 */
+  @media (max-width: 750px) {
+    .main { grid-template-columns: 1fr; }
+    .player-panel { flex-direction: row; }
+    .player-card { flex: 1; }
+    .cell { width: 40px; height: 40px; }
+    .piece { width: 32px; height: 32px; }
+    .logo { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="everything">
+  <header>
+    <div class="logo">OTH<span>E</span>LLO</div>
+    <div class="tagline">AI Auto Match — Black vs White</div>
+  </header>
+
+  <div class="main">
+    <!-- 黒プレイヤー -->
+    <div class="player-panel">
+      <div class="player-card black-card" id="black-card">
+        <div class="player-icon black"></div>
+        <div class="player-label">Player 1</div>
+        <div class="player-name">Black</div>
+        <div class="player-score score-black" id="score-black">2</div>
+        <div class="ai-badge"><div class="ai-dot"></div>AI Engine</div>
+        <div class="ai-select-group">
+          <div class="ai-select-label">Black Level</div>
+          <div class="ai-levels" id="black-levels">
+            <button class="ai-level-btn" data-level="1">易</button>
+            <button class="ai-level-btn active" data-level="2">普</button>
+            <button class="ai-level-btn" data-level="3">難</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="log-card">
+        <div class="log-title">Score Graph</div>
+        <div class="score-graph">
+          <div class="graph-bar-row">
+            <div class="graph-label">●</div>
+            <div class="graph-bar-bg"><div class="graph-bar-fill fill-black" id="bar-black" style="width:50%"></div></div>
+            <div style="font-size:11px;color:#666;width:24px;text-align:right" id="pct-black">50%</div>
+          </div>
+          <div class="graph-bar-row">
+            <div class="graph-label">○</div>
+            <div class="graph-bar-bg"><div class="graph-bar-fill fill-white" id="bar-white" style="width:50%"></div></div>
+            <div style="font-size:11px;color:#666;width:24px;text-align:right" id="pct-white">50%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 盤面 -->
+    <div class="board-section">
+      <div class="status-msg" id="status">対局を開始してください</div>
+      <div class="board-wrapper">
+        <div class="board" id="board"></div>
+      </div>
+      <div class="controls">
+        <button id="choose-black">先手（黒）</button>
+        <button id="choose-white">後手（白）</button>
+      
+        <button class="btn primary" id="btn-start">▶ Start</button>
+        <button class="btn" id="btn-pause" disabled>❚❚ Pause</button>
+        <button class="btn" id="btn-reset">↺ Reset</button>
+      
+        <button id="btn-hint">ヒント</button>
+      </div>
+      <div class="speed-control">
+        <span>速度</span>
+        <input type="range" id="speed" min="1" max="5" value="3">
+        <span id="speed-label">普通</span>
+      </div>
+    </div>
+
+    <!-- ログ -->
+    <div class="side-log">
+      <div class="player-card" id="white-card">
+        <div class="player-icon white"></div>
+        <div class="player-label">Player 2</div>
+        <div class="player-name">White</div>
+        <div class="player-score" id="score-white">2</div>
+        <div class="ai-badge"><div class="ai-dot" style="animation-delay:.6s"></div>AI Engine</div>
+        <div class="ai-select-group">
+          <div class="ai-select-label">White Level</div>
+          <div class="ai-levels" id="white-levels">
+            <button class="ai-level-btn" data-level="1">易</button>
+            <button class="ai-level-btn active" data-level="2">普</button>
+            <button class="ai-level-btn" data-level="3">難</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="log-card">
+        <div class="log-title">Move Log</div>
+        <div class="move-log" id="move-log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const EMPTY = 0, BLACK = 1, WHITE = 2;
+const DIRS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+const COLS = 'ABCDEFGH';
+
+let board, currentTurn, gameActive, paused;
+let humanPlayer = BLACK; // デフォルト
+let selectedCell = null;
+let hintMove = null;
+
+// ===== 初期化 =====
+function initBoard() {
+  board = Array.from({length:8}, () => Array(8).fill(EMPTY));
+  board[3][3] = WHITE; board[3][4] = BLACK;
+  board[4][3] = BLACK; board[4][4] = WHITE;
+  currentTurn = BLACK;
+  gameActive = false;
+  paused = false;
+  selectedCell = null;
+  hintMove = null;
+}
+
+// ===== ロジック =====
+function getFlips(b, r, c, color) {
+  const flips = [];
+  for (const [dr,dc] of DIRS) {
+    const line = [];
+    let nr=r+dr, nc=c+dc;
+    while (nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===3-color) {
+      line.push([nr,nc]); nr+=dr; nc+=dc;
+    }
+    if (line.length && nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===color) {
+      flips.push(...line);
+    }
+  }
+  return flips;
+}
+
+function validMoves(b, color) {
+  const moves = [];
+  for (let r=0;r<8;r++) for (let c=0;c<8;c++) {
+    if (b[r][c]===EMPTY && getFlips(b,r,c,color).length) moves.push([r,c]);
+  }
+  return moves;
+}
+
+function applyMove(b, r, c, color) {
+  const nb = b.map(row=>[...row]);
+  nb[r][c] = color;
+  getFlips(nb,r,c,color).forEach(([fr,fc])=>nb[fr][fc]=color);
+  return nb;
+}
+
+// ===== 簡易AI（ヒント兼用）=====
+function chooseBestMove(color) {
+  const moves = validMoves(board, color);
+  if (!moves.length) return null;
+
+  // 角優先
+  const corners = moves.filter(([r,c])=>(r===0||r===7)&&(c===0||c===7));
+  if (corners.length) return corners[0];
+
+  return moves[0];
+}
+
+// ===== UI =====
+function renderBoard() {
+  const el = document.getElementById('board');
+  el.innerHTML = '';
+
+  const valid = validMoves(board, currentTurn);
+
+  for (let r=0;r<8;r++) for (let c=0;c<8;c++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+
+    // 有効手
+    if (valid.some(([vr,vc])=>vr===r&&vc===c)) {
+      cell.classList.add('valid');
+    }
+
+    // 選択ハイライト
+    if (selectedCell && selectedCell[0]===r && selectedCell[1]===c) {
+      cell.style.boxShadow = "inset 0 0 0 3px yellow";
+    }
+
+    // ヒント
+    if (hintMove && hintMove[0]===r && hintMove[1]===c) {
+      cell.style.boxShadow = "inset 0 0 0 3px cyan";
+    }
+
+    // 駒
+    if (board[r][c] !== EMPTY) {
+      const p = document.createElement('div');
+      p.className = 'piece ' + (board[r][c]===BLACK ? 'black' : 'white');
+      cell.appendChild(p);
+    }
+
+    // タップ対応
+    cell.addEventListener('click', ()=>handleMove(r,c));
+    cell.addEventListener('touchstart', ()=>handleMove(r,c));
+
+    el.appendChild(cell);
+  }
+}
+
+// ===== 手処理 =====
+function handleMove(r,c) {
+  if (!gameActive || paused) return;
+  if (currentTurn !== humanPlayer) return;
+
+  const flips = getFlips(board,r,c,currentTurn);
+  if (!flips.length) return;
+
+  selectedCell = [r,c];
+
+  board = applyMove(board,r,c,currentTurn);
+  currentTurn = 3-currentTurn;
+
+  hintMove = null;
+
+  renderBoard();
+
+  setTimeout(aiTurn, 500);
+}
+
+// ===== AIターン =====
+function aiTurn() {
+  if (currentTurn === humanPlayer) return;
+
+  const move = chooseBestMove(currentTurn);
+  if (!move) {
+    currentTurn = 3-currentTurn;
+    return;
+  }
+
+  board = applyMove(board, move[0], move[1], currentTurn);
+  currentTurn = 3-currentTurn;
+
+  renderBoard();
+}
+
+// ===== ヒント =====
+function showHint() {
+  if (currentTurn !== humanPlayer) return;
+  hintMove = chooseBestMove(currentTurn);
+  renderBoard();
+}
+
+// ===== UI操作 =====
+document.getElementById('btn-start').addEventListener('click', ()=>{
+  gameActive = true;
+  renderBoard();
+});
+
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  initBoard();
+  renderBoard();
+});
+
+// 先手・後手選択
+document.getElementById('choose-black').addEventListener('click', ()=>{
+  humanPlayer = BLACK;
+});
+
+document.getElementById('choose-white').addEventListener('click', ()=>{
+  humanPlayer = WHITE;
+});
+
+// ヒントボタン
+document.getElementById('btn-hint').addEventListener('click', showHint);
+
+// 初期化
+initBoard();
+renderBoard();
+</script>
+</body>
+</html>
