@@ -1,0 +1,15 @@
+{
+  "unit": "Unit 1",
+  "title": "基本単語 (Basic Words)",
+  "description": "日常的によく使う基本的な英単語",
+  "words": [
+    { "id": 1, "english": "apple",     "meaning": "りんご" },
+    { "id": 2, "english": "book",      "meaning": "本" },
+    { "id": 3, "english": "cat",       "meaning": "猫" },
+    { "id": 4, "english": "dog",       "meaning": "犬" },
+    { "id": 5, "english": "happy",     "meaning": "幸せな" },
+    { "id": 6, "english": "school",    "meaning": "学校" },
+    { "id": 7, "english": "water",     "meaning": "水" },
+    { "id": 8, "english": "beautiful", "meaning": "美しい" }
+  ]
+}

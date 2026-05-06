@@ -1,50 +1,779 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>TTS-HP トップ</title>
-    <link rel="icon" type="image/png" href="1678453241image.jpg">
-    <meta property="og:url" content="http://toshi1234.com/home" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="トップページ" />
-    <meta property="og:description" content="TTSのホームページ" />
-    <meta property="og:site_name" content="TTS-HP" />
-    <meta name="twitter:card" content="Summary Card" />
-    <meta name="twitter:site" content="@tts2525" />
-    <link rel="stylesheet" href="style.css">
-    <meta name="google-adsense-account" content="ca-pub-7484156905020806">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英単語4択学習 - Word Master</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .unit-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .unit-btn {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .unit-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .unit-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .unit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-container {
+            display: none;
+        }
+
+        .quiz-container.active {
+            display: block;
+        }
+
+        .quiz-header {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quiz-title {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            background: #ddd;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            background: #667eea;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .question-number {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question-word {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-hint {
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .option:disabled {
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #28a745;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #dc3545;
+        }
+
+            opacity: 0.8;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #eee;
+            border-color: #999;
+        }
+
+        .quiz-complete {
+            display: none;
+            text-align: center;
+        }
+
+        .quiz-complete.show {
+            display: block;
+        }
+
+        .score-display {
+            font-size: 48px;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .complete-message {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .mode-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #dc3545;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .question-word {
+                font-size: 20px;
+            }
+
+            .unit-selector {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+        }
+    </style>
 </head>
-
 <body>
-    <h1>TTS-HPトップ</h1>
-    <label for="switch">背景色変更ボタン</label>
-    <input type="checkbox" id="switch">
-    <h3><a href="https://twitter.com/tts2525" class="rinku">X(旧Twitter)に飛びます。</a>フォローしてね!!</h3>
-    <div id="message"></div>
+    <div class="container">
+        <header>
+            <h1>📚 Word Master</h1>
+            <p class="subtitle">英単語4択学習で語彙力アップ！</p>
+        </header>
 
-    <p>下記ボタンから他ページに飛んでください。</p>
-    <a href="https://toshi1234.com/wp" class="button button-prominent"><s>ブログ</s></a>
-    <a href="https://toshi1234.com/wp/data" class="button button-prominent"><s>情報提供</s></a>
-    <a href="tool/" class="button">WEBツール</a>
-    <a href="https://toshi1234.com/eitango/home.html" class="button"><s>勉強系</s></a>
-    <a href="books/" class="button">本検索(更新停止)</a>
-    <a href="http://toshi1234.com/ziko.html" class="button"><s>about:me</s></a>
-<br><br>
-    <a href="sns.html" class="button">SNSリンク集</a>
-    <a href="http://toshi1234.com/times/home" class="button"><s>その他(アーカイブ)</s></a>
-    <h3>
-        <br>
-        <br>
-        <s>以下のURLでこのページにアクセスできます。</s><br>
-        <a href="https://toshi1234.com/ttshome/home.html" class="rinku">https://toshi1234.com/ttshome/home.html</a><br>
-        <a href="https://toshi1234.com/home" class="rinku">https://toshi1234.com/home</a><br>
-        <a href="https://toshi1234.com" class="rinku">https://toshi1234.com</a><br>
-        <br>
-        タレコミ・ご意見は<s>情報提供ページか</s>以下のメアドまで<br>tts2525@outlook.comもしくはxtts2525@proton.me<br>
-        <p>僕が所属するPC部の部内発表のネタにするために作ったHPです。随時更新中。<br>セキュリティー対策として対策ツールを導入して<s>います</s>。</p>
-    </h3>
-    <h3>トップ画面最終更新   2025-08-26 16:01 (JST)</h3>
+        <div id="unitLoader">
+            <div class="loading">ユニットを読み込み中...</div>
+        </div>
+
+        <div id="unitSelector" style="display: none;">
+            <h3 style="margin-bottom: 15px; color: #333; font-size: 14px;">学習するユニットを選択</h3>
+            <div class="unit-selector" id="unitButtonsContainer"></div>
+
+            <div class="mode-selector" id="modeSelector" style="display: none;">
+                <button class="mode-btn active" data-mode="all">
+                    <strong>全問出題</strong><br>
+                    <span style="font-size: 12px; opacity: 0.8;">すべての問題</span>
+                </button>
+                <button class="mode-btn" data-mode="mistakes">
+                    <strong>間違え問題</strong><br>
+                    <span style="font-size: 12px; opacity: 0.8;">復習用</span>
+                </button>
+            </div>
+
+            <button class="btn btn-primary" id="startBtn" disabled style="width: 100%;">
+                学習を開始
+            </button>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <div class="quiz-header">
+                <div class="quiz-title" id="quizUnitTitle">Unit 1</div>
+                <div style="color: #666; font-size: 13px; margin-top: 5px;">
+                    <span id="questionCount">1</span> / <span id="totalCount">10</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-number" id="questionNumber">問題 1</div>
+                <div class="question-text">
+                    <div class="question-word" id="questionWord">word</div>
+                    <div class="question-hint">↓ 日本語の意味を選んでください</div>
+                </div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="feedback" id="feedback">
+                    <strong id="feedbackTitle">正解です！</strong>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="nextBtn" disabled>次の問題</button>
+                <button class="btn btn-secondary" id="giveUpBtn">スキップ</button>
+            </div>
+        </div>
+
+        <div class="quiz-complete" id="quizComplete">
+            <h2 style="color: #333; margin-bottom: 10px;">学習完了！</h2>
+            <div class="score-display" id="scoreDisplay">0/10</div>
+            <div class="complete-message">よく頑張りました！</div>
+
+            <div class="stats">
+                <div class="stat-row">
+                    <span class="stat-label">正解数</span>
+                    <span class="stat-value" id="correctCount">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">誤答数</span>
+                    <span class="stat-value" id="incorrectCount">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">正答率</span>
+                    <span class="stat-value" id="accuracy">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">新規の間違え</span>
+                    <span class="stat-value" id="newMistakes">0</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="retryBtn">もう一度チャレンジ</button>
+                <button class="btn btn-secondary" id="backBtn">ユニット選択に戻る</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            units: [],
+            currentUnit: null,
+            currentMode: 'all',
+            questions: [],
+            currentQuestionIndex: 0,
+            selectedAnswer: null,
+            answered: false,
+            score: 0,
+            mistakes: new Set(),
+            sessionMistakes: new Set(),
+
+            async init() {
+                await this.loadUnits();
+                this.setupEventListeners();
+            },
+
+            async loadUnits() {
+                try {
+                    const unitLoader = document.getElementById('unitLoader');
+                    const unitSelector = document.getElementById('unitSelector');
+
+                    // 複数のユニットを読み込む
+                    const unitFiles = ['unit1.json', 'unit2.json', 'unit3.json'];
+                    
+                    for (const file of unitFiles) {
+                        try {
+                            const response = await fetch(file);
+                            if (response.ok) {
+                                const data = await response.json();
+                                this.units.push(data);
+                            }
+                        } catch (e) {
+                            // ファイルが存在しない場合はスキップ
+                        }
+                    }
+
+                    if (this.units.length === 0) {
+                        // unit1.jsonが見つからない場合のエラーメッセージ
+                        unitLoader.innerHTML = '<div class="error">ユニットファイルが見つかりません。unit1.json を同じディレクトリに配置してください。</div>';
+                        return;
+                    }
+
+                    unitLoader.style.display = 'none';
+                    unitSelector.style.display = 'block';
+                    this.renderUnitButtons();
+                    this.loadMistakesFromStorage();
+                } catch (error) {
+                    console.error('ユニット読み込みエラー:', error);
+                    document.getElementById('unitLoader').innerHTML = '<div class="error">ユニットの読み込みに失敗しました。</div>';
+                }
+            },
+
+            renderUnitButtons() {
+                const container = document.getElementById('unitButtonsContainer');
+                container.innerHTML = '';
+                
+                this.units.forEach((unit, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'unit-btn';
+                    btn.textContent = unit.unit;
+                    btn.dataset.unitIndex = index;
+                    btn.addEventListener('click', () => this.selectUnit(index, btn));
+                    container.appendChild(btn);
+                });
+            },
+
+            selectUnit(index, btn) {
+                document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.currentUnit = this.units[index];
+                this.currentMode = 'all';
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-mode="all"]').classList.add('active');
+                document.getElementById('modeSelector').style.display = 'grid';
+                document.getElementById('startBtn').disabled = false;
+            },
+
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => this.startQuiz());
+                
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        e.target.closest('.mode-btn').classList.add('active');
+                        this.currentMode = e.target.closest('.mode-btn').dataset.mode;
+                    });
+                });
+
+                document.getElementById('nextBtn').addEventListener('click', () => this.nextQuestion());
+                document.getElementById('giveUpBtn').addEventListener('click', () => this.giveUp());
+                document.getElementById('retryBtn').addEventListener('click', () => this.retryQuiz());
+                document.getElementById('backBtn').addEventListener('click', () => this.backToSelection());
+            },
+
+            startQuiz() {
+                // 問題リストを作成
+                let questions = [...this.currentUnit.words];
+
+                if (this.currentMode === 'mistakes') {
+                    // 間違えた問題のみを抽出
+                    questions = questions.filter(q => this.mistakes.has(q.id));
+                    if (questions.length === 0) {
+                        alert('間違えた問題がまだありません！\n全問出題でチャレンジしてください。');
+                        return;
+                    }
+                }
+
+                // シャッフル
+                this.questions = this.shuffleArray(questions);
+                this.currentQuestionIndex = 0;
+                this.selectedAnswer = null;
+                this.answered = false;
+                this.score = 0;
+                this.sessionMistakes.clear();
+
+                document.getElementById('unitSelector').style.display = 'none';
+                document.getElementById('quizContainer').classList.add('active');
+                document.getElementById('quizComplete').classList.remove('show');
+
+                this.showQuestion();
+            },
+
+            showQuestion() {
+                const question = this.questions[this.currentQuestionIndex];
+                
+                document.getElementById('quizUnitTitle').textContent = this.currentUnit.unit;
+                document.getElementById('questionCount').textContent = this.currentQuestionIndex + 1;
+                document.getElementById('totalCount').textContent = this.questions.length;
+                document.getElementById('questionNumber').textContent = `問題 ${this.currentQuestionIndex + 1}`;
+                document.getElementById('questionWord').textContent = question.english;
+                
+                const progress = ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+
+                // オプションをユニット内の他の単語から自動生成
+                const shuffledOptions = this.shuffleArray(this.generateOptions(question));
+                const container = document.getElementById('optionsContainer');
+                container.innerHTML = '';
+
+                shuffledOptions.forEach((option, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option';
+                    btn.textContent = option;
+                    btn.addEventListener('click', () => this.selectOption(btn, option, question.meaning));
+                    if (this.answered) {
+                        btn.disabled = true;
+                        if (option === question.meaning) {
+                            btn.classList.add('correct');
+                        } else if (btn === this.selectedAnswer) {
+                            btn.classList.add('incorrect');
+                        }
+                    }
+                    container.appendChild(btn);
+                });
+
+                document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+                document.getElementById('nextBtn').disabled = true;
+                this.selectedAnswer = null;
+                this.answered = false;
+            },
+
+            selectOption(btn, option, correctAnswer) {
+                if (this.answered) return;
+
+                this.selectedAnswer = btn;
+                btn.classList.add('selected');
+
+                // 他のボタンを無効化
+                document.querySelectorAll('.option').forEach(b => {
+                    if (b !== btn) b.disabled = true;
+                });
+
+                setTimeout(() => {
+                    this.answered = true;
+                    const isCorrect = option === correctAnswer;
+                    const question = this.questions[this.currentQuestionIndex];
+
+                    if (isCorrect) {
+                        this.score++;
+                        btn.classList.remove('selected');
+                        btn.classList.add('correct');
+                        document.getElementById('feedback').classList.add('show', 'correct');
+                        document.getElementById('feedbackTitle').textContent = '✓ 正解です！';
+                    } else {
+                        this.mistakes.add(question.id);
+                        this.sessionMistakes.add(question.id);
+                        btn.classList.remove('selected');
+                        btn.classList.add('incorrect');
+                        document.querySelector('.option.correct').classList.add('correct');
+                        document.getElementById('feedback').classList.add('show', 'incorrect');
+                        document.getElementById('feedbackTitle').textContent = '✗ 不正解です。';
+                    }
+
+                    document.getElementById('nextBtn').disabled = false;
+                }, 300);
+            },
+
+            giveUp() {
+                if (this.answered) {
+                    this.nextQuestion();
+                    return;
+                }
+
+                const question = this.questions[this.currentQuestionIndex];
+                this.mistakes.add(question.id);
+                this.sessionMistakes.add(question.id);
+
+                const correctBtn = Array.from(document.querySelectorAll('.option'))
+                    .find(btn => btn.textContent === question.meaning);
+                
+                if (correctBtn) {
+                    correctBtn.classList.add('correct');
+                }
+
+                document.querySelectorAll('.option').forEach(b => b.disabled = true);
+                
+                document.getElementById('feedback').classList.add('show', 'incorrect');
+                document.getElementById('feedbackTitle').textContent = 'スキップしました';
+                document.getElementById('nextBtn').disabled = false;
+                this.answered = true;
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.showQuestion();
+                } else {
+                    this.completeQuiz();
+                }
+            },
+
+            completeQuiz() {
+                this.saveMistakesToStorage();
+                
+                document.getElementById('quizContainer').classList.remove('active');
+                document.getElementById('quizComplete').classList.add('show');
+
+                const accuracy = Math.round((this.score / this.questions.length) * 100);
+                document.getElementById('scoreDisplay').textContent = `${this.score}/${this.questions.length}`;
+                document.getElementById('correctCount').textContent = this.score;
+                document.getElementById('incorrectCount').textContent = this.questions.length - this.score;
+                document.getElementById('accuracy').textContent = accuracy + '%';
+                document.getElementById('newMistakes').textContent = this.sessionMistakes.size;
+
+                let message = '完璧です！🎉';
+                if (accuracy >= 80) message = 'よく出来ました！👏';
+                else if (accuracy >= 60) message = 'もう少しです！💪';
+                else if (accuracy >= 40) message = '頑張ってください！📚';
+                else message = '復習を頑張ろう！💪';
+
+                document.querySelector('.complete-message').textContent = message;
+            },
+
+            retryQuiz() {
+                this.startQuiz();
+            },
+
+            backToSelection() {
+                document.getElementById('quizContainer').classList.remove('active');
+                document.getElementById('quizComplete').classList.remove('show');
+                document.getElementById('unitSelector').style.display = 'block';
+                document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+                this.currentUnit = null;
+                document.getElementById('modeSelector').style.display = 'none';
+                document.getElementById('startBtn').disabled = true;
+            },
+
+            generateOptions(question) {
+                const otherMeanings = this.currentUnit.words
+                    .filter(w => w.id !== question.id)
+                    .map(w => w.meaning);
+                const distractors = this.shuffleArray(otherMeanings).slice(0, 3);
+                return [question.meaning, ...distractors];
+            },
+
+            shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            },
+
+            saveMistakesToStorage() {
+                const mistakesArray = Array.from(this.mistakes);
+                localStorage.setItem('wordMasterMistakes', JSON.stringify(mistakesArray));
+            },
+
+            loadMistakesFromStorage() {
+                const stored = localStorage.getItem('wordMistakes');
+                if (stored) {
+                    const mistakesArray = JSON.parse(stored);
+                    this.mistakes = new Set(mistakesArray);
+                }
+            }
+        };
+
+        // アプリケーション起動
+        app.init();
+    </script>
 </body>
-    <script src="script.js"></script>
 </html>
