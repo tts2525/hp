@@ -1,181 +1,79 @@
-:root {
-    --primary-color: #2563eb;
-    --text-color: #1f2937;
-    --bg-color: #f9fafb;
-    --card-bg: #ffffff;
-    --accent-color: #64748b;
-    --font-main: 'Inter', 'Noto Sans JP', sans-serif;
-}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Creative Blog</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    <header>
+        <div class="container">
+            <h1><a href="#">Tech & Life</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Archive</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-body {
-    font-family: var(--font-main);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-}
+    <main class="container">
+        <section class="hero">
+            <h2>Exploring the intersection of code and culture.</h2>
+            <p>日々の学びやプロジェクトの記録を綴る場所です。</p>
+        </section>
 
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
+        <div class="content-wrapper">
+            <div class="post-list">
+                <!-- 記事カード -->
+                <article class="post-card">
+                    <div class="post-image" style="background-image: url('https://via.placeholder.com/600x400');"></div>
+                    <div class="post-content">
+                        <span class="category">Development</span>
+                        <h3><a href="#">モダンなWebデザインの原則について</a></h3>
+                        <p>UI/UXを向上させるための基本的なレイアウト構成と色の使い方を解説します。</p>
+                        <time datetime="2026-05-12">2026.05.12</time>
+                    </div>
+                </article>
 
-/* Header */
-header {
-    background: var(--card-bg);
-    padding: 20px 0;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
+                <article class="post-card">
+                    <div class="post-image" style="background-image: url('https://via.placeholder.com/600x400');"></div>
+                    <div class="post-content">
+                        <span class="category">Science</span>
+                        <h3><a href="#">数理モデルで見る日常の不思議</a></h3>
+                        <p>私たちの周りに隠れている数学的なパターンをいくつか紹介します。</p>
+                        <time datetime="2026-05-10">2026.05.10</time>
+                    </div>
+                </article>
+            </div>
 
-header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+            <aside class="sidebar">
+                <div class="widget profile">
+                    <h4>Author</h4>
+                    <p>プログラミングと学問を愛する学生です。情報を発信しています。</p>
+                </div>
+                <div class="widget categories">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#">Python (12)</a></li>
+                        <li><a href="#">Web Design (8)</a></li>
+                        <li><a href="#">Science (5)</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
 
-header h1 a {
-    text-decoration: none;
-    color: var(--text-color);
-    font-weight: 700;
-    font-size: 1.5rem;
-}
+    <footer>
+        <p>&copy; 2026 My Creative Blog. Built with passion.</p>
+    </footer>
 
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-}
-
-nav a {
-    text-decoration: none;
-    color: var(--accent-color);
-    font-size: 0.95rem;
-    transition: color 0.3s;
-}
-
-nav a:hover {
-    color: var(--primary-color);
-}
-
-/* Hero Section */
-.hero {
-    padding: 60px 0;
-    text-align: center;
-}
-
-.hero h2 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-/* Main Layout */
-.content-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 40px;
-}
-
-@media (max-width: 768px) {
-    .content-wrapper {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Post Cards */
-.post-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-    display: flex;
-    transition: transform 0.3s;
-}
-
-.post-card:hover {
-    transform: translateY(-5px);
-}
-
-.post-image {
-    width: 35%;
-    background-size: cover;
-    background-position: center;
-}
-
-.post-content {
-    padding: 25px;
-    width: 65%;
-}
-
-.category {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: var(--primary-color);
-    font-weight: 700;
-    letter-spacing: 0.05em;
-}
-
-.post-content h3 {
-    margin: 10px 0;
-}
-
-.post-content h3 a {
-    text-decoration: none;
-    color: var(--text-color);
-}
-
-.post-content p {
-    color: var(--accent-color);
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-}
-
-time {
-    font-size: 0.8rem;
-    color: #9ca3af;
-}
-
-/* Sidebar */
-.widget {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #e5e7eb;
-}
-
-.widget h4 {
-    margin-bottom: 15px;
-    border-left: 4px solid var(--primary-color);
-    padding-left: 10px;
-}
-
-.widget ul {
-    list-style: none;
-}
-
-.widget ul li {
-    margin-bottom: 8px;
-}
-
-.widget a {
-    text-decoration: none;
-    color: var(--accent-color);
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 40px 0;
-    color: var(--accent-color);
-    font-size: 0.85rem;
-}
+</body>
+</html>
