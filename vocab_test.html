@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英単語ターゲット1900 テスト</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f14;
+    --surface: #1a1a24;
+    --surface2: #22222e;
+    --border: #2e2e40;
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --text: #e8e8f0;
+    --muted: #8888a8;
+    --card-radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: 0.05em;
+  }
+  .score-display {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .score-num { color: var(--text); font-weight: 700; }
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .tab {
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .tab.active {
+    color: var(--accent2);
+    border-bottom-color: var(--accent2);
+  }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* === LOADING STATE === */
+  #loading-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent2);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .load-error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    max-width: 480px;
+    text-align: center;
+  }
+  .load-error h3 { color: var(--wrong); margin-bottom: 0.75rem; font-size: 15px; }
+  .load-error p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .load-error code {
+    font-family: 'Space Mono', monospace;
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--accent2);
+  }
+
+  /* === QUIZ PANEL === */
+  #quiz-panel {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    gap: 1.5rem;
+    overflow-y: auto;
+  }
+  #quiz-panel.active { display: flex; }
+  .word-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 2.5rem 3rem;
+    text-align: center;
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+  }
+  .word-number {
+    position: absolute;
+    top: 1rem;
+    left: 1.25rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .word-en {
+    font-family: 'Space Mono', monospace;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
+  }
+  .word-hint {
+    font-size: 12px;
+    color: var(--muted);
+    min-height: 18px;
+  }
+  .choices-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 560px;
+  }
+  .choice-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 1rem 1.25rem;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, transform 0.08s;
+    text-align: left;
+    line-height: 1.45;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .choice-btn:hover:not(:disabled) {
+    background: var(--surface2);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .choice-btn:disabled { cursor: default; }
+  .choice-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .choice-btn.correct {
+    background: rgba(34,197,94,0.12);
+    border-color: var(--correct);
+  }
+  .choice-btn.correct .choice-key { color: var(--correct); background: rgba(34,197,94,0.15); }
+  .choice-btn.wrong {
+    background: rgba(239,68,68,0.10);
+    border-color: var(--wrong);
+  }
+  .choice-btn.wrong .choice-key { color: var(--wrong); background: rgba(239,68,68,0.12); }
+  .choice-btn.reveal {
+    background: rgba(34,197,94,0.08);
+    border-color: rgba(34,197,94,0.4);
+  }
+  .next-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    color: #fff;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.08s, opacity 0.15s;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .next-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .next-btn:hover { background: #5752d1; transform: translateY(-1px); }
+  .next-btn:active { transform: scale(0.97); }
+  .key-hint {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* === REVIEW AREA === */
+  .review-section {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+  }
+  .review-header {
+    padding: 12px 16px;
+    background: rgba(239,68,68,0.07);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--wrong);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .review-list {
+    padding: 8px 0;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .review-item {
+    padding: 7px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-item:hover { background: var(--surface2); }
+  .review-word {
+    font-family: 'Space Mono', monospace;
+    color: var(--accent2);
+    font-weight: 700;
+    font-size: 13px;
+    min-width: 120px;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.15s;
+  }
+  .review-item:hover .review-word { text-decoration-color: var(--accent2); }
+  .review-meaning { color: var(--muted); font-size: 13px; line-height: 1.4; }
+  .review-count {
+    margin-left: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--wrong);
+    flex-shrink: 0;
+  }
+
+  /* === DICT PANEL === */
+  #dict-panel {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #dict-panel.active { display: flex; }
+
+  /* Alphabet filter bar */
+  .alpha-bar {
+    padding: 8px 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .alpha-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+    text-transform: uppercase;
+  }
+  .alpha-btn:hover { color: var(--text); border-color: var(--accent); }
+  .alpha-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .alpha-btn.all-btn { color: var(--accent2); border-color: var(--accent2); }
+  .alpha-btn.all-btn.active { background: var(--accent2); color: var(--bg); }
+
+  .dict-search-wrap {
+    padding: 1rem 1.5rem 0.75rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .dict-search {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Space Mono', monospace;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .dict-search:focus { border-color: var(--accent); }
+  .dict-search::placeholder { color: var(--muted); font-family: 'Noto Sans JP', sans-serif; }
+  .dict-count {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+  .dict-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+  .dict-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 1.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+  .dict-item:hover { background: var(--surface2); }
+  .dict-no {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 36px;
+    flex-shrink: 0;
+  }
+  .dict-en {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+  .dict-ja { color: var(--text); line-height: 1.4; flex: 1; }
+  .dict-has-note {
+    font-size: 10px;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+    padding: 2px 6px;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    opacity: 0.7;
+  }
+  em { background: rgba(108,99,255,0.25); color: var(--accent2); border-radius: 2px; font-style: normal; }
+
+  /* === POPUP (辞書モード詳細) === */
+  .popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s;
+    backdrop-filter: blur(2px);
+  }
+  .popup-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .popup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2rem 2.25rem;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    transform: translateY(16px) scale(0.97);
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), opacity 0.18s;
+    opacity: 0;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(167,139,250,0.08);
+  }
+  .popup-overlay.show .popup-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  .popup-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--surface2);
+    border: none;
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.12s, background 0.12s;
+    line-height: 1;
+  }
+  .popup-close:hover { color: var(--text); background: var(--border); }
+  .popup-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .popup-word {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.15rem;
+  }
+  .popup-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1rem 0;
+  }
+  .popup-section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .popup-meaning {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+  .popup-note {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.75;
+    white-space: pre-wrap;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .popup-note-empty {
+    font-size: 13px;
+    color: var(--border);
+    font-style: italic;
+    font-family: 'Space Mono', monospace;
+  }
+  .popup-nav {
+    display: flex;
+    gap: 8px;
+    margin-top: 1.25rem;
+    justify-content: flex-end;
+  }
+  .popup-nav-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .popup-nav-btn:hover:not(:disabled) { color: var(--text); border-color: var(--accent2); }
+  .popup-nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">TARGET 1900</span>
+  <div class="score-display">
+    <span>正解 <span class="score-num" id="sc-correct">0</span></span>
+    <span>不正解 <span class="score-num" id="sc-wrong">0</span></span>
+    <span>正答率 <span class="score-num" id="sc-rate">—</span></span>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" id="tab-quiz" onclick="switchTab('quiz')">テスト</div>
+  <div class="tab" id="tab-dict" onclick="switchTab('dict')">辞書モード</div>
+</div>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">単語データを読み込み中...</div>
+</div>
+
+<!-- QUIZ PANEL -->
+<div id="quiz-panel">
+  <div class="word-card">
+    <span class="word-number" id="word-number">#—</span>
+    <div class="word-en" id="word-en">—</div>
+    <div class="word-hint" id="word-hint"></div>
+  </div>
+
+  <div class="choices-grid" id="choices-grid"></div>
+
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+    次の問題へ &nbsp;<span style="font-family:'Space Mono',monospace;font-size:11px;color:rgba(255,255,255,0.6)">Enter</span>
+  </button>
+  <div class="key-hint">数字キー 1〜4 で選択 ／ Enter で次へ</div>
+
+  <div class="review-section" id="review-section" style="display:none">
+    <div class="review-header">
+      ⚠ 復習エリア &nbsp;<span id="review-badge">0語</span>
+    </div>
+    <div class="review-list" id="review-list"></div>
+  </div>
+</div>
+
+<!-- DICT PANEL -->
+<div id="dict-panel">
+  <!-- Alphabet filter bar -->
+  <div class="alpha-bar" id="alpha-bar">
+    <button class="alpha-btn all-btn active" data-letter="ALL" onclick="setAlphaFilter('ALL')">ALL</button>
+    <!-- Letters injected by JS -->
+  </div>
+
+  <div class="dict-search-wrap">
+    <input class="dict-search" id="dict-search" type="text" placeholder="単語または意味を検索（部分一致）" oninput="filterDict()" />
+    <div class="dict-count" id="dict-count">読み込み中...</div>
+  </div>
+  <div class="dict-list" id="dict-list"></div>
+</div>
+
+<!-- DICT POPUP -->
+<div class="popup-overlay" id="popup-overlay" onclick="closePopupOnOverlay(event)">
+  <div class="popup-card" id="popup-card">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div class="popup-num" id="popup-num">#—</div>
+    <div class="popup-word" id="popup-word">—</div>
+    <div class="popup-divider"></div>
+    <div class="popup-section-label">意味</div>
+    <div class="popup-meaning" id="popup-meaning">—</div>
+    <div class="popup-section-label">解説文</div>
+    <div class="popup-note" id="popup-note"></div>
+    <div class="popup-nav">
+      <button class="popup-nav-btn" id="popup-prev" onclick="navigatePopup(-1)">← 前</button>
+      <button class="popup-nav-btn" id="popup-next" onclick="navigatePopup(1)">次 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// CSV LOADER
+// =====================================================
+const LETTERS = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z'];
+
+let WORDS = [];           // [[no, en, ja, note], ...]
+let currentAlpha = 'ALL';
+let filteredForDict = [];
+let currentPopupIdx = null; // index in filteredForDict
+
+/**
+ * CSVテキストをパース（ダブルクォートのエスケープ対応）
+ */
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split('\n');
+  for (let i = 1; i < lines.length; i++) { // skip header
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = parseCSVRow(line);
+    if (cols.length >= 3) {
+      rows.push([
+        parseInt(cols[0]) || 0,
+        cols[1] || '',
+        cols[2] || '',
+        cols[3] || ''
+      ]);
+    }
+  }
+  return rows;
+}
+
+function parseCSVRow(line) {
+  const cols = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuote) {
+      if (ch === '"' && line[i+1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') { inQuote = false; }
+      else { cur += ch; }
+    } else {
+      if (ch === '"') { inQuote = true; }
+      else if (ch === ',') { cols.push(cur); cur = ''; }
+      else { cur += ch; }
+    }
+  }
+  cols.push(cur);
+  return cols;
+}
+
+async function loadAllCSV() {
+  const allWords = [];
+  const errors = [];
+
+  await Promise.all(LETTERS.map(async (letter) => {
+    try {
+      const res = await fetch(`words/words_${letter}.csv`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      const rows = parseCSV(text);
+      allWords.push(...rows);
+    } catch (e) {
+      errors.push(`words_${letter}.csv: ${e.message}`);
+    }
+  }));
+
+  if (errors.length > 0) {
+    console.warn('Some CSV files failed:', errors);
+  }
+
+  // 番号順にソート
+  allWords.sort((a, b) => a[0] - b[0]);
+  return allWords;
+}
+
+// =====================================================
+// INIT
+// =====================================================
+async function init() {
+  try {
+    WORDS = await loadAllCSV();
+    if (WORDS.length === 0) throw new Error('単語データが空です');
+
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('quiz-panel').classList.add('active');
+
+    buildAlphaBar();
+    nextQuestion();
+  } catch (err) {
+    showLoadError(err.message);
+  }
+}
+
+function showLoadError(msg) {
+  const screen = document.getElementById('loading-screen');
+  screen.innerHTML = `
+    <div class="load-error">
+      <h3>⚠ データ読み込みエラー</h3>
+      <p>CSVファイルを読み込めませんでした。<br>
+      <code>vocab_test.html</code> と <code>words/</code> フォルダが<br>
+      同じ場所に置かれているか確認してください。</p>
+      <p style="margin-top:0.75rem;font-size:12px;color:#555">詳細: ${msg}</p>
+    </div>`;
+}
+
+function buildAlphaBar() {
+  const bar = document.getElementById('alpha-bar');
+  const usedLetters = [...new Set(WORDS.map(w => w[1][0].toLowerCase()))].sort();
+  usedLetters.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.className = 'alpha-btn';
+    btn.dataset.letter = letter.toUpperCase();
+    btn.textContent = letter.toUpperCase();
+    btn.onclick = () => setAlphaFilter(letter.toUpperCase());
+    bar.appendChild(btn);
+  });
+}
+
+// =====================================================
+// QUIZ
+// =====================================================
+let score = { correct: 0, wrong: 0 };
+let mistakes = {};
+let currentWord = null;
+let answered = false;
+
+function getRandom(arr, exclude, count) {
+  const pool = arr.filter(w => w !== exclude);
+  const result = [];
+  const used = new Set();
+  while (result.length < count && used.size < pool.length) {
+    const idx = Math.floor(Math.random() * pool.length);
+    if (!used.has(idx)) { used.add(idx); result.push(pool[idx]); }
+  }
+  return result;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function nextQuestion() {
+  answered = false;
+  document.getElementById('next-btn').classList.remove('show');
+  const idx = Math.floor(Math.random() * WORDS.length);
+  currentWord = WORDS[idx];
+  const [no, en, ja] = currentWord;
+  document.getElementById('word-number').textContent = '#' + no;
+  document.getElementById('word-en').textContent = en;
+  document.getElementById('word-hint').textContent = '';
+  const wrongs = getRandom(WORDS, currentWord, 3).map(w => w[2]);
+  const choices = shuffle([ja, ...wrongs]);
+  const grid = document.getElementById('choices-grid');
+  grid.innerHTML = '';
+  choices.forEach((text, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-key">${i+1}</span><span>${text}</span>`;
+    btn.onclick = () => selectAnswer(text, ja, choices);
+    grid.appendChild(btn);
+  });
+}
+
+function selectAnswer(chosen, correct, choices) {
+  if (answered) return;
+  answered = true;
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    const text = choices[i];
+    if (text === correct) btn.classList.add(chosen === correct ? 'correct' : 'reveal');
+    if (text === chosen && chosen !== correct) btn.classList.add('wrong');
+  });
+  if (chosen === correct) {
+    score.correct++;
+  } else {
+    score.wrong++;
+    const key = currentWord[1];
+    if (!mistakes[key]) mistakes[key] = { word: currentWord, count: 0 };
+    mistakes[key].count++;
+    renderReview();
+  }
+  updateScore();
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function updateScore() {
+  const total = score.correct + score.wrong;
+  document.getElementById('sc-correct').textContent = score.correct;
+  document.getElementById('sc-wrong').textContent = score.wrong;
+  document.getElementById('sc-rate').textContent = total ? Math.round(score.correct / total * 100) + '%' : '—';
+}
+
+function renderReview() {
+  const keys = Object.keys(mistakes);
+  const sec = document.getElementById('review-section');
+  const list = document.getElementById('review-list');
+  const badge = document.getElementById('review-badge');
+  if (keys.length === 0) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  badge.textContent = keys.length + '語';
+  list.innerHTML = '';
+  keys.forEach(k => {
+    const m = mistakes[k];
+    const el = document.createElement('div');
+    el.className = 'review-item';
+    el.innerHTML = `<span class="review-word">${m.word[1]}</span><span class="review-meaning">${m.word[2]}</span><span class="review-count">×${m.count}</span>`;
+    // 復習エリアからもポップアップを開けるように
+    el.onclick = () => openPopupByWord(m.word);
+    list.appendChild(el);
+  });
+}
+
+// =====================================================
+// DICT + ALPHABET FILTER
+// =====================================================
+function switchTab(tab) {
+  const quizPanel = document.getElementById('quiz-panel');
+  const dictPanel = document.getElementById('dict-panel');
+  document.getElementById('tab-quiz').classList.toggle('active', tab === 'quiz');
+  document.getElementById('tab-dict').classList.toggle('active', tab === 'dict');
+  quizPanel.classList.toggle('active', tab === 'quiz');
+  dictPanel.classList.toggle('active', tab === 'dict');
+  if (tab === 'dict') renderDict();
+}
+
+function setAlphaFilter(letter) {
+  currentAlpha = letter;
+  document.querySelectorAll('.alpha-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.letter === letter);
+  });
+  document.getElementById('dict-search').value = '';
+  renderDict();
+}
+
+function filterDict() {
+  renderDict();
+}
+
+function getFilteredWords() {
+  let words = WORDS;
+  if (currentAlpha !== 'ALL') {
+    const l = currentAlpha.toLowerCase();
+    words = words.filter(w => w[1][0].toLowerCase() === l);
+  }
+  const q = document.getElementById('dict-search').value.trim().toLowerCase();
+  if (q) {
+    words = words.filter(w => w[1].toLowerCase().includes(q) || w[2].includes(q));
+  }
+  return words;
+}
+
+function renderDict() {
+  filteredForDict = getFilteredWords();
+  document.getElementById('dict-count').textContent = filteredForDict.length + '語';
+  const q = document.getElementById('dict-search').value.trim().toLowerCase();
+  const list = document.getElementById('dict-list');
+  list.innerHTML = '';
+  filteredForDict.forEach((word, idx) => {
+    const [no, en, ja, note] = word;
+    const jaHtml = q ? highlight(ja, q) : ja;
+    const enHtml = q ? highlight(en, q) : en;
+    const el = document.createElement('div');
+    el.className = 'dict-item';
+    const noteTag = note ? `<span class="dict-has-note">NOTE</span>` : '';
+    el.innerHTML = `<span class="dict-no">${no}</span><span class="dict-en">${enHtml}</span><span class="dict-ja">${jaHtml}</span>${noteTag}`;
+    el.onclick = () => openPopup(idx);
+    list.appendChild(el);
+  });
+}
+
+function highlight(str, q) {
+  const idx = str.toLowerCase().indexOf(q);
+  if (idx === -1) return str;
+  return str.slice(0, idx) + '<em>' + str.slice(idx, idx + q.length) + '</em>' + str.slice(idx + q.length);
+}
+
+// =====================================================
+// POPUP
+// =====================================================
+function openPopup(idxInFiltered) {
+  currentPopupIdx = idxInFiltered;
+  renderPopup();
+  document.getElementById('popup-overlay').classList.add('show');
+  document.addEventListener('keydown', popupKeyHandler);
+}
+
+function openPopupByWord(word) {
+  // 辞書モード全体から探す
+  const idx = WORDS.indexOf(word);
+  if (idx === -1) return;
+  // filteredForDictを全件にして開く
+  filteredForDict = WORDS;
+  currentPopupIdx = idx;
+  renderPopup();
+  document.getElementById('popup-overlay').classList.add('show');
+  document.addEventListener('keydown', popupKeyHandler);
+}
+
+function renderPopup() {
+  if (currentPopupIdx === null || !filteredForDict[currentPopupIdx]) return;
+  const [no, en, ja, note] = filteredForDict[currentPopupIdx];
+  document.getElementById('popup-num').textContent = '#' + no;
+  document.getElementById('popup-word').textContent = en;
+  document.getElementById('popup-meaning').textContent = ja;
+  const noteEl = document.getElementById('popup-note');
+  if (note && note.trim()) {
+    noteEl.textContent = note.trim();
+    noteEl.className = 'popup-note';
+  } else {
+    noteEl.textContent = '（解説文はまだ登録されていません）';
+    noteEl.className = 'popup-note popup-note-empty';
+  }
+  document.getElementById('popup-prev').disabled = currentPopupIdx === 0;
+  document.getElementById('popup-next').disabled = currentPopupIdx === filteredForDict.length - 1;
+}
+
+function navigatePopup(dir) {
+  const next = currentPopupIdx + dir;
+  if (next < 0 || next >= filteredForDict.length) return;
+  currentPopupIdx = next;
+  renderPopup();
+}
+
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('show');
+  document.removeEventListener('keydown', popupKeyHandler);
+  currentPopupIdx = null;
+}
+
+function closePopupOnOverlay(e) {
+  if (e.target === document.getElementById('popup-overlay')) closePopup();
+}
+
+function popupKeyHandler(e) {
+  if (e.key === 'Escape') { closePopup(); return; }
+  if (e.key === 'ArrowLeft') navigatePopup(-1);
+  if (e.key === 'ArrowRight') navigatePopup(1);
+}
+
+// =====================================================
+// KEYBOARD (QUIZ)
+// =====================================================
+document.addEventListener('keydown', e => {
+  if (document.getElementById('popup-overlay').classList.contains('show')) return;
+  const panel = document.getElementById('quiz-panel');
+  if (!panel.classList.contains('active')) return;
+  if (e.key === 'Enter' && answered) { nextQuestion(); return; }
+  if (!answered && ['1','2','3','4'].includes(e.key)) {
+    const idx = parseInt(e.key) - 1;
+    const btns = document.querySelectorAll('.choice-btn');
+    if (btns[idx]) btns[idx].click();
+  }
+});
+
+// =====================================================
+// START
+// =====================================================
+init();
+</script>
+</body>
+</html>
