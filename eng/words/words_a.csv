@@ -1,157 +1,42 @@
 番号,単語,意味,解説文
-8,allow,を許す；を与える；考慮に入れる,
-25,affect,に影響を及ぼす；を感動させる,effect（効果・影響）と混同しやすい。affectは動詞「影響を与える」、effectは名詞「影響・結果」。例：The weather affected our plans.（天気が計画に影響した）
-27,avoid,を避ける,
-42,accord,一致；合意，協定,
-65,article,記事；条項；品物,
-79,appropriate,（～に）適切な,
-93,available,手に入る；利用できる；手が空いている,
-98,ancient,古代の；昔からの,
-103,approach,に近づく；に取り組む,
-109,argue,と主張する；議論する,
-114,advance,を進歩させる；進歩する；進む,
-118,achieve,を達成する；を成し遂げる,achievement（成果・業績）の動詞形。「努力して目標を達成する」という意味合いが強い。例：She achieved her goal.（彼女は目標を達成した）
-127,apply,を適用する；申し込む；適用される,
-147,account,説明；勘定；口座,
-158,advantage,利点；優勢；有利,
-169,access,利用，入手；接近,
-172,attitude,態度；考え方，心構え,
-174,aspect,（物事の）側面；観点；様相,
-189,academic,学問の；大学の,
-190,aware,気づいて，知って,
-193,active,積極的な；活動的な；効力のある,
-205,attend,に出席する；を世話する；対処する,
-211,associate,を結び付けて考える；交際する,
-212,attempt,を試みる，企てる,
-222,attract,を引きつける,
-227,adapt,適応する；を適合させる,
-236,assume,を当然のことと思う；と仮定する；を引き受ける,
-251,audience,聴衆，観客；視聴者,
-273,aim,目的，目標；狙い,
-274,ancestor,祖先；原型,
-297,actual,実際の，現実の,
-314,adopt,を採用する；（態度など）をとる；を養子にする,
-315,acquire,を得る；を習得する,
-330,address,（問題など）に対処する；に演説する,
-340,appreciate,を正当に評価する；を鑑賞する；を感謝する,
-345,atmosphere,大気；雰囲気,
-356,authority,（関係）当局；権威；権限,
-363,analysis,分析（結果）,
-375,agriculture,農業；農学，畜産,
-382,accurate,正確な；精密な,
-384,artificial,人工の；不自然な,
-406,admit,（を）（しぶしぶ）認める；に入場を認める,
-409,amaze,をびっくりさせる,
-412,afford,を持つ余裕がある；を与える,
-414,advertise,を宣伝する；広告を出す,
-418,aid,を援助する，助ける,
-426,appeal,訴える；抗議する；上訴する,
-486,annual,年1回の，例年の；1年間の,
-510,announce,を発表する，知らせる,
-521,arise,生じる,
-524,alter,を変える；変わる,
-525,absorb,を吸収する；を夢中にさせる,
-538,arrange,の段取りをつける；を手配する；を配置する,
-539,adjust,を調整する；を適合させる；順応する,
-549,alarm,不安，恐れ；警報装置,
-583,anxious,心配して；切望して,
-586,abstract,抽象的な,
-592,aggressive,攻撃的な；意欲的な,
-596,alien,（～にとって）異質の；外国の；宇宙人の,
-608,abandon,を捨てる；を放棄する，断念する,
-620,advise,に忠告する，助言する,
-622,attach,を（取り）付ける；を付与する,
-650,award,（～の）賞；（証書などの）授与,
-688,absolute,絶対的な,
-713,accompany,に同行する；に付随する,
-715,annoy,を悩ます；腹が立つ,
-717,acknowledge,（事実など）を認める；に謝意を表す,
-718,admire,に敬服する，感心する,
-723,attribute,（結果など）を（～に）帰する,
-730,assist,（を）援助する；を手伝う,
-739,assign,を割り当てる；を配属する,
-740,accomplish,を成し遂げる,
-752,agent,仲介者，代理人；薬剤,
-779,artistic,芸術的な,
-791,apparent,明白な；一見～らしい,
-799,adequate,十分な；適切な,
-801,assess,を評価する；を査定する,
-802,approve,賛成する；を承認する,
-813,apologize,（～に；～のことで）謝る；弁明する,
-848,asteroid,小惑星；ヒトデ,
-862,architecture,建築；建築様式；構造,
-877,administration,管理（部）；行政；政府（機関）,
-885,Arctic,北極の,
-923,anticipate,を予期する；楽しみに待つ,
-952,abuse,乱用；虐待,
-957,allergy,アレルギー,
-959,antibiotic,抗生物質,
-978,ambition,（～に対する）願望，野望；野心,
-985,alert,警戒して；敏速な,
-991,awful,ひどい；嫌な；ものすごい,
-1004,arrest,を逮捕する；を止める；（注意）を引く,
-1031,astonish,を驚かす,
-1051,adolescent,青年；青年期の,
-1093,awkward,気まずい；ぎこちない；厄介な,
-1108,accumulate,を蓄積する，集める；積もる,
-1110,advocate,を主張する；を擁護する,
-1122,accuse,を非難する；を告訴する,
-1181,acid,酸性の；酸っぱい；辛辣な,
-1190,aboriginal,アボリジニの；原生の，先住の,
-1192,abundant,豊富な；（～に）富む,
-1205,accelerate,を加速させる，促進する；加速する,
-1206,accustom,（人）を慣れさせる,
-1207,amuse,をおもしろがらせる，楽しませる,
-1242,appetite,食欲；欲求,
-1245,anniversary,（～周年）記念日,
-1257,acquaintance,知人；面識；知識,
-1278,asset,資産；価値のあるもの；利点,
-1286,aesthetic,美的な；美学の,
-1293,ashamed,恥じて,
-1301,assure,に自信を持って言う；を保証する,
-1325,assert,を主張する,
-1333,assemble,を集める；を組み立てる；集まる,
-1347,agenda,協議事項（リスト）；議事日程（表）；（政治上の）課題,
-1372,aisle,（座席間などの）通路,
-1386,ambiguous,あいまいな；多義的な,
-1406,attain,を獲得する，達成する；に達する,
-1433,abolish,を廃止する,
-1464,ally,同盟国；提携者；援助者；盟友,
-1486,acute,（痛み・感情などが）激しい；（知覚などが）鋭い；急性の,
-1490,alternate,代わりの；交互の,
-1515,accommodate,を収容する；を適応させる,
-1526,appoint,を任命する；（日時・場所など）を指定する,
-1539,awaken,を目覚めさせる；（～から）覚める,
-1552,algorithm,アルゴリズム；問題解決の手順,
-1580,authentic,本物の；信頼できる,
-1583,absurd,ばかげた；不合理な,
-1585,accidental,偶然の；過失による,
-1600,affluent,裕福な；豊富な,
-1611,addict,（～の）中毒になる；（～に）凝る,
-1639,aspire,（～を）熱望する,
-1651,autonomy,（個人の）自律；自治（権）；自治体,
-1656,arithmetic,計算；算数,
-1658,archive,記録文書，公文書；公文書保管所；アーカイブ,
-1660,anthropology,人類学,
-1670,astronomy,天文学,
-1672,altitude,高度，標高,
-1683,adverse,不都合な；逆の,
-1686,arbitrary,恣意的な；独断的な,
-1687,anonymous,匿名の,
-1688,antique,骨董の，アンティークの；古風な,
-1696,apt,（...する）傾向がある；適切な；利発な,
-1697,arrogant,横柄な，傲慢な,
-1736,await,を待つ,
-1744,analogy,類推；類似,
-1792,acoustic,音響の；聴覚の；（楽器が）アコースティックの,
-1794,approximate,おおよその,
-1798,ample,十分すぎるほどの；広い,
-1806,assault,に暴行する；を攻撃する,
-1811,arouse,（感情など）を引き起こす；を目覚めさせる,
-1823,allocate,を割り当てる，分配する,
-1836,allege,を主張する,
-1839,ascend,（を）上がる,
-1841,advent,（～の）出現，到来,
-1854,archaeology,考古学,
-1864,attorney,弁護士；代理人,
-1883,abrupt,突然の,
+8,allow,〜を許可する；〜を認める；（時間や金など）を与える,"allow A to do「Aが〜するのを許可する」の形が超重要です。allow for ~「〜を考慮に入れる」も入試頻出。派生語：allowance（名：お小遣い、許容量）。"
+25,affect,〜に影響を及ぼす；〜の心を動かす,"名詞のeffect（効果・影響）との区別が非常によく狙われます。affectは「動詞」として使われるのが基本です。例：The cold weather affected the crops."
+27,avoid,〜を避ける；〜を回避する,"後ろに動詞がくる場合は必ず動名詞（avoid doing）になります。to不定詞は不可。派生語：avoidable（形：回避できる）。"
+42,accord,一致する；〜を一致させる；協定；合意,"重要フレーズ：in accord with ~（〜と一致して・調和して）。派生語：accordingly（副：それに応じて、したがって）。"
+65,article,記事；論説；品物；（法律などの）条項,"新聞や雑誌の「記事」という意味が最も一般的ですが、an article of clothing（衣類1点）のように「品物」を表すこともあります。"
+79,appropriate,適切な；ふさわしい,"重要フレーズ：be appropriate for ~（〜に適切である）。派生語：appropriately（副：適切に）。対義語はinappropriate（不適切な）。"
+93,available,手に入る；利用できる；（人が）時間が空いている,"重要フレーズ：be available for ~（〜に利用できる）。「予定が空いている」という意味で、Are you available tomorrow?（明日時間ある？）のようにも使います。"
+98,ancient,古代の；大昔の,"対義語はmodern（現代の）。重要フレーズ：ancient history（古代史）。非常に古い歴史や建物を指すときに使います。"
+103,approach,〜に近づく；（問題などに）取り組む；接近；アプローチ,"他動詞なので approach to the city ではなく approach the city と直接目的語を取る点に注意。名詞では approach to ~（〜への接近・取り組み方）となります。"
+109,argue,〜と主張する；議論する；言い争う,"that節を伴って「〜だと強く主張する」という意味でよく使われます。派生語：argument（名：議論・主張）。"
+114,advance,進歩する；〜を進める；進歩；前進,"重要フレーズ：in advance（あらかじめ、前もって）。派生語：advanced（形：進んだ、上級の）。"
+118,achieve,〜を達成する；〜を成し遂げる,"努力の末に目標を達成するニュアンスがあります。重要フレーズ：achieve success（成功を収める）。派生語：achievement（名：達成、業績）。"
+127,apply,申し込む；〜を適用する；当てはまる,"重要フレーズ：apply for ~（〜に申し込む）、apply to ~（〜に適用される・当てはまる）。派生語：application（名：応募、アプリ）。"
+147,account,説明；報告；口座；（割合を）占める,"重要フレーズ：account for ~（〜を説明する、〜の割合を占める）、take ~ into account（〜を考慮に入れる）。"
+158,advantage,利点；優位；長所,"重要フレーズ：take advantage of ~（〜を利用する・につけ込む）。対義語はdisadvantage（不利な点）。"
+169,access,接近；利用する権利；〜にアクセスする,"名詞・動詞どちらの形も重要です。重要フレーズ：have access to ~（〜を利用できる・にアクセスできる）。"
+172,attitude,態度；考え方；姿勢,"重要フレーズ：attitude toward ~（〜に対する態度）。take a positive attitude（前向きな態度をとる）のように使います。"
+174,aspect,（物事の）側面；局面；外観,"重要フレーズ：every aspect of life（生活のあらゆる側面）。物事を異なる角度から見たときの一面を表します。"
+189,academic,学問の；大学の；学術的な,"派生語：academy（名：専門学校・学会）。重要フレーズ：academic achievement（学業成績）。"
+190,aware,気づいて；知って,"重要フレーズ：be aware of ~ / be aware that節（〜に気づいている）。対義語はunaware（気づいていない）。"
+193,active,活発な；積極的な；活動的な,"対義語はpassive（受動的な、消極的な）。派生語：activity（名：活動）、activate（動：〜を活性化する）。"
+205,attend,〜に出席する；〜に注意を向ける；（病人の）世話をする,"他動詞として「出席する（attend the meeting）」、自動詞として attend to ~（〜に注意を払う・対応する）の両方を覚えましょう。派生語：attendance（名：出席）。"
+211,associate,〜を結びつけて考える；連想する；交際する,"重要フレーズ：associate A with B（AからBを連想する、AとBを結びつける）。派生語：association（名：協会、連想）。"
+212,attempt,〜を試みる；〜に挑戦する；試み；企て,"重要フレーズ：attempt to do（〜しようと試みる）。make an attempt（試みる）。"
+222,attract,〜を引きつける；（興味・注意）をそそる,"重要フレーズ：attract attention（注目を集める）。派生語：attractive（形：魅力的な）、attraction（名：引きつけること、アトラクション）。"
+227,adapt,〜を適応させる；順応する；（作品を）改作する,"重要フレーズ：adapt to ~（〜に順応する）、adapt A for B（AをB用に変える・脚色する）。派生語：adaptation（名：適応、脚色）。"
+236,assume,〜と仮定する；（証拠なしに）〜と思い込む；（責任・任務）を引き受ける,"that節を伴って「（当然）〜だと思う」と推測する意味で多用されます。派生語：assumption（名：仮定、想定）。"
+251,audience,聴衆；観客；（テレビの）視聴者,"集合的に人を表す名詞で、聴衆の「数」が多いときは large、少ないときは small で表します（manyやfewで修飾するのは不可）。"
+273,aim,目指す；狙う；目的；目標,"重要フレーズ：aim to do / aim at doing（〜することを目指す）。名詞としては with the aim of ~（〜という目的で）。"
+274,ancestor,祖先；先祖,"対義語はdescendant（子孫）。重要フレーズ：common ancestor（共通の祖先）。"
+297,actual,実際の；現実に起こっている,"形は形容詞ですが、副詞形の actually（実は、実際に）がリスニングや長文で非常に重要です。"
+314,adopt,〜を採用する；（態度など）をとる；〜を養子にする,"adapt（適応させる）とのスペル・意味の混同に注意。重要フレーズ：adopt a new method（新しい方法を採用する）。派生語：adoption（名：採用、養子縁組）。"
+315,acquire,〜を習得する；〜を手に入れる,"時間をかけて知識や言語、技術を「身に付ける」ニュアンス。重要フレーズ：acquire a language（言語を習得する）。派生語：acquisition（名：獲得、習得）。"
+330,address,（問題など）に対処する；〜に演説する；住所；演説,"重要フレーズ：address a problem（問題に対処する）。「住所」や「メールアドレス」以外に、動詞としての「対処する」という意味が超重要です。"
+340,appreciate,〜を正当に評価する；〜を感謝する；〜を鑑賞する,"感謝の対象には「人」ではなく「事柄（行為）」がきます（例：I appreciate your help.）。派生語：appreciation（名：感謝、鑑賞）。"
+345,atmosphere,雰囲気；大気；空気,"重要フレーズ：friendly atmosphere（親しみやすい雰囲気）。地球を取り巻く「大気」から、その場の「空気感」まで表します。"
+356,authority,権威；権限；（関係）当局,"重要フレーズ：the authorities（当局、警察など ※通常複数形）。have the authority to do（〜する権限がある）。"
+363,analysis,分析,"複数形は analyses とスペルが変わるので注意。派生語：analyze（動：〜を分析する）。"
+375,agriculture,農業；農学,"派生語：agricultural（形：農業の）。sustainable agriculture（持続可能な農業）などのフレーズで長文によく出ます。"
+382,accurate,正確な；精密な,"事実に対して間違いがない状態を指します。対義語はinaccurate（不正確な）。派生語：accuracy（名：正確さ）。"
+384,artificial,人工の；作り物の,"対義語はnatural（自然の）。重要フレーズ：AI = Artificial Intelligence（人工知能）。"
