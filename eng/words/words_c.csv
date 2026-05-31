@@ -1,210 +1,209 @@
 番号,単語,意味,解説文
-1,create,を創り出す；を引き起こす,
-7,consider,を見なす；について考える,
-17,concern,心配している；関係する；に関連する,
-31,compare,を比較する；をたとえる,
-35,challenge,に異議を唱える；に挑む,
-40,complete,を完成させる，仕上げる,
-43,company,会社；仲間；一緒にいること,
-46,cause,原因；理由；大義,
-76,community,（共同）社会；地域社会；地域住民,
-78,culture,文化；教養；耕作；養殖,
-84,common,共通の；普通の；一般の,
-85,certain,確信して；確かな；ある；一定の,
-99,correct,正しい；適切な,
-110,claim,と主張する；を要求する,
-129,communicate,情報交換をする；を伝達する,
-130,contain,を含む；を収容する；を抑える,
-131,contact,と連絡を取る；接触する,
-135,connect,をつなぐ；を関連づける,
-151,cell,細胞；独房；電池,
-157,character,性格，個性；特徴；登場人物；文字,
-181,complex,複雑な；複合（体）の,
-182,current,現在の；現代の；通用している,
-198,chemical,化学の，化学的な,
-210,conduct,を実施する；を導く,
-228,contribute,貢献する；（を）寄付する；（を）寄稿する,
-241,concept,概念；考え；コンセプト,
-244,charge,料金；世話；管理；告発,
-245,contrast,（～との）対照,
-246,colleague,（職場の）同僚,
-249,content,内容，中身；コンテンツ,
-253,crop,作物；収穫高,
-260,crime,罪，犯罪；違法行為,
-261,conflict,争い；論争；不一致,
-263,context,状況，背景；文脈,
-272,consequence,結果；重大性,
-279,cognitive,認知の,
-320,consume,を消費する；を食べる，飲む,
-321,confuse,を混同する；を当惑させる,
-324,convince,を納得させる，確信させる,
-336,complain,不平を言う；訴える,
-338,combine,を結び付ける；結び付く,
-348,capacity,（最大）容量；（潜在）能力,
-350,circumstance,状況，事情；境遇,
-359,campaign,運動；軍事行動,
-366,crisis,危機,
-371,custom,（社会的な）慣習；税関；関税,
-372,court,裁判所，法廷；宮廷；中庭,
-380,conscious,意識して，気づいて,
-381,capable,能力がある；有能な,
-391,constant,絶え間ない；一定の,
-395,convenient,便利な，都合のいい,
-413,conclude,と結論づける；を締めくくる；を締結する,
-428,compete,競う；匹敵する,
-440,consist,（～から）成る；（～に）ある,
-441,comment,意見，コメント；批判,
-447,confidence,自信；信頼；秘密,
-450,category,部類，区分；範疇,
-451,capital,資本；首都；大文字,
-461,conference,会議；協議,
-468,comfort,快適さ；慰め,
-477,code,規範；暗号；法典,
-487,contemporary,現代の；同時代の；同年輩の,
-488,contrary,（～と）反対の,
-490,civil,市民の；民間の；民事の,
-499,crucial,重要な,
-503,concentrate,（を）集中する,
-505,criticize,を批判する；を批評する,
-518,credit,（功績など）を帰する；を信じる,
-520,construct,を建設する；を構成する,
-527,cure,を治す；を取り除く；（病気が）治る,
-535,celebrate,を祝う；を挙行する,
-540,confirm,を確認する；を裏づける,
-554,candidate,（～の）候補（者）；志願者,
-555,corporation,（大）企業；法人,
-571,client,顧客；（弁護士などの）依頼人,
-572,colony,植民地；集団居住地；コロニー,
-577,contract,契約（書）；協定,
-580,curious,好奇心の強い；奇妙な,
-585,conventional,従来の；月並みな,
-601,commit,献身する；（罪など）を犯す；を投入する,
-610,capture,をとらえる；をとりこにする,
-621,convey,を伝える；を運ぶ，運搬する,
-626,crash,衝突する，墜落する；をぶつけて壊す,
-627,cope,うまく処理する,
-637,calculate,を計算する；を予測する,
-655,clue,（～の）手がかり；（パズルの）ヒント,
-666,conservation,（動植物などの）保護；保存,
-674,cooperation,協力，共同,
-677,component,構成要素；部品,
-734,collapse,崩壊する；（人が）倒れる；を折り畳む,
-760,contest,コンテスト，競技（会）；争い,
-773,channel,チャンネル；伝達経路；海峡,
-778,correlation,相互関係，相関（関係）,
-781,classic,第一級の；典型的な；定番の,
-783,concrete,具体的な；有形の,
-808,command,を命じる；を指揮する；（景色）を見渡せる,
-820,convert,を変える；を改宗させる；を交換する,
-825,correspond,一致する；（～に）相当する；文通する,
-833,compose,を構成する；を創作する；を鎮静する,
-849,core,核心；芯,
-858,courage,勇気,
-872,chip,小片，破片；欠けた箇所；集積回路,
-876,council,（地方）議会；評議会；（公の）会議,
-878,curriculum,教育課程，カリキュラム,
-881,casual,何気ない；形式ばらない,
-895,collective,集団の，共同の,
-901,chase,（を）追跡する；（を）追求する,
-921,cultivate,を養う；を耕す；を栽培する,
-927,classify,を分類する；を機密扱いにする,
-938,confront,に立ち向かう；（困難などが）に立ちはだかる,
-939,consult,（に）相談する；を参照する,
-946,chart,図，グラフ；海図；ヒットチャート,
-969,counterpart,相当する物，人,
-977,charm,魅力；お守り,
-993,cruel,残酷な；むごい,
-1005,crack,ひびが入る；にひびを入れる,
-1016,cite,を引き合いに出す；を引用する,
-1021,cheat,をだます；不正をする,
-1036,complicate,を複雑にする,
-1045,compliment,賛辞；表敬,
-1063,clinic,診療所，クリニック；（病院内の）～科,
-1068,curve,（道路などの）カーブ；曲線,
-1111,constitute,を構成する；になる，に等しい,
-1116,conceal,を隠す；を秘密にする,
-1117,chew,（を）かむ；をかみ砕く,
-1129,compound,を悪化させる；を合成する；を混合する,
-1132,commute,通勤（通学）する,
-1135,cease,をやめる；終わる,
-1136,compromise,妥協する；を危うくする,
-1142,cue,合図；手がかり；（次の演技の）キュー,
-1145,congress,（米国などの）議会；会議,
-1151,caution,用心；警告,
-1152,controversy,論争,
-1153,consensus,総意；（意見の）一致,
-1174,column,コラム；欄；円柱；（縦）列,
-1198,chronic,慢性の；長引く；常習の,
-1211,click,（を）クリックする；をカチッと鳴らす,
-1213,clip,を切り抜く；を切り取る；をクリップで留める,
-1215,cast,を投じる；に役を当てる,
-1234,crush,を押しつぶす；を弾圧する,
-1248,cortex,皮質；樹皮,
-1250,chamber,（特定の目的の）部屋；議場；議院,
-1252,cattle,牛,
-1262,commodity,商品；有用なもの,
-1268,combat,戦闘；対立,
-1275,consent,同意，承諾,
-1280,competent,有能な；適任の；満足できる,
-1282,cosmetic,化粧の，美容の；うわべの,
-1304,compel,に強いる,
-1316,confine,を限定する；閉じ込められる,
-1332,compute,（を）計算する；コンピューターを使う,
-1338,compensate,補償する；に償う,
-1339,comprise,から成る；を構成する,
-1343,criterion,（判断・評価の）基準,
-1352,chaos,混沌，大混乱,
-1355,cluster,集団；（植物の）房，束,
-1362,cuisine,（独特の）料理，料理法,
-1384,compulsory,義務的な，強制的な,
-1404,conquer,を征服する；を克服する,
-1412,contradict,と矛盾する；に反対意見を言う,
-1420,comprehend,を理解する,
-1422,cram,に詰め込む；詰め込み勉強をする,
-1425,clarify,を明確にする,
-1440,coordinate,を調整する；を組織する；をコーディネートする,
-1450,compassion,同情,
-1452,curse,悪態，ののしりの言葉；呪い；災い,
-1454,census,国勢調査；交通調査,
-1456,cereal,穀物；シリアル（穀物加工食品）,
-1467,county,郡；州,
-1470,circulation,循環；流通；（新聞・雑誌の）発行部数,
-1474,collision,衝突；対立,
-1503,conform,順応する；一致する,
-1510,crawl,はう；ゆっくり進む,
-1529,contaminate,を汚染する；を堕落させる,
-1535,confess,（を）告白する,
-1540,conceive,（を）思いつく；と想像する；（を）妊娠する,
-1546,clash,衝突；対立；かち合うこと,
-1591,crude,大まかな；粗野な；未精製の,
-1601,collaborate,共同して働く；（～に）協力する,
-1610,carve,を彫る；を切り開く；（肉）を切り分ける,
-1612,condemn,を非難する；（～の刑を）宣告される,
-1613,convict,に有罪を宣告する,
-1621,coincide,同時に起こる；一致する,
-1623,cling,しがみつく；くっつく,
-1633,converse,（～と）会話をする,
-1640,contemplate,（を）熟考する；を予想する,
-1643,commerce,商業；貿易,
-1649,cabinet,内閣；戸棚,
-1684,coherent,一貫した，筋の通った；結束した,
-1699,conspicuous,目立つ,
-1703,console,を慰める,
-1708,constrain,に（...することを）強いる；を抑える,
-1732,contend,と主張する；競う,
-1745,conscience,良心；分別,
-1753,carriage,馬車；車両；立ち居振舞い；輸送,
-1767,certificate,証明書；免許状,
-1775,courtesy,礼儀正しさ；好意；優遇,
-1797,compatible,矛盾しない；互換性のある；気が合う,
-1805,cater,（の）料理をまかなう；（要望などに）応える,
-1810,cherish,を大切にする；を心に抱く,
-1819,corrupt,を堕落させる；を買収する；堕落する,
-1822,compile,を編集する；（資料など）をまとめる,
-1826,comply,従う，応じる,
-1840,commence,始まる；を開始する,
-1859,congestion,混雑,
-1861,complement,（～の）補完物，補足；（文法の）補語,
-1873,contempt,軽蔑；恥辱,
-1891,contagious,感染（性）の；病気を伝染する,
-1892,cynical,冷笑的な，皮肉な,
+7,consider,を熟考する；を～と見なす,consider A as B（AをBと見なす）・take into consideration（考慮に入れる）。派生語：consideration（考慮）・considerate（思いやりのある）
+17,concern,を心配させる；～に関係する；関係,be concerned about…（…を心配する）・To whom it may concern（関係者各位）。派生語：concerning（…に関して）・concerned（心配している）
+31,compare,を比較する；を～に例える,compare A with/to B（AをBと比較する）・beyond compare（比類なく）。派生語：comparison（比較）・comparable（比較できる）
+35,challenge,に挑む；に異議を唱える；難題,face a challenge（課題に直面する）・challenge authority（権威に異議を唱える）。派生語：challenging（やりがいのある）
+40,complete,を完成させる；完全な,complete a task（仕事を仕上げる）・a complete set（完全な一式）。派生語：completely（完全に）・completion（完成）
+43,company,会社；仲間；一緒にいること,keep company with…（…と付き合う）・company policy（社内規則）。派生語：companion（仲間）・accompany（同伴する）
+46,cause,原因；理由；大義；～を引き起こす,cause and effect（原因と結果）・a worthy cause（立派な大義）。派生語：causal（因果関係の）・causality（因果律）
+76,community,地域社会；共同体；コミュニティ,the local community（地元社会）・sense of community（共同体意識）。派生語：communal（共有の）
+78,culture,文化；教養；栽培；養殖,corporate culture（企業文化）・culture shock（カルチャーショック）。派生語：cultural（文化的な）・cultivate（耕す、養う）
+84,common,共通の；普通の；一般の,common sense（常識）・have something in common（共通点がある）。派生語：commonly（一般に）・uncommon（珍しい）
+85,certain,確信している；確かな；ある特定の,be certain of/about…（…を確信する）・a certain amount（ある程度）。派生語：certainly（確かに）・certainty（確実性）
+99,correct,正しい；適切な；を訂正する,correct answer（正解）・politically correct（政治上適切な）。派生語：correction（訂正）・incorrect（不正確な）
+110,claim,と主張する；を要求する；請求,claim damages（損害賠償を請求する）・make a claim（主張する、請求する）。派生語：claimant（請求者）・disclaim（否認する）
+129,communicate,を伝える；意思疎通する,communicate with…（…と連絡を取る）・communicate ideas（考えを伝える）。派生語：communication（コミュニケーション）・communicative（話好きの）
+130,contain,を含む；を収容する；感情を抑える,contain an ingredient（成分を含む）・contain oneself（自制する）。派生語：container（容器）・content（内容）
+131,contact,と接触する；連絡を取る；接点,keep in contact with…（…と連絡を取り合う）・eye contact（アイコンタクト）。派生語：contact lens（コンタクトレンズ）
+135,connect,をつなぐ；を関連づける；接続する,connect A to/with B（AをBにつなぐ）・connect ideas（考えを結びつける）。派生語：connection（つながり）・disconnect（切断する）
+151,cell,細胞；独房；電池；小部屋,blood cell（血球）・cell phone（携帯電話）・stem cell（幹細胞）。派生語：cellular（細胞の）
+157,character,性格；特徴；登場人物；文字,have a strong character（個性が強い）・main character（主人公）・Chinese character（漢字）。派生語：characteristic（特徴的な）・characterize（特徴づける）
+181,complex,複雑な；複合体；コンプレックス,inferiority complex（劣等感）・complex system（複雑なシステム）。派生語：complexity（複雑さ）
+182,current,現在の；流れ；潮流,current affairs（時事問題）・electric current（電流）・currently（現在は）。派生語：currency（通貨）
+198,chemical,化学の；化学物質,chemical reaction（化学反応）・toxic chemicals（有害化学物質）。派生語：chemistry（化学）・chemist（化学者）
+210,conduct,を実施する；を導く；振る舞い,conduct a survey（調査を行う）・conduct electricity（電気を通す）。派生語：conductor（指揮者、導体）・conductive（伝導性の）
+228,contribute,貢献する；寄付する；寄稿する,contribute to…（…に貢献する）・contribute money（金銭を寄付する）。派生語：contribution（貢献）・contributor（貢献者）
+241,concept,概念；考え方；コンセプト,basic concept（基本概念）・concept car（コンセプトカー）。派生語：conceptual（概念の）
+244,charge,料金；責任；告発；充電,free of charge（無料で）・take charge of…（…を引き受ける）・criminal charge（刑事告訴）。派生語：charger（充電器）・discharge（放出する）
+245,contrast,対照；対比,in contrast to…（…と対照的に）・stark contrast（著しい対比）。派生語：contrasting（対照的な）
+246,colleague,（職場の）同僚,a colleague at work（職場の同僚）。派生語：collegial（同僚の）
+249,content,内容；中身；満足している,table of contents（目次）・digital content（デジタルコンテンツ）・be content with…（…に満足する）。派生語：contentment（満足）
+253,crop,農作物；収穫高；～を刈り込む,cash crop（換金作物）・crop yields（収穫量）。派生語：cropland（農地）
+260,crime,犯罪；罪,commit a crime（犯罪を犯す）・organized crime（組織犯罪）。派生語：criminal（犯罪者、犯罪の）・criminology（犯罪学）
+261,conflict,対立；紛争；矛盾,armed conflict（武力衝突）・conflict of interest（利益相反）・inner conflict（葛藤）。派生語：conflicting（相反する）
+263,context,文脈；背景；状況,in context（文脈の中で）・out of context（文脈を無視して）・historical context（歴史的背景）。派生語：contextual（文脈上の）
+272,consequence,結果；重要性,as a consequence（結果として）・face the consequences（結果を受け止める）。派生語：consequently（その結果として）・consequential（重大な）
+279,cognitive,認知の,cognitive ability（認知能力）・cognitive psychology（認知心理学）。派生語：cognition（認知）
+320,consume,を消費する；飲食する,consume energy（エネルギーを消費する）・time-consuming（時間のかかる）。派生語：consumer（消費者）・consumption（消費）
+321,confuse,を混乱させる；混同する,confuse A with B（AとBを混同する）・get confused（混乱する）。派生語：confusing（混乱させる）・confusion（混乱）
+324,convince,を納得させる；確信させる,convince A of B（AにBを納得させる）・be convinced that…（…と確信する）。派生語：convincing（説得力のある）
+336,complain,不平を言う；訴える,complain about…（…について不平を言う）・complain of pain（痛みを訴える）。派生語：complaint（苦情）・complaining（不平ばかり言う）
+338,combine,を結合する；組み合わせる,combine business with pleasure（仕事と楽しみを両立させる）・combine forces（力を合わせる）。派生語：combination（組み合わせ）・combined（合わさった）
+348,capacity,容量；能力,seating capacity（座席数）・capacity for learning（学習能力）・at full capacity（フル稼働で）。派生語：capacious（広々とした）
+350,circumstance,状況；事情；経済的境遇,under no circumstances（決して～しない）・due to unforeseen circumstances（予期せぬ事情により）。派生語：circumstantial（状況証拠の）
+359,campaign,運動；選挙運動；軍事作戦,election campaign（選挙運動）・advertising campaign（広告キャンペーン）。派生語：campaigner（活動家）
+366,crisis,危機；重大局面,economic crisis（経済危機）・midlife crisis（中年の危機）。派生語：critical（危機的な）・crisis management（危機管理）
+371,custom,慣習；関税；注文製作の,local custom（地元の慣習）・customs duty（関税）。派生語：customer（顧客）・customary（慣習的な）
+372,court,裁判所；宮廷；中庭；求愛する,Supreme Court（最高裁判所）・basketball court（バスケットコート）。派生語：courteous（礼儀正しい）
+380,conscious,意識している；気づいている,be conscious of…（…を意識している）・environmentally conscious（環境を意識した）。派生語：consciousness（意識）・unconscious（無意識の）
+381,capable,能力がある；有能な,be capable of…（…する能力がある）・a capable leader（有能なリーダー）。派生語：capability（能力）・incapable（できない）
+391,constant,絶え間ない；一定の,constant noise（絶え間ない騒音）・constant temperature（一定の温度）。派生語：constantly（絶えず）・constancy（不変）
+395,convenient,便利な；都合の良い,at a convenient time（都合の良い時間に）・convenience store（コンビニ）。派生語：convenience（便利さ）・inconvenient（不便な）
+413,conclude,と結論づける；締結する；終える,conclude a treaty（条約を締結する）・to conclude（結論として）。派生語：conclusion（結論）・conclusive（決定的な）
+428,compete,競争する；匹敵する,compete against/with…（…と競争する）・compete for attention（注目を競う）。派生語：competition（競争）・competitive（競争力のある）・competitor（競合相手）
+440,consist,（～から）成る；（～に）ある,consist of…（…から成る）・consist in…（…にある）。派生語：consistent（一貫した）・consistency（一貫性）
+441,comment,意見；論評；コメントする,make a comment on…（…についてコメントする）・No comment.（ノーコメント）。派生語：commentary（解説）・commentator（解説者）
+447,confidence,自信；信頼；打ち明け話,have confidence in…（…を信頼する）・self-confidence（自信）・in confidence（内密に）。派生語：confident（自信のある）・confidential（機密の）
+450,category,区分；カテゴリー,fall into a category（区分に入る）。派生語：categorize（分類する）・categorical（断定的な）
+451,capital,首都；資本；大文字,capital city（首都）・capital investment（資本投資）・capital letter（大文字）。派生語：capitalism（資本主義）・capitalize（大文字で書く、活用する）
+461,conference,会議；協議会,press conference（記者会見）・video conference（ビデオ会議）。派生語：confer（協議する）
+468,comfort,快適さ；慰め,comfort zone（快適な範囲）・take comfort in…（…に慰めを見いだす）。派生語：comfortable（快適な）・discomfort（不快）
+477,code,規範；暗号；法典,dress code（服装規定）・bar code（バーコード）・moral code（道徳規範）。派生語：encode（符号化する）・decode（解読する）
+487,contemporary,現代の；同時代の,contemporary art（現代美術）・contemporary of…（…と同時代の人）。派生語：contemporaneous（同時代の）
+488,contrary,反対の；逆の,on the contrary（それどころか逆に）・contrary to…（…に反して）。派生語：contrariness（強情）
+490,civil,市民の；民事の；礼儀正しい,civil rights（公民権）・civil engineer（土木技師）・civil marriage（民事婚）。派生語：civilian（民間人）・civilization（文明）
+499,crucial,極めて重要な,crucial role（重要な役割）・crucial moment（正念場）。派生語：crucially（決定的に）
+503,concentrate,集中する；濃縮する,concentrate on…（…に集中する）・concentrate one's efforts（努力を集中する）。派生語：concentration（集中）・concentrated（濃縮された）
+505,criticize,批判する；批評する,criticize the government（政府を批判する）・criticize constructively（建設的に批評する）。派生語：criticism（批判）・critical（批判的な）・critic（批評家）
+518,credit,功績を認める；信用；クレジット,give credit to…（…の功績を認める）・credit card（クレジットカード）・on credit（掛けで）。派生語：credible（信頼できる）・creditor（債権者）
+520,construct,建設する；構成する,construct a building（建物を建設する）・construct an argument（論理を組み立てる）。派生語：construction（建設）・constructive（建設的な）
+527,cure,を治す；治療；矯正する,cure an illness（病気を治す）・a cure for cancer（がんの治療法）。派生語：curable（治療可能な）・incurable（不治の）
+535,celebrate,を祝う；称賛する,celebrate a birthday（誕生日を祝う）・celebrate diversity（多様性を称える）。派生語：celebration（祝賀）・celebrated（有名な）
+540,confirm,確認する；確定する,confirm a reservation（予約を確認する）・confirm the truth（真実を裏付ける）。派生語：confirmation（確認）・confirmed（確認済みの）
+554,candidate,候補者；志願者,presidential candidate（大統領候補）・candidate for a job（求人への応募者）。派生語：candidacy（立候補）
+555,corporation,法人；大企業,multinational corporation（多国籍企業）・corporation tax（法人税）。派生語：corporate（企業の）・incorporate（法人組織にする）
+571,client,顧客；依頼人,regular client（常連客）・client base（顧客基盤）。派生語：clientele（顧客層）
+572,colony,植民地；集団居住地,British colony（イギリスの植民地）・artist colony（芸術家村）。派生語：colonial（植民地の）・colonize（植民地化する）
+577,contract,契約書；契約；収縮する,sign a contract（契約書に署名する）・breach of contract（契約違反）。派生語：contractor（請負業者）・contraction（収縮）
+580,curious,好奇心旺盛な；奇妙な,be curious about…（…に好奇心がある）・curious fact（奇妙な事実）。派生語：curiosity（好奇心）・curiously（好奇心をもって）
+585,conventional,従来の；型にはまった,conventional wisdom（世間一般の通念）・conventional weapons（通常兵器）。派生語：convention（慣例、大会）・unconventional（型破りな）
+601,commit,を犯す；を委ねる；専心する,commit a crime（罪を犯す）・commit oneself to…（…に専心する）・commit to memory（暗記する）。派生語：commitment（献身）・committee（委員会）
+610,capture,捕らえる；捉える；奪取する,capture attention（注目を集める）・capture data（データを取り込む）。派生語：captive（捕虜）・captivity（監禁）
+621,convey,を伝える；運ぶ,convey a message（メッセージを伝える）・conveyor belt（コンベヤーベルト）。派生語：conveyance（運搬、伝達）
+626,crash,衝突する；墜落する；急落する,car crash（自動車事故）・stock market crash（株価大暴落）・crash a party（パーティーに押しかける）。派生語：crashing（大失敗の）
+627,cope,うまく対処する,cope with stress（ストレスに対処する）・cope with difficulties（困難を乗り切る）。派生語：coping mechanism（対処メカニズム）
+637,calculate,計算する；見積もる,calculate the cost（コストを計算する）・calculated risk（計算済みのリスク）。派生語：calculation（計算）・calculator（電卓）
+655,clue,手がかり；ヒント,have no clue（全くわからない）・clue someone in（人に情報を与える）。派生語：clueless（無知な）
+666,conservation,保護；保存,energy conservation（省エネルギー）・wildlife conservation（野生生物保護）。派生語：conservationist（自然保護論者）・conserve（保存する）
+674,cooperation,協力；協調,international cooperation（国際協力）・in cooperation with…（…と協力して）。派生語：cooperate（協力する）・cooperative（協力的な）
+677,component,構成要素；部品,key component（主要構成要素）・electronic components（電子部品）。派生語：componential（構成要素の）
+734,collapse,崩壊する；倒れる；折りたたむ,building collapse（建物の倒壊）・collapse from exhaustion（疲労で倒れる）・collapse a chair（椅子を折り畳む）。派生語：collapsible（折り畳み式の）
+760,contest,コンテスト；争い；異議を唱える,beauty contest（美人コンテスト）・contest a decision（判決に異議を申し立てる）。派生語：contestant（競技参加者）
+773,channel,チャンネル；経路；海峡,television channel（テレビチャンネル）・communication channel（伝達経路）・the English Channel（イギリス海峡）。動詞：導く、流す
+778,correlation,相互関係；相関関係,positive correlation（正の相関）・correlation between A and B（AとBの相関）。派生語：correlate（相関する）
+781,classic,古典的な；典型的な；傑作,classic example（典型的な例）・classic car（クラシックカー）。派生語：classical（古典の、クラシックの）
+783,concrete,具体的な；コンクリート,concrete evidence（具体的な証拠）・concrete plan（具体的な計画）・reinforced concrete（鉄筋コンクリート）。派生語：concreteness（具体性）
+808,command,命令する；指揮する；見渡す,command a view（景色を見渡せる）・command attention（注目を集める）・chain of command（指揮系統）。派生語：commander（司令官）
+820,convert,変換する；改宗させる；交換する,convert dollars to yen（ドルを円に替える）・convert to Christianity（キリスト教に改宗する）。派生語：conversion（変換）・convertible（交換可能な、オープンカー）
+825,correspond,一致する；相当する；文通する,correspond with…（…と連絡を取る）・correspond to…（…に相当する）。派生語：correspondence（文通、一致）・correspondent（通信員）
+833,compose,構成する；作曲する；落ち着かせる,be composed of…（…から成る）・compose a song（曲を作る）・compose oneself（気を落ち着ける）。派生語：composer（作曲家）・composition（構成）・composure（平静）
+849,core,核心；中心部；芯,the core of the problem（問題の核心）・apple core（リンゴの芯）・core values（中核的価値観）。派生語：hardcore（筋金入りの）
+858,courage,勇気,have the courage to…（…する勇気がある）・take courage（勇気を出す）。派生語：courageous（勇敢な）・encourage（励ます）・discourage（落胆させる）
+872,chip,かけら；欠け；チップ（集積回路）,potato chips（ポテトチップス）・bargaining chip（交渉の切り札）・chip off the old block（親にそっくりな子）。派生語：chipping（欠片）
+876,council,評議会；協議会,city council（市議会）・student council（生徒会）。派生語：councilor（議員）・counsel（助言）
+878,curriculum,教育課程；カリキュラム,curriculum vitae（履歴書、CV）・school curriculum（学校のカリキュラム）。派生語：curricular（カリキュラムの）・extracurricular（課外の）
+881,casual,形式ばらない；偶然の；何気ない,casual clothes（普段着）・casual remark（何気ない発言）・casual worker（臨時雇い）。派生語：casually（何気なく）
+895,collective,集団の；共同の,collective responsibility（共同責任）・collective bargaining（団体交渉）。派生語：collectively（集団的に）・collectivism（集産主義）
+901,chase,追う；追い求める,chase a suspect（容疑者を追う）・chase one's dreams（夢を追いかける）。派生語：chaser（追跡者）
+921,cultivate,耕す；栽培する；養う,cultivate the land（土地を耕す）・cultivate a relationship（関係を培う）。派生語：cultivation（耕作）・cultivated（教養のある）
+927,classify,分類する；機密指定する,classify documents（文書を機密扱いにする）・classify species（種を分類する）。派生語：classification（分類）・declassify（機密解除する）
+938,confront,立ち向かう；直面する,confront a problem（問題に立ち向かう）・be confronted with…（…に直面する）。派生語：confrontation（対決）・confrontational（対立的な）
+939,consult,相談する；参照する,consult a doctor（医者に相談する）・consult a dictionary（辞書を引く）。派生語：consultation（相談）・consultant（コンサルタント）
+946,chart,図表；海図；チャート,flow chart（流れ図）・record chart（ヒットチャート）・chart a course（進路を計画する）。派生語：chartist（チャート分析家）
+969,counterpart,対応する人・物,the Japanese prime minister and his British counterpart（日本の首相と英国の首相）。派生語：counter（反対の）＋part
+977,charm,魅力；お守り；魅了する,charm offensive（魅力攻勢）・good luck charm（幸運のお守り）。派生語：charming（魅力的な）
+993,cruel,残酷な；無情な,cruel treatment（虐待）・be cruel to animals（動物を虐待する）。派生語：cruelty（残酷さ）・cruelly（残酷にも）
+1005,crack,ひびが入る；割れ目；冗談を言う,crack a joke（冗談を言う）・crack down on…（…を厳しく取り締まる）・crack of dawn（夜明け）。派生語：cracked（ひびの入った）
+1016,cite,引用する；引き合いに出す,cite an example（例を挙げる）・cite a source（出典を明記する）。派生語：citation（引用、表彰状）
+1021,cheat,だます；不正をする,cheat on a test（テストでカンニングする）・cheat someone out of money（人から金をだまし取る）。派生語：cheater（不正をする人）
+1036,complicate,複雑にする,complicate matters（事態を複雑にする）。派生語：complicated（複雑な）・complication（複雑化、合併症）
+1045,compliment,賛辞；ほめ言葉,pay a compliment（賛辞を贈る）・take something as a compliment（…を褒め言葉として受け取る）。動詞：褒める。派生語：complimentary（賛辞の、無料の）
+1063,clinic,診療所；クリニック,dental clinic（歯科医院）・walk-in clinic（予約不要の診療所）。派生語：clinical（臨床の）・clinician（臨床医）
+1068,curve,曲線；カーブ,learning curve（学習曲線）・curve ball（カーブボール）。派生語：curved（曲がった）・curvature（湾曲）
+1111,constitute,構成する；～に等しい,constitute a majority（過半数を占める）・constitute a crime（犯罪となる）。派生語：constitution（憲法、構成）・constitutional（憲法上の）
+1116,conceal,隠す；秘密にする,conceal the truth（真実を隠す）・concealed weapon（隠し持った武器）。派生語：concealment（隠蔽）
+1117,chew,かむ；かみ砕く,chew gum（ガムをかむ）・chew over（熟考する）。派生語：chewy（かみごたえのある）
+1129,compound,悪化させる；合成する；複合の,compound the problem（問題を悪化させる）・chemical compound（化学化合物）。派生語：compound interest（複利）
+1132,commute,通勤する；通学する,commute to work（職場に通う）・commuting time（通勤時間）。派生語：commuter（通勤者）
+1135,cease,やめる；終わる,cease fire（停戦する）・without cease（絶え間なく）。派生語：ceaseless（絶え間ない）
+1136,compromise,妥協する；危うくする,reach a compromise（妥協点に達する）・compromise one's principles（信念を曲げる）。派生語：compromising（不名誉になるような）
+1142,cue,合図；きっかけ,on cue（合図で）・take a cue from…（…を見習う）。動詞：合図をする。
+1145,congress,議会；大会,the US Congress（米国議会）・congress of scientists（科学者会議）。派生語：congressional（議会の）
+1151,caution,用心；警告,with caution（用心して）・exercise caution（注意を払う）。派生語：cautious（用心深い）・precaution（予防措置）
+1152,controversy,論争；議論,cause controversy（論争を引き起こす）・controversy over…（…をめぐる論争）。派生語：controversial（論争を呼ぶ）
+1153,consensus,総意；合意,reach a consensus（合意に達する）・general consensus（大方の意見）。派生語：consensual（同意に基づく）
+1174,column,欄；コラム；円柱；列,newspaper column（新聞のコラム）・spinal column（脊柱）・column of numbers（数字の縦列）。派生語：columnist（コラムニスト）
+1198,chronic,慢性の；長引く；習慣的な,chronic disease（慢性疾患）・chronic shortage（恒常的不足）。派生語：chronically（慢性的に）
+1211,click,クリックする；かちっと音がする,click on an icon（アイコンをクリックする）・click one's tongue（舌打ちする）。派生語：double-click（ダブルクリック）
+1213,clip,切り取る；クリップで留める,clip an article（記事を切り抜く）・paper clip（クリップ）・clip one's nails（爪を切る）。派生語：clipping（切り抜き）・clipboard（クリップボード）
+1215,cast,投じる；配役する；鋳造する,cast a vote（投票する）・cast iron（鋳鉄）・cast doubt on…（…に疑いをかける）。派生語：casting（配役）
+1234,crush,押しつぶす；鎮圧する；片思い,crush ice（氷を砕く）・crush a rebellion（反乱を鎮圧する）・have a crush on someone（人に片思いする）。派生語：crushing（壊滅的な）
+1248,cortex,皮質；外皮,cerebral cortex（大脳皮質）・adrenal cortex（副腎皮質）。派生語：cortical（皮質の）
+1250,chamber,部屋；議院；会議所,chamber music（室内楽）・chamber of commerce（商工会議所）。派生語：chambermaid（客室係）
+1252,cattle,牛（畜牛）,cattle ranch（牧牛場）・dairy cattle（乳牛）。派生語：cattleman（牧場主）
+1262,commodity,商品；日用品,commodity prices（商品価格）・scarce commodity（希少品）。派生語：commodities market（商品市場）
+1268,combat,戦闘；闘争,combat troops（戦闘部隊）・combat crime（犯罪と戦う）。動詞：戦う。派生語：combatant（戦闘員）・combative（好戦的な）
+1275,consent,同意；承諾,give consent（同意する）・age of consent（性的同意年齢）・by mutual consent（双方の合意により）。派生語：consensual（同意に基づく）
+1280,competent,有能な；適任の,competent teacher（有能な教師）・competent to stand trial（裁判を受ける能力がある）。派生語：competence（能力）・incompetent（無能な）
+1282,cosmetic,化粧の；美容の；表面的な,cosmetic surgery（美容整形）・cosmetic changes（表面的な変更）。派生語：cosmetics（化粧品）
+1304,compel,強いる；強制する,compel someone to do（人に…するよう強いる）・feel compelled to…（…せざるを得ないと感じる）。派生語：compelling（説得力のある）・compulsion（強制）
+1316,confine,限定する；閉じ込める,confine to bed（寝たきりにする）・confine oneself to…（…にとどめる）。派生語：confinement（監禁、制限）・confined（狭い）
+1332,compute,計算する；コンピュータ処理する,compute the result（結果を計算する）・cloud computing（クラウドコンピューティング）。派生語：computation（計算）・computer（コンピュータ）
+1338,compensate,補償する；埋め合わせる,compensate for the loss（損失を補償する）・compensate workers fairly（労働者に正当な報酬を与える）。派生語：compensation（補償）・compensatory（代償の）
+1339,comprise,～から成る；構成する,be comprised of…（…から成る）・the collection comprises 100 works（コレクションは100作品から成る）
+1343,criterion,基準；判断規準,meet the criteria（基準を満たす）・selection criterion（選考基準）。複数形: criteria
+1352,chaos,混沌；大混乱,in chaos（大混乱で）・chaos theory（カオス理論）。派生語：chaotic（混沌とした）
+1355,cluster,集団；房；集まる,a cluster of stars（星団）・cluster together（群がる）。派生語：clustering（クラスタリング）
+1362,cuisine,料理；料理法,Japanese cuisine（日本料理）・haute cuisine（高級料理）。派生語：culinary（料理の）
+1384,compulsory,義務的な；強制的な,compulsory education（義務教育）・compulsory military service（徴兵制）。派生語：compulsion（強制）・compulsorily（強制的に）
+1404,conquer,征服する；克服する,conquer a country（国を征服する）・conquer fear（恐怖に打ち勝つ）。派生語：conqueror（征服者）・conquest（征服）
+1412,contradict,矛盾する；反論する,contradict oneself（矛盾することを言う）・contradict a statement（発言に反論する）。派生語：contradiction（矛盾）・contradictory（矛盾した）
+1420,comprehend,理解する；包含する,fully comprehend（完全に理解する）・difficult to comprehend（理解しがたい）。派生語：comprehension（理解）・comprehensive（包括的な）
+1422,cram,詰め込む；詰め込み学習する,cram clothes into a suitcase（服をスーツケースに詰め込む）・cram for an exam（試験前の詰め込み勉強）。派生語：crammer（詰め込み塾）
+1425,clarify,明確にする；浄化する,clarify a point（点を明確にする）・clarify butter（バターを澄ましバターにする）。派生語：clarification（明確化）・clarity（明快さ）
+1440,coordinate,調整する；調和させる；座標,coordinate schedules（スケジュールを調整する）・coordinates（座標）。派生語：coordination（調整）・coordinator（調整役）
+1450,compassion,同情；思いやり,show compassion（思いやりを示す）・feel compassion for…（…に同情する）。派生語：compassionate（思いやりのある）
+1452,curse,呪い；悪態；災いのもと,put a curse on…（…に呪いをかける）・curse word（ののしり言葉）。動詞：ののしる。派生語：cursed（呪われた）
+1454,census,国勢調査；調査,national census（国勢調査）・census data（調査データ）。派生語：censual（調査の）
+1456,cereal,穀物；シリアル食品,breakfast cereal（朝食用シリアル）・cereal crops（穀物）。派生語：cereals（穀物類）
+1467,county,郡；州,county court（郡裁判所）・county seat（郡庁所在地）。派生語：countywide（郡全体の）
+1470,circulation,循環；流通；発行部数,blood circulation（血液循環）・newspaper circulation（新聞発行部数）。派生語：circulate（循環する、流通させる）・circulatory（循環の）
+1474,collision,衝突；対立,mid-air collision（空中衝突）・collision of interests（利害の衝突）。派生語：collide（衝突する）
+1503,conform,順応する；適合する,conform to rules（規則に従う）・conform with expectations（期待に沿う）。派生語：conformity（適合、順応）・nonconformist（体制に従わない人）
+1510,crawl,はう；のろのろ進む,crawl on the floor（床をはう）・traffic crawls（交通がのろのろ進む）。派生語：crawler（クローラー）・crawl space（床下の狭い空間）
+1529,contaminate,汚染する；悪影響を与える,contaminate water（水を汚染する）・contaminated food（汚染食品）。派生語：contamination（汚染）・contaminant（汚染物質）
+1535,confess,告白する；自白する,confess one's love（愛を告白する）・confess to a crime（罪を自白する）。派生語：confession（告白）・confessional（告白の）
+1540,conceive,考案する；想像する；妊娠する,conceive a plan（計画を思いつく）・conceive of…（…を想像する）・conceive a child（子を宿す）。派生語：conceivable（想像できる）・conception（概念、妊娠）
+1546,clash,衝突；対立；かち合う,clash of cultures（文化の衝突）・clash with schedule（スケジュールと重なる）。派生語：clashing（衝突する、不調和な）
+1591,crude,粗雑な；未加工の；粗野な,crude oil（原油）・crude remark（粗野な発言）。派生語：crudity（粗野）・crudely（粗末に）
+1601,collaborate,協力する；共同制作する,collaborate with…（…と協力する）・collaborate on a project（プロジェクトで協力する）。派生語：collaboration（共同作業）・collaborator（協力者）・collaborative（協力的な）
+1610,carve,彫る；切り開く；切り分ける,carve a statue（像を彫る）・carve out a career（キャリアを築く）・carve a turkey（七面鳥を切り分ける）。派生語：carving（彫刻）・carver（彫刻家）
+1612,condemn,非難する；刑を宣告する,condemn violence（暴力を非難する）・condemned to death（死刑判決を受ける）。派生語：condemnation（非難）・condemnatory（非難の）
+1613,convict,有罪を宣告する；囚人,convict someone of murder（人を殺人で有罪にする）・an escaped convict（脱獄囚）。派生語：conviction（有罪判決、確信）
+1621,coincide,同時に起こる；一致する,coincide with…（…と同時に起こる）・opinions coincide（意見が一致する）。派生語：coincidence（偶然の一致）・coincidental（偶然の一致の）
+1623,cling,しがみつく；執着する,cling to hope（希望にすがる）・cling film（食品包装用ラップ）。派生語：clingy（まとわりつく）
+1633,converse,会話する,converse with…（…と話す）。名詞/形容詞：逆（の）。派生語：conversation（会話）・conversational（会話の）
+1640,contemplate,熟考する；じっくり考える,contemplate one's future（将来を熟考する）・contemplate suicide（自殺を考える）。派生語：contemplation（熟考）・contemplative（思索的な）
+1643,commerce,商業；貿易,electronic commerce（電子商取引）・chamber of commerce（商工会議所）。派生語：commercial（商業の、コマーシャル）・commercialize（商業化する）
+1649,cabinet,内閣；収納棚,filing cabinet（書類戸棚）・cabinet minister（閣僚）。派生語：cabinetmaker（家具職人）
+1684,coherent,首尾一貫した；筋の通った,coherent argument（筋の通った議論）・coherent light（可干渉光）。派生語：coherence（一貫性）・incoherent（支離滅裂な）
+1699,conspicuous,目立つ；人目を引く,conspicuous consumption（衒示的消費）・make oneself conspicuous（目立つ）。派生語：conspicuously（目立って）
+1703,console,慰める；操作盤,console a friend（友人を慰める）・game console（ゲーム機）。派生語：consolation（慰め）・inconsolable（慰めようのない）
+1708,constrain,強いる；制約する,be constrained by time（時間に制約される）・constrain oneself（自制する）。派生語：constraint（制約、強制）
+1732,contend,主張する；競い合う,contend that…（…と主張する）・contend for the title（タイトルを争う）。派生語：contender（競争者）・contention（論点、競争）
+1745,conscience,良心,guilty conscience（良心の呵責）・in all conscience（良心に従って）。派生語：conscientious（良心的な）・conscious（意識している）と混同注意
+1753,carriage,馬車；客車；姿勢；運搬,horse-drawn carriage（馬車）・carriage return（改行）・have an elegant carriage（気品のある物腰）。派生語：carry（運ぶ）・carrier（運送業者）
+1767,certificate,証明書；免状,birth certificate（出生証明書）・teaching certificate（教員免許）。派生語：certify（証明する）・certification（認定）
+1775,courtesy,礼儀；好意；優遇,as a courtesy（ご厚意で）・courtesy call（表敬訪問）・courtesy bus（送迎バス）。派生語：courteous（礼儀正しい）・discourteous（無礼な）
+1797,compatible,互換性のある；両立できる；気の合う,compatible with…（…と互換性がある）・compatible couple（相性の良いカップル）。派生語：compatibility（互換性、相性）・incompatible（相容れない）
+1805,cater,料理を提供する；要求に応じる,cater for a wedding（結婚式の料理を請け負う）・cater to one's needs（ニーズに応える）。派生語：caterer（仕出し屋）・catering（ケータリング）
+1810,cherish,大切にする；心に抱く,cherish memories（思い出を大切にする）・cherish hope（希望を抱く）。派生語：cherished（大切にされた）
+1819,corrupt,堕落させる；汚職をする；腐敗した,corrupt officials（汚職役人）・corrupt data（データを破損させる）。派生語：corruption（腐敗、汚職）・incorruptible（買収されない）
+1822,compile,編集する；まとめる,compile a report（報告書をまとめる）・compile data（データを集める）。派生語：compilation（編集、編集物）・compiler（編者、コンパイラ）
+1826,comply,従う；応じる,comply with regulations（規則に従う）・comply with a request（要求に応じる）。派生語：compliance（遵守）・compliant（従順な）
+1840,commence,始める；開始する,commence operations（操業を開始する）・commencement ceremony（卒業式）。派生語：commencement（開始、卒業式）
+1859,congestion,混雑；渋滞,traffic congestion（交通渋滞）・congestion charge（混雑税）。派生語：congested（混雑した）
+1861,complement,補完するもの；補語；定員,complement to…（…を補完するもの）・full complement of staff（フル人員）。動詞：補完する。派生語：complementary（補完的な）・compliment（褒め言葉）と混同注意
+1873,contempt,軽蔑；侮辱,hold in contempt（軽蔑する）・contempt of court（法廷侮辱罪）。派生語：contemptuous（軽蔑的な）・contemptible（軽蔑に値する）
+1891,contagious,感染性の；伝染する,contagious disease（伝染病）・contagious laughter（伝染する笑い）。派生語：contagion（伝染、感染力）・contagiously（伝染性に）
+1892,cynical,冷笑的な；皮肉な；人間不信の,cynical remark（皮肉な発言）・be cynical about politics（政治に冷笑的である）。派生語：cynic（冷笑家）・cynicism（皮肉主義）
