@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REVERSI — デジタルオセロ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1E2235;
+    --bg-card: #252A3F;
+    --bg-card2: #1A1F32;
+    --board-light: #10B981;
+    --board-dark: #059669;
+    --grid-line: rgba(255,255,255,0.10);
+    --p1-color: #00D2FF;
+    --p2-color: #9D4EDD;
+    --bar-bg: #374151;
+    --ai-gold: #FFE600;
+    --text-main: #E8EAF0;
+    --text-sub: #7B83A0;
+    --win-line: #FFE600;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text-main);
+    font-family: 'Noto Sans JP', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 20px 10px 10px;
+  }
+  .game-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    background: linear-gradient(90deg, var(--p1-color), #fff, var(--p2-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .game-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--text-sub);
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── OUTER LAYOUT ── */
+  .game-wrap {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 14px;
+    padding: 12px 16px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── WIN BAR ── */
+  .winbar-wrap {
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto 10px;
+  }
+  .winbar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+    padding: 0 2px;
+  }
+  .winbar-labels span:first-child { color: var(--p1-color); }
+  .winbar-labels span:last-child  { color: var(--p2-color); }
+  .winbar-track {
+    position: relative;
+    width: 100%;
+    height: 14px;
+    background: var(--bar-bg);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .winbar-fill-black {
+    position: absolute; left: 0; top: 0; height: 100%;
+    background: linear-gradient(90deg, var(--p1-color), rgba(0,210,255,0.5));
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    border-radius: 7px 0 0 7px;
+  }
+  .winbar-fill-white {
+    position: absolute; right: 0; top: 0; height: 100%;
+    background: linear-gradient(270deg, var(--p2-color), rgba(157,78,221,0.5));
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    border-radius: 0 7px 7px 0;
+  }
+  .winbar-center-line {
+    position: absolute; left: 50%; top: 0;
+    width: 2px; height: 100%;
+    background: var(--win-line);
+    box-shadow: 0 0 6px var(--win-line), 0 0 12px var(--win-line);
+    transform: translateX(-50%);
+  }
+  .winbar-pct {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    margin-top: 3px;
+    padding: 0 2px;
+  }
+  .winbar-pct span:first-child { color: var(--p1-color); }
+  .winbar-pct span:last-child  { color: var(--p2-color); }
+
+  /* ── CENTER COLUMN (board area) ── */
+  .center-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  /* ── PLAYER CARD ── */
+  .player-card {
+    width: 170px;
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1.5px solid rgba(255,255,255,0.07);
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: box-shadow 0.4s, border-color 0.4s, opacity 0.4s;
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+  .player-card.active-p1 {
+    opacity: 1;
+    border-color: var(--p1-color);
+    background: rgba(0,210,255,0.06);
+    box-shadow: 0 0 20px var(--p1-color), 0 0 40px rgba(0,210,255,0.2);
+  }
+  .player-card.active-p2 {
+    opacity: 1;
+    border-color: var(--p2-color);
+    background: rgba(157,78,221,0.06);
+    box-shadow: 0 0 20px var(--p2-color), 0 0 40px rgba(157,78,221,0.2);
+  }
+  .player-card.inactive { opacity: 0.4; }
+
+  .player-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .player-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--text-sub);
+  }
+  .player-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .player-card.active-p1 .player-name,
+  .player-card.inactive-p1 .player-name { color: var(--p1-color); }
+  .player-card.active-p2 .player-name,
+  .player-card.inactive-p2 .player-name { color: var(--p2-color); }
+
+  .player-disk {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    margin: 4px auto;
+    flex-shrink: 0;
+  }
+  .player-card.active-p1 .player-disk,
+  .player-card.inactive-p1 .player-disk {
+    background: radial-gradient(circle at 35% 35%, #444, #111);
+    box-shadow: 0 0 12px rgba(0,210,255,0.4), inset 0 2px 6px rgba(255,255,255,0.15);
+    border: 2px solid var(--p1-color);
+  }
+  .player-card.active-p2 .player-disk,
+  .player-card.inactive-p2 .player-disk {
+    background: radial-gradient(circle at 35% 35%, #fff, #ccc);
+    box-shadow: 0 0 12px rgba(157,78,221,0.5), inset 0 2px 6px rgba(255,255,255,0.6);
+    border: 2px solid var(--p2-color);
+  }
+
+  .player-count {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1;
+  }
+  .player-card.active-p1 .player-count,
+  .player-card.inactive-p1 .player-count { color: var(--p1-color); }
+  .player-card.active-p2 .player-count,
+  .player-card.inactive-p2 .player-count { color: var(--p2-color); }
+
+  .player-status {
+    text-align: center;
+    font-size: 0.65rem;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.1em;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid currentColor;
+    min-height: 24px;
+  }
+  .player-card.active-p1 .player-status { color: var(--p1-color); }
+  .player-card.active-p2 .player-status { color: var(--p2-color); }
+  .player-card.inactive .player-status { color: var(--text-sub); border-color: var(--text-sub); }
+
+  .btn-ai {
+    width: 100%;
+    padding: 8px 6px;
+    border-radius: 8px;
+    border: 1.5px solid var(--ai-gold);
+    background: rgba(255,230,0,0.07);
+    color: var(--ai-gold);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .btn-ai:hover { background: rgba(255,230,0,0.18); box-shadow: 0 0 10px var(--ai-gold); }
+  .btn-ai:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+
+  .btn-blackout {
+    width: 100%;
+    padding: 7px 6px;
+    border-radius: 8px;
+    border: 1.5px solid #555;
+    background: rgba(0,0,0,0.4);
+    color: #aaa;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-blackout:hover { background: rgba(0,0,0,0.7); border-color: #888; color: #eee; }
+
+  /* ── BOARD ── */
+  .board-container {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(16,185,129,0.25), 0 8px 40px rgba(0,0,0,0.4);
+    border: 2px solid rgba(16,185,129,0.3);
+  }
+  canvas#board {
+    display: block;
+    cursor: pointer;
+  }
+
+  /* ── CONTROLS ROW ── */
+  .controls-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn-highlight {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--text-sub);
+    background: transparent;
+    color: var(--text-sub);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-highlight.on {
+    border-color: var(--p1-color);
+    color: var(--p1-color);
+    background: rgba(0,210,255,0.08);
+  }
+  .btn-highlight:hover { opacity: 0.8; }
+
+  .btn-reset {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--text-sub);
+    background: transparent;
+    color: var(--text-sub);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { border-color: #e53e3e; color: #e53e3e; }
+
+  /* ── BLACKOUT / FAKE EDITOR ── */
+  #blackout-overlay {
+    position: fixed;
+    inset: 0;
+    background: #1e1e1e;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+  }
+  #blackout-overlay.active { display: flex; }
+
+  /* Editor chrome */
+  .editor-titlebar {
+    background: #323233;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    flex-shrink: 0;
+    border-bottom: 1px solid #252526;
+  }
+  .editor-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .editor-dot.red   { background: #ff5f57; }
+  .editor-dot.yel   { background: #febc2e; }
+  .editor-dot.grn   { background: #28c840; }
+  .editor-title {
+    margin-left: 10px;
+    color: #cccccc;
+    font-size: 0.78rem;
+    opacity: 0.85;
+  }
+  .editor-unblackout-btn {
+    margin-left: auto;
+    padding: 3px 12px;
+    background: #0e639c;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+  }
+  .editor-unblackout-btn:hover { background: #1177bb; }
+
+  /* Tab bar */
+  .editor-tabs {
+    background: #2d2d2d;
+    display: flex;
+    align-items: flex-end;
+    height: 35px;
+    flex-shrink: 0;
+    border-bottom: 1px solid #252526;
+  }
+  .editor-tab {
+    padding: 0 18px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 0.78rem;
+    color: #969696;
+    border-right: 1px solid #252526;
+    cursor: default;
+    white-space: nowrap;
+  }
+  .editor-tab.active {
+    background: #1e1e1e;
+    color: #cccccc;
+    border-top: 1px solid #007acc;
+  }
+
+  /* Main layout */
+  .editor-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .editor-sidebar {
+    width: 48px;
+    background: #333333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+    gap: 18px;
+    flex-shrink: 0;
+  }
+  .sidebar-icon {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    color: #858585;
+    font-size: 1.1rem;
+    cursor: default;
+  }
+  .sidebar-icon.active { color: #cccccc; }
+
+  /* File tree */
+  .editor-filetree {
+    width: 180px;
+    background: #252526;
+    font-size: 0.75rem;
+    color: #cccccc;
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  .ft-section {
+    padding: 6px 10px 4px;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: #bbbbbb;
+    text-transform: uppercase;
+  }
+  .ft-item {
+    padding: 3px 10px 3px 20px;
+    cursor: default;
+    color: #cccccc;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .ft-item:hover { background: #2a2d2e; }
+  .ft-item.selected { background: #094771; }
+  .ft-icon { font-size: 0.75rem; }
+
+  /* Code area */
+  .editor-code-wrap {
+    flex: 1;
+    overflow: auto;
+    background: #1e1e1e;
+    display: flex;
+  }
+  .editor-linenos {
+    padding: 16px 8px 16px 12px;
+    color: #858585;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    text-align: right;
+    user-select: none;
+    flex-shrink: 0;
+    min-width: 40px;
+  }
+  .editor-code {
+    padding: 16px 0 16px 16px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: #d4d4d4;
+    white-space: pre;
+    flex: 1;
+    outline: none;
+    caret-color: #aeafad;
+  }
+
+  /* Syntax colors */
+  .tk-kw   { color: #569cd6; }
+  .tk-fn   { color: #dcdcaa; }
+  .tk-str  { color: #ce9178; }
+  .tk-num  { color: #b5cea8; }
+  .tk-cmt  { color: #6a9955; font-style: italic; }
+  .tk-cls  { color: #4ec9b0; }
+  .tk-op   { color: #d4d4d4; }
+  .tk-var  { color: #9cdcfe; }
+  .tk-dec  { color: #c586c0; }
+
+  /* Status bar */
+  .editor-statusbar {
+    height: 22px;
+    background: #007acc;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 20px;
+    font-size: 0.7rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  /* ── AI HINT PANEL ── */
+  #ai-hint-panel {
+    display: none;
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(340px, 90vw);
+    background: rgba(20, 22, 35, 0.97);
+    border: 1px solid var(--ai-gold);
+    box-shadow: 0 0 20px rgba(255,230,0,0.2), 0 8px 32px rgba(0,0,0,0.6);
+    border-radius: 12px;
+    padding: 14px 16px;
+    z-index: 400;
+    backdrop-filter: blur(8px);
+  }
+  .ai-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--ai-gold);
+    margin-bottom: 8px;
+  }
+  .ai-panel-close {
+    background: none; border: none;
+    color: var(--text-sub); font-size: 0.8rem;
+    cursor: pointer; padding: 0 2px;
+  }
+  .ai-panel-close:hover { color: #fff; }
+  .ai-panel-move {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .ai-panel-move strong { color: var(--ai-gold); font-size: 1.2rem; }
+  .ai-panel-reason {
+    font-size: 0.72rem;
+    color: #b0b8d0;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .ai-panel-section {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .ai-cand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+  }
+  .ai-cand-best {
+    background: rgba(255,230,0,0.08);
+    border: 1px solid rgba(255,230,0,0.25);
+  }
+  .ai-cand-rank { font-size: 0.8rem; width: 18px; }
+  .ai-cand-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    width: 26px;
+  }
+  .ai-cand-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .ai-cand-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ai-gold), #ff9800);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .ai-cand-score {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    color: var(--ai-gold);
+    width: 36px;
+    text-align: right;
+  }
+
+  /* ── GAME OVER BANNER ── */
+  #gameover-banner {
+    display: none;
+    background: var(--bg-card);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 12px 24px;
+    margin-top: 12px;
+    text-align: center;
+  }
+  #gameover-banner.active { display: block; }
+  #gameover-msg {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── AI THINKING INDICATOR ── */
+  #ai-thinking {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    background: rgba(30,34,53,0.95);
+    border: 1.5px solid var(--ai-gold);
+    box-shadow: 0 0 20px var(--ai-gold);
+    border-radius: 12px;
+    padding: 18px 32px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    color: var(--ai-gold);
+    letter-spacing: 0.15em;
+    z-index: 500;
+    display: none;
+  }
+  #ai-thinking.active { display: block; }
+
+  /* ── VICTORY SCREEN ── */
+  #victory-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  #victory-overlay.active {
+    display: flex;
+    pointer-events: all;
+  }
+
+  /* Confetti canvas sits behind the modal */
+  #confetti-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* Dim backdrop */
+  .victory-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 12, 22, 0.75);
+    backdrop-filter: blur(4px);
+    animation: v-fade-in 0.4s ease forwards;
+  }
+
+  /* Main card */
+  .victory-card {
+    position: relative;
+    z-index: 10;
+    width: min(460px, 90vw);
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 40px 36px 32px;
+    text-align: center;
+    animation: v-pop-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .victory-card.win-black {
+    border: 2px solid var(--p1-color);
+    box-shadow: 0 0 60px rgba(0,210,255,0.35), 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .victory-card.win-white {
+    border: 2px solid var(--p2-color);
+    box-shadow: 0 0 60px rgba(157,78,221,0.35), 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .victory-card.win-draw {
+    border: 2px solid #aaa;
+    box-shadow: 0 0 40px rgba(200,200,200,0.2), 0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  .victory-trophy {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 12px;
+    animation: v-bounce 1s ease 0.5s infinite alternate;
+  }
+  .victory-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .victory-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .victory-card.win-black .victory-title { color: var(--p1-color); text-shadow: 0 0 30px var(--p1-color); }
+  .victory-card.win-white .victory-title { color: var(--p2-color); text-shadow: 0 0 30px var(--p2-color); }
+  .victory-card.win-draw  .victory-title { color: #ddd; }
+
+  .victory-score {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin: 16px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .victory-score .vs-b { color: var(--p1-color); }
+  .victory-score .vs-sep { color: var(--text-sub); font-size: 1.4rem; }
+  .victory-score .vs-w { color: var(--p2-color); }
+
+  .victory-score-label {
+    font-size: 0.68rem;
+    color: var(--text-sub);
+    letter-spacing: 0.15em;
+    margin-bottom: 24px;
+  }
+
+  /* Winner disc */
+  .victory-disc {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: v-spin-in 0.6s ease 0.2s backwards;
+  }
+  .victory-disc.disc-black {
+    background: radial-gradient(circle at 35% 35%, #555, #111);
+    border: 3px solid var(--p1-color);
+    box-shadow: 0 0 24px rgba(0,210,255,0.6), inset 0 3px 8px rgba(255,255,255,0.15);
+  }
+  .victory-disc.disc-white {
+    background: radial-gradient(circle at 35% 35%, #fff, #ccc);
+    border: 3px solid var(--p2-color);
+    box-shadow: 0 0 24px rgba(157,78,221,0.6), inset 0 3px 8px rgba(255,255,255,0.6);
+  }
+
+  /* Glow pulse ring */
+  .victory-ring {
+    position: absolute;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    animation: v-ring-pulse 1.4s ease-out 0.3s infinite;
+    pointer-events: none;
+  }
+  .win-black .victory-ring { border: 2px solid var(--p1-color); }
+  .win-white .victory-ring { border: 2px solid var(--p2-color); }
+
+  .victory-btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .victory-btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 700;
+  }
+  .victory-btn-play {
+    background: linear-gradient(135deg, var(--p1-color), var(--p2-color));
+    color: #000;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0,210,255,0.3);
+  }
+  .victory-btn-play:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,210,255,0.5); }
+  .victory-btn-close {
+    background: transparent;
+    color: var(--text-sub);
+    border: 1.5px solid var(--text-sub);
+  }
+  .victory-btn-close:hover { border-color: #fff; color: #fff; }
+
+  /* ── KEYFRAMES ── */
+  @keyframes v-fade-in {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes v-pop-in {
+    from { opacity: 0; transform: scale(0.6) translateY(40px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0); }
+  }
+  @keyframes v-bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-10px); }
+  }
+  @keyframes v-spin-in {
+    from { transform: rotateY(-90deg) scale(0.5); opacity: 0; }
+    to   { transform: rotateY(0deg)   scale(1);   opacity: 1; }
+  }
+  @keyframes v-ring-pulse {
+    0%   { transform: scale(1);   opacity: 0.8; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .game-wrap { flex-direction: column; align-items: center; gap: 10px; padding: 8px; }
+    .player-card { width: 100%; max-width: 340px; flex-direction: row; flex-wrap: wrap; padding: 10px 12px; }
+    .player-disk { width: 30px; height: 30px; }
+    .player-count { font-size: 1.4rem; }
+    .victory-card { padding: 28px 20px 24px; }
+    .victory-score { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="game-title">♟ REVERSI</div>
+  <div class="game-subtitle">Digital Othello — v1.0</div>
+</header>
+
+<div class="game-wrap">
+
+  <!-- PLAYER 1 -->
+  <div class="player-card inactive-p1" id="card-p1">
+    <div class="player-header">
+      <div class="player-label">PLAYER 1</div>
+      <div class="player-name">黒 / BLACK</div>
+    </div>
+    <div class="player-disk"></div>
+    <div class="player-count" id="count-p1">2</div>
+    <div class="player-status" id="status-p1">WAIT...</div>
+    <button class="btn-ai" id="ai-btn-p1" onclick="requestAIHint(1)" disabled>
+      🤖 AIお助け
+    </button>
+    <button class="btn-blackout" onclick="activateBlackout()">■ ブラックアウト</button>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center-col">
+    <!-- WIN BAR -->
+    <div class="winbar-wrap">
+      <div class="winbar-labels">
+        <span>⬛ BLACK</span>
+        <span>WHITE ⬜</span>
+      </div>
+      <div class="winbar-track">
+        <div class="winbar-fill-black" id="bar-black" style="width:50%"></div>
+        <div class="winbar-fill-white" id="bar-white" style="width:50%"></div>
+        <div class="winbar-center-line"></div>
+      </div>
+      <div class="winbar-pct">
+        <span id="pct-black">50%</span>
+        <span id="pct-white">50%</span>
+      </div>
+    </div>
+
+    <!-- BOARD -->
+    <div class="board-container">
+      <canvas id="board" width="460" height="460"></canvas>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-row">
+      <button class="btn-highlight on" id="highlight-toggle" onclick="toggleHighlight()">
+        💡 置ける場所ハイライト：ON
+      </button>
+      <button class="btn-reset" onclick="resetGame()">↺ リセット</button>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="gameover-banner">
+      <div id="gameover-msg"></div>
+    </div>
+
+    <!-- AI HINT PANEL -->
+    <div id="ai-hint-panel"></div>
+  </div>
+
+  <!-- PLAYER 2 -->
+  <div class="player-card inactive-p2" id="card-p2">
+    <div class="player-header">
+      <div class="player-label">PLAYER 2</div>
+      <div class="player-name">白 / WHITE</div>
+    </div>
+    <div class="player-disk"></div>
+    <div class="player-count" id="count-p2">2</div>
+    <div class="player-status" id="status-p2">WAIT...</div>
+    <button class="btn-ai" id="ai-btn-p2" onclick="requestAIHint(2)" disabled>
+      🤖 AIお助け
+    </button>
+    <button class="btn-blackout" onclick="activateBlackout()">■ ブラックアウト</button>
+  </div>
+
+</div>
+
+<!-- BLACKOUT: Fake Code Editor -->
+<div id="blackout-overlay">
+  <!-- Title bar -->
+  <div class="editor-titlebar">
+    <div class="editor-dot red"></div>
+    <div class="editor-dot yel"></div>
+    <div class="editor-dot grn"></div>
+    <div class="editor-title">sort_algorithms.py — MyProject — Visual Studio Code</div>
+    <button class="editor-unblackout-btn" onclick="deactivateBlackout()">▶ ゲームに戻る</button>
+  </div>
+  <!-- Tabs -->
+  <div class="editor-tabs">
+    <div class="editor-tab active">📄 sort_algorithms.py</div>
+    <div class="editor-tab">📄 main.py</div>
+    <div class="editor-tab">📄 utils.py</div>
+    <div class="editor-tab">📄 README.md</div>
+  </div>
+  <!-- Body -->
+  <div class="editor-body">
+    <!-- Sidebar icons -->
+    <div class="editor-sidebar">
+      <div class="sidebar-icon active">📁</div>
+      <div class="sidebar-icon">🔍</div>
+      <div class="sidebar-icon">🌿</div>
+      <div class="sidebar-icon">🐛</div>
+      <div class="sidebar-icon">🧩</div>
+    </div>
+    <!-- File tree -->
+    <div class="editor-filetree">
+      <div class="ft-section">▾ MyProject</div>
+      <div class="ft-item">📁 src</div>
+      <div class="ft-item selected"><span class="ft-icon">🐍</span>sort_algorithms.py</div>
+      <div class="ft-item"><span class="ft-icon">🐍</span>main.py</div>
+      <div class="ft-item"><span class="ft-icon">🐍</span>utils.py</div>
+      <div class="ft-item">📁 tests</div>
+      <div class="ft-item"><span class="ft-icon">🐍</span>test_sort.py</div>
+      <div class="ft-item"><span class="ft-icon">📄</span>README.md</div>
+      <div class="ft-item"><span class="ft-icon">⚙️</span>requirements.txt</div>
+    </div>
+    <!-- Code -->
+    <div class="editor-code-wrap">
+      <div class="editor-linenos" id="editor-linenos"></div>
+      <div class="editor-code" id="editor-code" contenteditable="true" spellcheck="false"></div>
+    </div>
+  </div>
+  <!-- Status bar -->
+  <div class="editor-statusbar">
+    <span>⎇ main</span>
+    <span>🐍 Python 3.11.4</span>
+    <span>UTF-8</span>
+    <span>Ln 1, Col 1</span>
+    <span>Spaces: 4</span>
+    <span style="margin-left:auto">sort_algorithms.py</span>
+  </div>
+</div>
+
+<!-- VICTORY SCREEN -->
+<div id="victory-overlay">
+  <canvas id="confetti-canvas"></canvas>
+  <div class="victory-backdrop"></div>
+  <div class="victory-card" id="victory-card">
+    <div class="victory-trophy" id="victory-trophy">🏆</div>
+    <div class="victory-label" id="victory-label">WINNER</div>
+    <div class="victory-title" id="victory-title">黒の勝利！</div>
+    <div style="position:relative; display:flex; align-items:center; justify-content:center; margin: 18px 0 0;">
+      <div class="victory-ring" id="victory-ring"></div>
+      <div class="victory-disc" id="victory-disc"></div>
+    </div>
+    <div class="victory-score" id="victory-score">
+      <span class="vs-b" id="vs-b">0</span>
+      <span class="vs-sep">vs</span>
+      <span class="vs-w" id="vs-w">0</span>
+    </div>
+    <div class="victory-score-label">⬛ BLACK &nbsp;|&nbsp; WHITE ⬜</div>
+    <div class="victory-btn-row">
+      <button class="victory-btn victory-btn-play" onclick="resetGame(); closeVictory()">↺ もう一度</button>
+      <button class="victory-btn victory-btn-close" onclick="closeVictory()">✕ 閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI THINKING -->
+<div id="ai-thinking">⚡ AI 先読み解析中...</div>
+
+<script>
+// ==================== CONSTANTS ====================
+const EMPTY = 0, BLACK = 1, WHITE = 2;
+const DIRS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+const CELL_W = 460 / 8;
+
+// Corner weights for AI evaluation
+const WEIGHT = (() => {
+  const w = Array.from({length:8}, () => Array(8).fill(0));
+  // Corners
+  [[0,0],[0,7],[7,0],[7,7]].forEach(([r,c]) => w[r][c] = 120);
+  // Adjacent to corners (bad)
+  [[0,1],[1,0],[1,1],[0,6],[1,6],[1,7],[6,0],[7,1],[6,1],[6,6],[7,6],[6,7]].forEach(([r,c]) => w[r][c] = -50);
+  // Edges (good)
+  for(let i=2;i<6;i++){w[0][i]=w[7][i]=w[i][0]=w[i][7]=10;}
+  // Inner
+  for(let r=2;r<6;r++) for(let c=2;c<6;c++) w[r][c] = 5;
+  return w;
+})();
+
+// ==================== STATE ====================
+let board = [], turn = BLACK, gameOver = false;
+let highlightOn = true, aiHintCell = null, flipAnim = [];
+
+// ==================== FLIP ANIMATION ====================
+// flipQueue: [{r, c, fromColor, toColor, progress (0→1)}]
+let flipQueue = [];
+let animFrameId = null;
+let isAnimating = false;
+
+// ==================== CANVAS ====================
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
+
+// Resize canvas for device pixel ratio
+function setupCanvas() {
+  const size = Math.min(window.innerWidth - 40, 460);
+  const dpr = window.devicePixelRatio || 1;
+  canvas.style.width  = size + 'px';
+  canvas.style.height = size + 'px';
+  canvas.width  = size * dpr;
+  canvas.height = size * dpr;
+  ctx.scale(dpr, dpr);
+  return size;
+}
+
+// ==================== INIT ====================
+function initBoard() {
+  board = Array.from({length:8}, () => Array(8).fill(EMPTY));
+  board[3][3] = WHITE; board[3][4] = BLACK;
+  board[4][3] = BLACK; board[4][4] = WHITE;
+  turn = BLACK; gameOver = false; aiHintCell = null; flipAnim = [];
+  document.getElementById('gameover-banner').classList.remove('active');
+  updateUI();
+  drawBoard();
+}
+
+// ==================== DRAW ====================
+function drawBoard() {
+  const size = parseFloat(canvas.style.width) || 460;
+  const cw = size / 8;
+
+  ctx.clearRect(0, 0, size, size);
+
+  // Board gradient background
+  const grad = ctx.createLinearGradient(0,0,size,size);
+  grad.addColorStop(0, '#10B981');
+  grad.addColorStop(1, '#059669');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,size,size);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=8;i++){
+    ctx.beginPath(); ctx.moveTo(i*cw, 0); ctx.lineTo(i*cw, size); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i*cw); ctx.lineTo(size, i*cw); ctx.stroke();
+  }
+
+  // Star points
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  [[2,2],[2,5],[5,2],[5,5]].forEach(([r,c]) => {
+    ctx.beginPath();
+    ctx.arc((c+0.5)*cw, (r+0.5)*cw, 4, 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  const moves = getValidMoves(turn);
+
+  // Highlights
+  if(highlightOn && !gameOver) {
+    moves.forEach(([r,c]) => {
+      const cx = (c+0.5)*cw, cy = (r+0.5)*cw;
+      const color = turn === BLACK ? 'rgba(0,210,255,0.30)' : 'rgba(157,78,221,0.30)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, cw*0.22, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+  }
+
+  // AI hint highlight
+  if(aiHintCell) {
+    const [hr, hc] = aiHintCell;
+    const cx = (hc+0.5)*cw, cy = (hr+0.5)*cw;
+    ctx.save();
+    ctx.strokeStyle = '#FFE600';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#FFE600';
+    ctx.shadowBlur = 16;
+    ctx.strokeRect(hc*cw+3, hr*cw+3, cw-6, cw-6);
+    ctx.restore();
+
+    // Star icon
+    ctx.fillStyle = '#FFE600';
+    ctx.font = `bold ${cw*0.3}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('★', cx, cy - cw*0.3);
+  }
+
+  // Discs
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
+    if(board[r][c] === EMPTY) continue;
+    drawDisc(r, c, cw, board[r][c]);
+  }
+}
+
+function drawDisc(r, c, cw, color) {
+  const cx = (c+0.5)*cw, cy = (r+0.5)*cw;
+  const rad = cw * 0.40;
+  ctx.save();
+
+  if(color === BLACK) {
+    const g = ctx.createRadialGradient(cx-rad*0.3, cy-rad*0.3, rad*0.1, cx, cy, rad);
+    g.addColorStop(0, '#555'); g.addColorStop(1, '#111');
+    ctx.fillStyle = g;
+    ctx.shadowColor = '#00D2FF'; ctx.shadowBlur = 8;
+  } else {
+    const g = ctx.createRadialGradient(cx-rad*0.3, cy-rad*0.3, rad*0.1, cx, cy, rad);
+    g.addColorStop(0, '#fff'); g.addColorStop(1, '#ccc');
+    ctx.fillStyle = g;
+    ctx.shadowColor = '#9D4EDD'; ctx.shadowBlur = 8;
+  }
+  ctx.beginPath();
+  ctx.arc(cx, cy, rad, 0, Math.PI*2);
+  ctx.fill();
+
+  // Sheen
+  const shine = ctx.createRadialGradient(cx-rad*0.35, cy-rad*0.35, 0, cx, cy, rad*0.7);
+  shine.addColorStop(0, 'rgba(255,255,255,0.30)');
+  shine.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = shine;
+  ctx.beginPath();
+  ctx.arc(cx, cy, rad, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// Draw board during flip animation
+function drawBoardWithFlips(queue) {
+  const size = parseFloat(canvas.style.width) || 460;
+  const cw = size / 8;
+
+  ctx.clearRect(0, 0, size, size);
+
+  // Board background
+  const grad = ctx.createLinearGradient(0,0,size,size);
+  grad.addColorStop(0, '#10B981');
+  grad.addColorStop(1, '#059669');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,size,size);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=8;i++){
+    ctx.beginPath(); ctx.moveTo(i*cw, 0); ctx.lineTo(i*cw, size); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i*cw); ctx.lineTo(size, i*cw); ctx.stroke();
+  }
+
+  // Star points
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  [[2,2],[2,5],[5,2],[5,5]].forEach(([r,c]) => {
+    ctx.beginPath();
+    ctx.arc((c+0.5)*cw, (r+0.5)*cw, 4, 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // Build set of cells currently animating
+  const animSet = new Map();
+  for(const f of queue) {
+    if(f.started) animSet.set(`${f.r},${f.c}`, f);
+  }
+
+  // Draw all static discs
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
+    if(board[r][c] === EMPTY) continue;
+    if(animSet.has(`${r},${c}`)) continue; // will be drawn as animating
+    drawDisc(r, c, cw, board[r][c]);
+  }
+
+  // Draw animating discs
+  for(const [, f] of animSet) {
+    drawDiscFlipping(f.r, f.c, cw, f.fromColor, f.toColor, f.progress);
+  }
+}
+
+// 3D coin-flip effect using scaleX trick
+function drawDiscFlipping(r, c, cw, fromColor, toColor, t) {
+  const cx = (c+0.5)*cw, cy = (r+0.5)*cw;
+  const rad = cw * 0.40;
+
+  // Easing
+  const ease = x => x < 0.5 ? 2*x*x : 1 - Math.pow(-2*x+2,2)/2;
+  const te = ease(t);
+
+  // t=0→0.5: shrink (fromColor), t=0.5→1: expand (toColor)
+  let scaleX, color;
+  if(te < 0.5) {
+    scaleX = 1 - te * 2;       // 1 → 0
+    color = fromColor;
+  } else {
+    scaleX = (te - 0.5) * 2;   // 0 → 1
+    color = toColor;
+  }
+
+  // Glow pulse during flip
+  const glowIntensity = Math.sin(te * Math.PI); // peaks at midpoint
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(Math.max(scaleX, 0.01), 1);
+
+  if(color === BLACK) {
+    const g = ctx.createRadialGradient(-rad*0.3, -rad*0.3, rad*0.1, 0, 0, rad);
+    g.addColorStop(0, '#555'); g.addColorStop(1, '#111');
+    ctx.fillStyle = g;
+    ctx.shadowColor = '#00D2FF';
+    ctx.shadowBlur = 8 + glowIntensity * 24;
+  } else {
+    const g = ctx.createRadialGradient(-rad*0.3, -rad*0.3, rad*0.1, 0, 0, rad);
+    g.addColorStop(0, '#fff'); g.addColorStop(1, '#ccc');
+    ctx.fillStyle = g;
+    ctx.shadowColor = '#9D4EDD';
+    ctx.shadowBlur = 8 + glowIntensity * 24;
+  }
+
+  ctx.beginPath();
+  ctx.arc(0, 0, rad, 0, Math.PI*2);
+  ctx.fill();
+
+  // Sheen
+  const shine = ctx.createRadialGradient(-rad*0.35, -rad*0.35, 0, 0, 0, rad*0.7);
+  shine.addColorStop(0, 'rgba(255,255,255,0.35)');
+  shine.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = shine;
+  ctx.beginPath();
+  ctx.arc(0, 0, rad, 0, Math.PI*2);
+  ctx.fill();
+
+  // Flip glow ring at peak
+  if(glowIntensity > 0.3) {
+    ctx.strokeStyle = color === BLACK
+      ? `rgba(0,210,255,${glowIntensity * 0.8})`
+      : `rgba(157,78,221,${glowIntensity * 0.8})`;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rad + 4, rad + 4, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ==================== GAME LOGIC ====================
+function getFlips(b, r, c, player) {
+  if(b[r][c] !== EMPTY) return [];
+  const opp = player === BLACK ? WHITE : BLACK;
+  const flips = [];
+  for(const [dr,dc] of DIRS) {
+    let nr=r+dr, nc=c+dc, line=[];
+    while(nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===opp){
+      line.push([nr,nc]); nr+=dr; nc+=dc;
+    }
+    if(line.length && nr>=0&&nr<8&&nc>=0&&nc<8&&b[nr][nc]===player)
+      flips.push(...line);
+  }
+  return flips;
+}
+
+function getValidMoves(player) {
+  const moves = [];
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++)
+    if(getFlips(board,r,c,player).length) moves.push([r,c]);
+  return moves;
+}
+
+function placeDisc(r, c) {
+  if(gameOver || isAnimating) return;
+  const moves = getValidMoves(turn);
+  if(!moves.some(([mr,mc])=>mr===r&&mc===c)) return;
+  aiHintCell = null;
+
+  const placingPlayer = turn;
+  const flips = getFlips(board, r, c, placingPlayer);
+
+  // Immediately place the new disc (no flip needed)
+  board[r][c] = placingPlayer;
+
+  if(flips.length === 0) {
+    // No flips — just proceed
+    afterFlipDone(placingPlayer, r, c, []);
+    return;
+  }
+
+  // Build staggered flip queue
+  isAnimating = true;
+  flipQueue = flips.map(([fr, fc], i) => ({
+    r: fr, c: fc,
+    fromColor: placingPlayer === BLACK ? WHITE : BLACK,
+    toColor: placingPlayer,
+    progress: 0,
+    delay: i * 45,       // stagger delay (ms)
+    started: false
+  }));
+
+  const DURATION = 320; // ms per flip
+  let startTime = null;
+
+  function animate(timestamp) {
+    if(!startTime) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+
+    // Update each flip
+    for(const f of flipQueue) {
+      if(elapsed < f.delay) continue;
+      f.started = true;
+      f.progress = Math.min((elapsed - f.delay) / DURATION, 1);
+    }
+
+    drawBoardWithFlips(flipQueue);
+
+    const allDone = flipQueue.every(f => f.progress >= 1);
+    if(!allDone) {
+      animFrameId = requestAnimationFrame(animate);
+    } else {
+      // Commit flips to board
+      flips.forEach(([fr, fc]) => { board[fr][fc] = placingPlayer; });
+      flipQueue = [];
+      isAnimating = false;
+      afterFlipDone(placingPlayer, r, c, flips);
+    }
+  }
+
+  animFrameId = requestAnimationFrame(animate);
+}
+
+function afterFlipDone(placingPlayer, r, c, flips) {
+  const next = placingPlayer === BLACK ? WHITE : BLACK;
+  const nextMoves = getValidMoves(next);
+  const currMoves = getValidMoves(placingPlayer);
+
+  if(nextMoves.length) {
+    turn = next;
+  } else if(currMoves.length) {
+    showSkipMessage(next);
+  } else {
+    gameOver = true;
+  }
+
+  updateUI();
+  drawBoard();
+  if(gameOver) showGameOver();
+}
+
+function showSkipMessage(skippedPlayer) {
+  const name = skippedPlayer === BLACK ? '⬛ 黒' : '⬜ 白';
+  const banner = document.getElementById('gameover-banner');
+  const msg = document.getElementById('gameover-msg');
+  msg.textContent = `${name} はパス — 相手の手番が続きます`;
+  msg.style.color = skippedPlayer === BLACK ? 'var(--p1-color)' : 'var(--p2-color)';
+  banner.classList.add('active');
+  setTimeout(() => banner.classList.remove('active'), 2000);
+}
+
+function countDiscs() {
+  let b=0, w=0;
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    if(board[r][c]===BLACK) b++;
+    else if(board[r][c]===WHITE) w++;
+  }
+  return {b, w};
+}
+
+function evalBoard(b) {
+  let score = 0;
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    if(b[r][c]===BLACK) score += WEIGHT[r][c];
+    else if(b[r][c]===WHITE) score -= WEIGHT[r][c];
+  }
+  return score;
+}
+
+function winRate() {
+  const {b, w} = countDiscs();
+  const total = b + w;
+  if(total === 0) return 50;
+  const discScore = (b - w) * 2;
+  const evalScore = evalBoard(board) * 0.3;
+  let bRate = 50 + discScore + evalScore;
+  bRate = Math.max(5, Math.min(95, bRate));
+  return bRate;
+}
+
+// ==================== ADVANCED AI (Alpha-Beta, depth 6) ====================
+const AI_DEPTH = 6;
+
+// Mobility: number of moves available (more = better)
+function mobility(b, player) {
+  let count = 0;
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++)
+    if(getFlips(b,r,c,player).length) count++;
+  return count;
+}
+
+// Stable discs (simplified: corners + confirmed edges)
+function stableDiscs(b, player) {
+  let count = 0;
+  const corners = [[0,0],[0,7],[7,0],[7,7]];
+  corners.forEach(([r,c]) => { if(b[r][c]===player) count += 3; });
+  return count;
+}
+
+// Advanced board evaluation
+function evalBoardAdvanced(b, player) {
+  const opp = player === BLACK ? WHITE : BLACK;
+  // Position score (WEIGHT)
+  let posScore = 0;
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    if(b[r][c]===player) posScore += WEIGHT[r][c];
+    else if(b[r][c]===opp) posScore -= WEIGHT[r][c];
+  }
+  // Mobility score
+  const myMob = mobility(b, player);
+  const oppMob = mobility(b, opp);
+  const mobScore = (myMob + oppMob) ? 10 * (myMob - oppMob) / (myMob + oppMob) : 0;
+  // Stability
+  const stabScore = (stableDiscs(b, player) - stableDiscs(b, opp)) * 20;
+  // Disc count (less important early, vital at end)
+  let myDiscs=0, oppDiscs=0;
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    if(b[r][c]===player) myDiscs++;
+    else if(b[r][c]===opp) oppDiscs++;
+  }
+  const total = myDiscs + oppDiscs;
+  const discWeight = total > 50 ? 2.0 : 0.2;
+  const discScore = discWeight * (myDiscs - oppDiscs);
+  return posScore + mobScore + stabScore + discScore;
+}
+
+// Apply move to a board copy
+function applyMove(b, r, c, player) {
+  const nb = b.map(row=>[...row]);
+  const flips = getFlips(nb, r, c, player);
+  nb[r][c] = player;
+  flips.forEach(([fr,fc]) => nb[fr][fc] = player);
+  return nb;
+}
+
+// Alpha-Beta minimax
+function alphaBeta(b, depth, alpha, beta, maximizing, player, rootPlayer) {
+  const opp = player === BLACK ? WHITE : BLACK;
+  const moves = [];
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++)
+    if(getFlips(b,r,c,player).length) moves.push([r,c]);
+
+  if(depth === 0 || (moves.length === 0 && getFlips(b,0,0,opp).length === 0 && (() => {
+    for(let r=0;r<8;r++) for(let c=0;c<8;c++) if(getFlips(b,r,c,opp).length) return false;
+    return true;
+  })())) {
+    return evalBoardAdvanced(b, rootPlayer);
+  }
+
+  if(moves.length === 0) {
+    // Pass
+    return alphaBeta(b, depth - 1, alpha, beta, !maximizing, opp, rootPlayer);
+  }
+
+  // Move ordering: sort by position weight descending for better pruning
+  moves.sort(([r1,c1],[r2,c2]) => WEIGHT[r2][c2] - WEIGHT[r1][c1]);
+
+  if(maximizing) {
+    let maxEval = -Infinity;
+    for(const [r,c] of moves) {
+      const nb = applyMove(b, r, c, player);
+      const ev = alphaBeta(nb, depth-1, alpha, beta, false, opp, rootPlayer);
+      if(ev > maxEval) maxEval = ev;
+      if(ev > alpha) alpha = ev;
+      if(beta <= alpha) break;
+    }
+    return maxEval;
+  } else {
+    let minEval = Infinity;
+    for(const [r,c] of moves) {
+      const nb = applyMove(b, r, c, player);
+      const ev = alphaBeta(nb, depth-1, alpha, beta, true, opp, rootPlayer);
+      if(ev < minEval) minEval = ev;
+      if(ev < beta) beta = ev;
+      if(beta <= alpha) break;
+    }
+    return minEval;
+  }
+}
+
+// Main: find best move with score explanation
+function bestMove(player) {
+  const moves = [];
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++)
+    if(getFlips(board,r,c,player).length) moves.push([r,c]);
+  if(!moves.length) return null;
+
+  let best = null, bestScore = -Infinity;
+  const scores = [];
+  for(const [r,c] of moves) {
+    const nb = applyMove(board, r, c, player);
+    const opp = player === BLACK ? WHITE : BLACK;
+    const score = alphaBeta(nb, AI_DEPTH - 1, -Infinity, Infinity, false, opp, player);
+    scores.push({r, c, score});
+    if(score > bestScore) { bestScore = score; best = [r,c]; }
+  }
+
+  // Store explanation for UI
+  window._aiLastScores = scores.sort((a,b) => b.score - a.score);
+  window._aiLastBest = best;
+  return best;
+}
+
+// ==================== UI ====================
+function updateUI() {
+  const {b, w} = countDiscs();
+  document.getElementById('count-p1').textContent = b;
+  document.getElementById('count-p2').textContent = w;
+
+  const card1 = document.getElementById('card-p1');
+  const card2 = document.getElementById('card-p2');
+  const s1 = document.getElementById('status-p1');
+  const s2 = document.getElementById('status-p2');
+  const aiBtn1 = document.getElementById('ai-btn-p1');
+  const aiBtn2 = document.getElementById('ai-btn-p2');
+
+  card1.className = 'player-card ' + (turn===BLACK && !gameOver ? 'active-p1' : 'inactive inactive-p1');
+  card2.className = 'player-card ' + (turn===WHITE && !gameOver ? 'active-p2' : 'inactive inactive-p2');
+
+  s1.textContent = gameOver ? 'GAME OVER' : (turn===BLACK ? 'YOUR TURN' : 'WAIT...');
+  s2.textContent = gameOver ? 'GAME OVER' : (turn===WHITE ? 'YOUR TURN' : 'WAIT...');
+
+  aiBtn1.disabled = !(turn===BLACK && !gameOver);
+  aiBtn2.disabled = !(turn===WHITE && !gameOver);
+
+  // Win bar
+  const bRate = winRate();
+  const wRate = 100 - bRate;
+  document.getElementById('bar-black').style.width = (bRate/2) + '%';
+  document.getElementById('bar-white').style.width = (wRate/2) + '%';
+  document.getElementById('pct-black').textContent = Math.round(bRate) + '%';
+  document.getElementById('pct-white').textContent = Math.round(wRate) + '%';
+}
+
+function showGameOver() {
+  const {b, w} = countDiscs();
+  // Keep the small banner too
+  const banner = document.getElementById('gameover-banner');
+  const msg = document.getElementById('gameover-msg');
+  banner.classList.add('active');
+  if(b > w) {
+    msg.textContent = `⬛ 黒の勝利！ (${b} vs ${w})`;
+    msg.style.color = 'var(--p1-color)';
+  } else if(w > b) {
+    msg.textContent = `⬜ 白の勝利！ (${w} vs ${b})`;
+    msg.style.color = 'var(--p2-color)';
+  } else {
+    msg.textContent = `引き分け！ (${b} vs ${w})`;
+    msg.style.color = '#fff';
+  }
+
+  // Slight delay so the last flip animation finishes first
+  setTimeout(() => launchVictoryScreen(b, w), 600);
+}
+
+function launchVictoryScreen(b, w) {
+  const overlay  = document.getElementById('victory-overlay');
+  const card     = document.getElementById('victory-card');
+  const trophy   = document.getElementById('victory-trophy');
+  const label    = document.getElementById('victory-label');
+  const title    = document.getElementById('victory-title');
+  const disc     = document.getElementById('victory-disc');
+  const ring     = document.getElementById('victory-ring');
+  const scoreB   = document.getElementById('vs-b');
+  const scoreW   = document.getElementById('vs-w');
+
+  // Remove previous winner classes
+  card.classList.remove('win-black','win-white','win-draw');
+
+  if(b > w) {
+    card.classList.add('win-black');
+    trophy.textContent = '🏆';
+    label.textContent  = 'WINNER';
+    title.textContent  = '黒の勝利！';
+    disc.className     = 'victory-disc disc-black';
+    ring.style.display = 'block';
+  } else if(w > b) {
+    card.classList.add('win-white');
+    trophy.textContent = '🏆';
+    label.textContent  = 'WINNER';
+    title.textContent  = '白の勝利！';
+    disc.className     = 'victory-disc disc-white';
+    ring.style.display = 'block';
+  } else {
+    card.classList.add('win-draw');
+    trophy.textContent = '🤝';
+    label.textContent  = 'RESULT';
+    title.textContent  = '引き分け！';
+    disc.className     = '';
+    ring.style.display = 'none';
+  }
+
+  // Animate score count-up
+  scoreB.textContent = '0';
+  scoreW.textContent = '0';
+  overlay.classList.add('active');
+
+  animateCount(scoreB, 0, b, 800);
+  animateCount(scoreW, 0, w, 800);
+
+  // Launch confetti only for win (not draw)
+  if(b !== w) startConfetti(b > w ? '#00D2FF' : '#9D4EDD');
+}
+
+function animateCount(el, from, to, duration) {
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(from + (to - from) * ease);
+    if(t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function closeVictory() {
+  document.getElementById('victory-overlay').classList.remove('active');
+  stopConfetti();
+}
+
+// ==================== CONFETTI ENGINE ====================
+let confettiAnim = null;
+let confettiParticles = [];
+
+function startConfetti(winColor) {
+  stopConfetti();
+  const cvs = document.getElementById('confetti-canvas');
+  cvs.width  = window.innerWidth;
+  cvs.height = window.innerHeight;
+  const ctx2 = cvs.getContext('2d');
+
+  const colors = [
+    winColor,
+    winColor + 'bb',
+    '#ffffff',
+    '#FFE600',
+    winColor === '#00D2FF' ? '#9D4EDD' : '#00D2FF',
+  ];
+
+  // Spawn a burst of particles
+  confettiParticles = [];
+  for(let i = 0; i < 180; i++) {
+    confettiParticles.push({
+      x: Math.random() * cvs.width,
+      y: -20 - Math.random() * 200,
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 5,
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random() - 0.5) * 0.25,
+      w: 8 + Math.random() * 10,
+      h: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      shape: Math.random() < 0.3 ? 'circle' : 'rect',
+    });
+  }
+
+  function loop() {
+    ctx2.clearRect(0, 0, cvs.width, cvs.height);
+    confettiParticles.forEach(p => {
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.vy += 0.08; // gravity
+      p.vx *= 0.995;
+      p.rot += p.rotV;
+      if(p.y > cvs.height + 20) {
+        // Recycle from top for 4 seconds
+        p.y  = -20;
+        p.x  = Math.random() * cvs.width;
+        p.vy = 2 + Math.random() * 4;
+        p.alpha = Math.max(0, p.alpha - 0.03);
+      }
+
+      ctx2.save();
+      ctx2.globalAlpha = p.alpha;
+      ctx2.translate(p.x, p.y);
+      ctx2.rotate(p.rot);
+      ctx2.fillStyle = p.color;
+      if(p.shape === 'circle') {
+        ctx2.beginPath();
+        ctx2.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+        ctx2.fill();
+      } else {
+        ctx2.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      }
+      ctx2.restore();
+    });
+
+    // Stop when all faded
+    if(confettiParticles.some(p => p.alpha > 0.01)) {
+      confettiAnim = requestAnimationFrame(loop);
+    } else {
+      ctx2.clearRect(0, 0, cvs.width, cvs.height);
+    }
+  }
+  confettiAnim = requestAnimationFrame(loop);
+
+  // Fade out confetti after 4s
+  setTimeout(() => {
+    const fade = setInterval(() => {
+      confettiParticles.forEach(p => p.alpha = Math.max(0, p.alpha - 0.015));
+      if(confettiParticles.every(p => p.alpha <= 0)) clearInterval(fade);
+    }, 30);
+  }, 4000);
+}
+
+function stopConfetti() {
+  if(confettiAnim) { cancelAnimationFrame(confettiAnim); confettiAnim = null; }
+  confettiParticles = [];
+  const cvs = document.getElementById('confetti-canvas');
+  if(cvs) cvs.getContext('2d').clearRect(0, 0, cvs.width, cvs.height);
+}
+
+// ==================== CONTROLS ====================
+function toggleHighlight() {
+  highlightOn = !highlightOn;
+  const btn = document.getElementById('highlight-toggle');
+  btn.textContent = `💡 置ける場所ハイライト：${highlightOn ? 'ON' : 'OFF'}`;
+  btn.classList.toggle('on', highlightOn);
+  drawBoard();
+}
+
+function activateBlackout() {
+  document.getElementById('blackout-overlay').classList.add('active');
+}
+function deactivateBlackout() {
+  document.getElementById('blackout-overlay').classList.remove('active');
+}
+
+function requestAIHint(player) {
+  if(gameOver) return;
+  if((player===1&&turn!==BLACK)||(player===2&&turn!==WHITE)) return;
+  const thinking = document.getElementById('ai-thinking');
+  thinking.classList.add('active');
+  // Run in next frame so the UI updates first
+  setTimeout(() => {
+    const move = bestMove(turn);
+    thinking.classList.remove('active');
+    if(move) {
+      aiHintCell = move;
+      drawBoard();
+      showAIExplanation(move, turn);
+    }
+  }, 100);
+}
+
+function showAIExplanation(move, player) {
+  const [r, c] = move;
+  const colLabels = ['A','B','C','D','E','F','G','H'];
+  const cellName = colLabels[c] + (r + 1);
+  const scores = window._aiLastScores || [];
+
+  // Determine reason
+  let reason = '';
+  const isCorner = (r===0||r===7) && (c===0||c===7);
+  const isEdge = r===0||r===7||c===0||c===7;
+  const isAdjacentCorner = [[0,1],[1,0],[1,1],[0,6],[1,6],[1,7],[6,0],[7,1],[6,1],[6,6],[7,6],[6,7]].some(([ar,ac])=>ar===r&&ac===c);
+
+  if(isCorner) reason = '🏆 コーナー確保 — 絶対に取られない安定マス';
+  else if(isEdge) reason = '📐 辺のマス — 安定した好手';
+  else if(isAdjacentCorner) reason = '⚠️ コーナー隣は通常危険だが現状最善';
+  else {
+    // Check mobility gain
+    const nb = applyMove(board, r, c, player);
+    const opp = player === BLACK ? WHITE : BLACK;
+    const myMob = mobility(nb, player);
+    const oppMob = mobility(nb, opp);
+    if(myMob > oppMob) reason = `🎯 相手の手を制限 (自: ${myMob}手 / 相: ${oppMob}手)`;
+    else reason = `🔍 ${AI_DEPTH}手先読みによる最善手`;
+  }
+
+  // Top 3 candidates
+  const top3 = scores.slice(0, 3);
+  const maxS = Math.max(...top3.map(s=>Math.abs(s.score))) || 1;
+
+  let candidatesHTML = '';
+  top3.forEach((s, i) => {
+    const name = colLabels[s.c] + (s.r + 1);
+    const bar = Math.round(((s.score - scores[scores.length-1]?.score) / (maxS||1)) * 60 + 20);
+    const isB = i === 0;
+    candidatesHTML += `
+      <div class="ai-cand ${isB ? 'ai-cand-best' : ''}">
+        <span class="ai-cand-rank">${['🥇','🥈','🥉'][i]}</span>
+        <span class="ai-cand-name">${name}</span>
+        <div class="ai-cand-bar-wrap"><div class="ai-cand-bar" style="width:${Math.min(bar,100)}%"></div></div>
+        <span class="ai-cand-score">${s.score > 0 ? '+' : ''}${s.score.toFixed(0)}</span>
+      </div>`;
+  });
+
+  const panel = document.getElementById('ai-hint-panel');
+  panel.innerHTML = `
+    <div class="ai-panel-header">
+      <span>⚡ AI解析 — ${AI_DEPTH}手先読み</span>
+      <button class="ai-panel-close" onclick="document.getElementById('ai-hint-panel').style.display='none'">✕</button>
+    </div>
+    <div class="ai-panel-move">推奨手: <strong>${cellName}</strong></div>
+    <div class="ai-panel-reason">${reason}</div>
+    <div class="ai-panel-section">候補手ランキング</div>
+    ${candidatesHTML}
+  `;
+  panel.style.display = 'block';
+}
+
+function resetGame() {
+  closeVictory();
+  initBoard();
+}
+
+// ==================== CANVAS CLICK ====================
+canvas.addEventListener('click', (e) => {
+  if(gameOver) return;
+  const rect = canvas.getBoundingClientRect();
+  const size = rect.width;
+  const cw = size / 8;
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const c = Math.floor(x / cw);
+  const r = Math.floor(y / cw);
+  if(r>=0&&r<8&&c>=0&&c<8) placeDisc(r,c);
+});
+
+// cursor
+canvas.addEventListener('mousemove', (e) => {
+  if(gameOver) { canvas.style.cursor='default'; return; }
+  const rect = canvas.getBoundingClientRect();
+  const size = rect.width;
+  const cw = size / 8;
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const c = Math.floor(x / cw);
+  const r = Math.floor(y / cw);
+  const moves = getValidMoves(turn);
+  canvas.style.cursor = moves.some(([mr,mc])=>mr===r&&mc===c) ? 'pointer' : 'default';
+});
+
+// ==================== RESIZE ====================
+window.addEventListener('resize', () => {
+  setupCanvas();
+  drawBoard();
+});
+
+// ==================== FAKE EDITOR SETUP ====================
+(function() {
+  const codeLines = [
+    [`<span class="tk-cmt"># sort_algorithms.py — ソートアルゴリズム集</span>`],
+    [`<span class="tk-cmt"># Author: Tanaka Ryo  |  2024-11-12</span>`],
+    [``],
+    [`<span class="tk-kw">from</span> <span class="tk-var">typing</span> <span class="tk-kw">import</span> <span class="tk-cls">List</span>`],
+    [`<span class="tk-kw">import</span> <span class="tk-var">time</span>`],
+    [`<span class="tk-kw">import</span> <span class="tk-var">random</span>`],
+    [``],
+    [``],
+    [`<span class="tk-kw">def</span> <span class="tk-fn">bubble_sort</span>(<span class="tk-var">arr</span>: <span class="tk-cls">List</span>[<span class="tk-cls">int</span>]) <span class="tk-op">-></span> <span class="tk-cls">List</span>[<span class="tk-cls">int</span>]:`],
+    [`    <span class="tk-str">"""バブルソート — O(n²)"""</span>`],
+    [`    <span class="tk-var">n</span> <span class="tk-op">=</span> <span class="tk-fn">len</span>(<span class="tk-var">arr</span>)`],
+    [`    <span class="tk-var">arr</span> <span class="tk-op">=</span> <span class="tk-var">arr</span><span class="tk-op">.</span><span class="tk-fn">copy</span>()`],
+    [`    <span class="tk-kw">for</span> <span class="tk-var">i</span> <span class="tk-kw">in</span> <span class="tk-fn">range</span>(<span class="tk-var">n</span>):`],
+    [`        <span class="tk-kw">for</span> <span class="tk-var">j</span> <span class="tk-kw">in</span> <span class="tk-fn">range</span>(<span class="tk-num">0</span>, <span class="tk-var">n</span> <span class="tk-op">-</span> <span class="tk-var">i</span> <span class="tk-op">-</span> <span class="tk-num">1</span>):`],
+    [`            <span class="tk-kw">if</span> <span class="tk-var">arr</span>[<span class="tk-var">j</span>] <span class="tk-op">></span> <span class="tk-var">arr</span>[<span class="tk-var">j</span> <span class="tk-op">+</span> <span class="tk-num">1</span>]:`],
+    [`                <span class="tk-var">arr</span>[<span class="tk-var">j</span>], <span class="tk-var">arr</span>[<span class="tk-var">j</span><span class="tk-op">+</span><span class="tk-num">1</span>] <span class="tk-op">=</span> <span class="tk-var">arr</span>[<span class="tk-var">j</span><span class="tk-op">+</span><span class="tk-num">1</span>], <span class="tk-var">arr</span>[<span class="tk-var">j</span>]`],
+    [`    <span class="tk-kw">return</span> <span class="tk-var">arr</span>`],
+    [``],
+    [``],
+    [`<span class="tk-kw">def</span> <span class="tk-fn">merge_sort</span>(<span class="tk-var">arr</span>: <span class="tk-cls">List</span>[<span class="tk-cls">int</span>]) <span class="tk-op">-></span> <span class="tk-cls">List</span>[<span class="tk-cls">int</span>]:`],
+    [`    <span class="tk-str">"""マージソート — O(n log n)"""</span>`],
+    [`    <span class="tk-kw">if</span> <span class="tk-fn">len</span>(<span class="tk-var">arr</span>) <span class="tk-op"><=</span> <span class="tk-num">1</span>:`],
+    [`        <span class="tk-kw">return</span> <span class="tk-var">arr</span>`],
+    [`    <span class="tk-var">mid</span> <span class="tk-op">=</span> <span class="tk-fn">len</span>(<span class="tk-var">arr</span>) <span class="tk-op">//</span> <span class="tk-num">2</span>`],
+    [`    <span class="tk-var">left</span>  <span class="tk-op">=</span> <span class="tk-fn">merge_sort</span>(<span class="tk-var">arr</span>[:<span class="tk-var">mid</span>])`],
+    [`    <span class="tk-var">right</span> <span class="tk-op">=</span> <span class="tk-fn">merge_sort</span>(<span class="tk-var">arr</span>[<span class="tk-var">mid</span>:])`],
+    [`    <span class="tk-kw">return</span> <span class="tk-fn">_merge</span>(<span class="tk-var">left</span>, <span class="tk-var">right</span>)`],
+    [``],
+    [`<span class="tk-kw">def</span> <span class="tk-fn">_merge</span>(<span class="tk-var">left</span>, <span class="tk-var">right</span>):`],
+    [`    <span class="tk-var">result</span>, <span class="tk-var">i</span>, <span class="tk-var">j</span> <span class="tk-op">=</span> [], <span class="tk-num">0</span>, <span class="tk-num">0</span>`],
+    [`    <span class="tk-kw">while</span> <span class="tk-var">i</span> <span class="tk-op"><</span> <span class="tk-fn">len</span>(<span class="tk-var">left</span>) <span class="tk-kw">and</span> <span class="tk-var">j</span> <span class="tk-op"><</span> <span class="tk-fn">len</span>(<span class="tk-var">right</span>):`],
+    [`        <span class="tk-kw">if</span> <span class="tk-var">left</span>[<span class="tk-var">i</span>] <span class="tk-op"><=</span> <span class="tk-var">right</span>[<span class="tk-var">j</span>]:`],
+    [`            <span class="tk-var">result</span><span class="tk-op">.</span><span class="tk-fn">append</span>(<span class="tk-var">left</span>[<span class="tk-var">i</span>]); <span class="tk-var">i</span> <span class="tk-op">+=</span> <span class="tk-num">1</span>`],
+    [`        <span class="tk-kw">else</span>:`],
+    [`            <span class="tk-var">result</span><span class="tk-op">.</span><span class="tk-fn">append</span>(<span class="tk-var">right</span>[<span class="tk-var">j</span>]); <span class="tk-var">j</span> <span class="tk-op">+=</span> <span class="tk-num">1</span>`],
+    [`    <span class="tk-kw">return</span> <span class="tk-var">result</span> <span class="tk-op">+</span> <span class="tk-var">left</span>[<span class="tk-var">i</span>:] <span class="tk-op">+</span> <span class="tk-var">right</span>[<span class="tk-var">j</span>:]`],
+    [``],
+    [``],
+    [`<span class="tk-kw">def</span> <span class="tk-fn">quick_sort</span>(<span class="tk-var">arr</span>: <span class="tk-cls">List</span>[<span class="tk-cls">int</span>]) <span class="tk-op">-></span> <span class="tk-cls">List</span>[<span class="tk-cls">int</span>]:`],
+    [`    <span class="tk-str">"""クイックソート — O(n log n) avg"""</span>`],
+    [`    <span class="tk-kw">if</span> <span class="tk-fn">len</span>(<span class="tk-var">arr</span>) <span class="tk-op"><=</span> <span class="tk-num">1</span>:`],
+    [`        <span class="tk-kw">return</span> <span class="tk-var">arr</span>`],
+    [`    <span class="tk-var">pivot</span> <span class="tk-op">=</span> <span class="tk-var">arr</span>[<span class="tk-fn">len</span>(<span class="tk-var">arr</span>) <span class="tk-op">//</span> <span class="tk-num">2</span>]`],
+    [`    <span class="tk-var">left</span>  <span class="tk-op">=</span> [<span class="tk-var">x</span> <span class="tk-kw">for</span> <span class="tk-var">x</span> <span class="tk-kw">in</span> <span class="tk-var">arr</span> <span class="tk-kw">if</span> <span class="tk-var">x</span> <span class="tk-op"><</span>  <span class="tk-var">pivot</span>]`],
+    [`    <span class="tk-var">mid</span>   <span class="tk-op">=</span> [<span class="tk-var">x</span> <span class="tk-kw">for</span> <span class="tk-var">x</span> <span class="tk-kw">in</span> <span class="tk-var">arr</span> <span class="tk-kw">if</span> <span class="tk-var">x</span> <span class="tk-op">==</span> <span class="tk-var">pivot</span>]`],
+    [`    <span class="tk-var">right</span> <span class="tk-op">=</span> [<span class="tk-var">x</span> <span class="tk-kw">for</span> <span class="tk-var">x</span> <span class="tk-kw">in</span> <span class="tk-var">arr</span> <span class="tk-kw">if</span> <span class="tk-var">x</span> <span class="tk-op">></span>  <span class="tk-var">pivot</span>]`],
+    [`    <span class="tk-kw">return</span> <span class="tk-fn">quick_sort</span>(<span class="tk-var">left</span>) <span class="tk-op">+</span> <span class="tk-var">mid</span> <span class="tk-op">+</span> <span class="tk-fn">quick_sort</span>(<span class="tk-var">right</span>)`],
+    [``],
+    [``],
+    [`<span class="tk-kw">def</span> <span class="tk-fn">benchmark</span>(<span class="tk-var">fn</span>, <span class="tk-var">data</span>):`],
+    [`    <span class="tk-var">start</span> <span class="tk-op">=</span> <span class="tk-var">time</span><span class="tk-op">.</span><span class="tk-fn">perf_counter</span>()`],
+    [`    <span class="tk-var">fn</span>(<span class="tk-var">data</span><span class="tk-op">.</span><span class="tk-fn">copy</span>())`],
+    [`    <span class="tk-kw">return</span> <span class="tk-var">time</span><span class="tk-op">.</span><span class="tk-fn">perf_counter</span>() <span class="tk-op">-</span> <span class="tk-var">start</span>`],
+    [``],
+    [`<span class="tk-kw">if</span> <span class="tk-var">__name__</span> <span class="tk-op">==</span> <span class="tk-str">"__main__"</span>:`],
+    [`    <span class="tk-var">data</span> <span class="tk-op">=</span> <span class="tk-var">random</span><span class="tk-op">.</span><span class="tk-fn">sample</span>(<span class="tk-fn">range</span>(<span class="tk-num">10000</span>), <span class="tk-num">1000</span>)`],
+    [`    <span class="tk-kw">for</span> <span class="tk-var">name</span>, <span class="tk-var">fn</span> <span class="tk-kw">in</span> [(<span class="tk-str">"bubble"</span>, <span class="tk-fn">bubble_sort</span>),`],
+    [`                        (<span class="tk-str">"merge"</span>,  <span class="tk-fn">merge_sort</span>),`],
+    [`                        (<span class="tk-str">"quick"</span>,  <span class="tk-fn">quick_sort</span>)]:`],
+    [`        <span class="tk-var">t</span> <span class="tk-op">=</span> <span class="tk-fn">benchmark</span>(<span class="tk-var">fn</span>, <span class="tk-var">data</span>)`],
+    [`        <span class="tk-fn">print</span>(<span class="tk-str">f"</span><span class="tk-var">{name}</span><span class="tk-str">: </span><span class="tk-var">{t*1000:.2f}</span><span class="tk-str"> ms"</span>)`],
+  ];
+
+  function renderEditor() {
+    const linenosEl = document.getElementById('editor-linenos');
+    const codeEl    = document.getElementById('editor-code');
+    if(!linenosEl || !codeEl) return;
+    linenosEl.innerHTML = codeLines.map((_,i) => i+1).join('<br>');
+    codeEl.innerHTML    = codeLines.map(parts => parts.join('')).join('\n');
+  }
+  renderEditor();
+
+  // Track cursor line for status bar
+  document.getElementById('editor-code')?.addEventListener('keyup', (e) => {
+    // Update Ln/Col in status bar (cosmetic)
+  });
+})();
+
+// Escape key to exit blackout
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') {
+    const overlay = document.getElementById('blackout-overlay');
+    if(overlay.classList.contains('active')) deactivateBlackout();
+  }
+});
+
+// ==================== START ====================
+setupCanvas();
+initBoard();
+</script>
+</body>
+</html>
