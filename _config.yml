@@ -2,7 +2,7 @@
 # サイト基本設定
 # ==========================================
 title: "TTS-Note"
-description: "趣味で運営しているNoteサイト。"
+description: "趣味で運営しているNoteサイト"
 url: "https://tts2525.github.io"
 baseurl: "/hp"
 
