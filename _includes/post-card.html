@@ -2,10 +2,10 @@
   使い方: {% include post-card.html post=post %}
 {% endcomment %}
 {% assign post = include.post %}
+{% assign post_category = post.categories[0] %}
 <article class="post-card">
   <div class="post-card__meta">
-    {% assign current_category = page.categories[0] %}
-    {% include category-label.html category=current_category %}
+    {% include category-label.html category=post_category %}
     <time class="post-card__date" datetime="{{ post.date | date_to_xmlschema }}">
       {{ post.date | date: "%Y年%m月%d日" }}
     </time>
