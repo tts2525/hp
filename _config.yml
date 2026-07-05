@@ -13,13 +13,13 @@ timezone: Asia/Tokyo
 # カテゴリ設定（政治・社会の2本柱）
 # ==========================================
 categories:
-  - politics
-  - society
+  - blog
+  - opinion
 
 # 表示名の日本語マッピング（テンプレート側で参照する）
 category_names:
-  politics: "政治"
-  society: "社会"
+  politics: "BLOG"
+  society: "主張"
 
 # 各カテゴリのテーマカラー（ラベル・アクセント用）
 category_colors:
