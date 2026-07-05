@@ -1,6 +1,10 @@
 {% comment %}
-  使い方: {% include category-label.html category=post.categories[0] %}
-  post.categories[0] に "politics" または "society" が入っている前提
+  使い方:
+    {% assign post_category = post.categories[0] %}
+    {% include category-label.html category=post_category %}
+  category には "politics" または "society" が入っている前提。
+  注意: includeタグの引数に配列添字([0]など)を直接書くとGitHub Pages上の
+  Jekyllでは構文エラーになるため、必ず一度assignで変数化してから渡すこと。
 {% endcomment %}
 {% assign cat = include.category %}
 {% assign cat_name = site.category_names[cat] | default: cat %}
