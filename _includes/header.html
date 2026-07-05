@@ -1,0 +1,24 @@
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="{{ '/' | relative_url }}" class="site-header__logo">
+      {{ site.title }}
+    </a>
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="メニューを開く">☰</button>
+
+    <nav class="site-nav" id="site-nav">
+      <a href="{{ '/' | relative_url }}" class="site-nav__link">トップ</a>
+      <a href="{{ '/category/politics/' | relative_url }}" class="site-nav__link site-nav__link--politics">政治</a>
+      <a href="{{ '/category/society/' | relative_url }}" class="site-nav__link site-nav__link--society">社会</a>
+      <a href="{{ '/archive/' | relative_url }}" class="site-nav__link">アーカイブ</a>
+      <a href="{{ '/about/' | relative_url }}" class="site-nav__link">About</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // シンプルなハンバーガーメニュー開閉（スマホ用）
+  document.getElementById('nav-toggle').addEventListener('click', function () {
+    document.getElementById('site-nav').classList.toggle('is-open');
+  });
+</script>

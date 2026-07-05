@@ -1,0 +1,7 @@
+{% comment %}
+  使い方: {% include category-label.html category=post.categories[0] %}
+  post.categories[0] に "politics" または "society" が入っている前提
+{% endcomment %}
+{% assign cat = include.category %}
+{% assign cat_name = site.category_names[cat] | default: cat %}
+<span class="category-label category-label--{{ cat }}">{{ cat_name }}</span>
