@@ -9,11 +9,11 @@ layout: default
 
 <!-- カテゴリへの入り口。まず「どっちを読むか」を選んでもらう -->
 <section class="category-nav">
-  <a href="{{ '/category/politics/' | relative_url }}" class="category-nav__card category-nav__card--politics">
+  <a href="{{ '/opinion/category/politics/' | relative_url }}" class="category-nav__card category-nav__card--politics">
     <span class="category-nav__label">政治</span>
     <span class="category-nav__sub">制度・選挙・政策のはなし</span>
   </a>
-  <a href="{{ '/category/society/' | relative_url }}" class="category-nav__card category-nav__card--society">
+  <a href="{{ '/opinion/category/society/' | relative_url }}" class="category-nav__card category-nav__card--society">
     <span class="category-nav__label">社会</span>
     <span class="category-nav__sub">暮らし・世相・違和感のはなし</span>
   </a>
@@ -25,24 +25,20 @@ layout: default
   <section class="home-main">
     <h2 class="section-title">新着記事</h2>
 
+    {% comment %}
+      paginator は使わず、site.posts を直接、新しい順に limit で絞って表示する。
+      理由: jekyll-paginate はサイト内で1箇所にしか正しく効かないため、
+      ルート以外の場所（opinion/index.html等）で使うと記事が出ないことがある。
+    {% endcomment %}
+    {% assign recent_posts = site.posts | limit: 10 %}
+
     <div class="post-list">
-      {% for post in paginator.posts %}
+      {% for post in recent_posts %}
         {% include post-card.html post=post %}
+      {% else %}
+        <p class="empty-state">まだ記事がありません。</p>
       {% endfor %}
     </div>
-
-    <!-- ページネーション -->
-    {% if paginator.total_pages > 1 %}
-      <nav class="pagination">
-        {% if paginator.previous_page %}
-          <a href="{{ paginator.previous_page_path | relative_url }}" class="pagination__link">← 新しい記事</a>
-        {% endif %}
-        <span class="pagination__current">{{ paginator.page }} / {{ paginator.total_pages }}</span>
-        {% if paginator.next_page %}
-          <a href="{{ paginator.next_page_path | relative_url }}" class="pagination__link">古い記事 →</a>
-        {% endif %}
-      </nav>
-    {% endif %}
   </section>
 
   <!-- サイドバー: 注目記事 -->
