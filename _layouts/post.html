@@ -1,12 +1,12 @@
 ---
 layout: default
 ---
+{% assign current_category = page.categories[0] %}
 <article class="post">
 
   <!-- 記事ヘッダー -->
   <header class="post__header">
     <div class="post__meta">
-      {% assign current_category = page.categories[0] %}
       {% include category-label.html category=current_category %}
       <time class="post__date" datetime="{{ page.date | date_to_xmlschema }}">
         {{ page.date | date: "%Y年%m月%d日" }}
@@ -66,8 +66,8 @@ layout: default
 
   <footer class="post__footer">
     <a href="{{ '/' | relative_url }}" class="post__back">← トップへ戻る</a>
-    <a href="{{ '/category/' | append: page.categories[0] | append: '/' | relative_url }}" class="post__back">
-      {{ site.category_names[page.categories[0]] }}の記事一覧へ
+    <a href="{{ '/category/' | append: current_category | append: '/' | relative_url }}" class="post__back">
+      {{ site.category_names[current_category] }}の記事一覧へ
     </a>
   </footer>
 
