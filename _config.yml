@@ -1,0 +1,70 @@
+# ==========================================
+# サイト基本設定
+# ==========================================
+title: "視点のかけら"
+description: "政治と社会について、ちょっと皮肉を交えながら考えるサイト"
+url: "https://your-username.github.io"   # GitHub Pagesの場合、末尾スラッシュなし
+baseurl: ""                               # リポジトリ名が site/ の場合は "/site" にする
+
+lang: ja
+timezone: Asia/Tokyo
+
+# ==========================================
+# カテゴリ設定（政治・社会の2本柱）
+# ==========================================
+categories:
+  - politics
+  - society
+
+# 表示名の日本語マッピング（テンプレート側で参照する）
+category_names:
+  politics: "政治"
+  society: "社会"
+
+# 各カテゴリのテーマカラー（ラベル・アクセント用）
+category_colors:
+  politics: "#b23a48"   # くすんだ赤
+  society: "#2f6690"    # くすんだ青
+
+# ==========================================
+# Markdown / ビルド設定
+# ==========================================
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+permalink: /:categories/:year/:month/:day/:title/
+
+# ==========================================
+# コレクション・プラグイン（GitHub Pages対応版のみ使用可）
+# ==========================================
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# 記事一覧のデフォルトソート（新しい順）
+sort_order: descending
+
+# トップページに表示する新着記事数
+paginate: 10
+paginate_path: "/page/:num/"
+
+# ==========================================
+# デフォルトのFront Matter設定
+# ==========================================
+defaults:
+  - scope:
+      path: "_posts"
+      type: "posts"
+    values:
+      layout: "post"
+      comments: false
+
+# Jekyllのビルド対象外にするファイル
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - node_modules
