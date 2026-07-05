@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "中国崩壊するする詐欺にストップ！"
-categories: [society]   # または [society]
+categories: [opinion]   # または [blog]
 tags: [中国,]       # 任意
 featured: false
 ---
