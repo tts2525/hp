@@ -11,8 +11,9 @@
   <h4 class="related-posts__title">注目の記事</h4>
   <ul class="related-posts__list">
     {% for post in featured_posts %}
+      {% assign post_category = post.categories[0] %}
       <li>
-        {% include category-label.html category=post.categories[0] %}
+        {% include category-label.html category=post_category %}
         <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
       </li>
     {% endfor %}
