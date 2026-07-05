@@ -18,13 +18,13 @@ categories:
 
 # 表示名の日本語マッピング（テンプレート側で参照する）
 category_names:
-  politics: "BLOG"
-  society: "主張"
+  blog: "BLOG"
+  opinion: "主張"
 
 # 各カテゴリのテーマカラー（ラベル・アクセント用）
 category_colors:
-  politics: "#b23a48"   # くすんだ赤
-  society: "#2f6690"    # くすんだ青
+  blog: "#b23a48"   # くすんだ赤
+  opinion: "#2f6690"    # くすんだ青
 
 # ==========================================
 # Markdown / ビルド設定
