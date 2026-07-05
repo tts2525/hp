@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "国会議員定数削減は諦めるべき"
-categories: [politics]
+categories: [opinion]
 tags: [国会, 維新の会]
 featured: false
 intro: >
