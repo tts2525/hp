@@ -6,7 +6,8 @@ layout: default
   <!-- 記事ヘッダー -->
   <header class="post__header">
     <div class="post__meta">
-      {% include category-label.html category=page.categories[0] %}
+      {% assign current_category = page.categories[0] %}
+      {% include category-label.html category=current_category %}
       <time class="post__date" datetime="{{ page.date | date_to_xmlschema }}">
         {{ page.date | date: "%Y年%m月%d日" }}
       </time>
