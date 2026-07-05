@@ -4,7 +4,8 @@
 {% assign post = include.post %}
 <article class="post-card">
   <div class="post-card__meta">
-    {% include category-label.html category=post.categories[0] %}
+    {% assign current_category = page.categories[0] %}
+    {% include category-label.html category=current_category %}
     <time class="post-card__date" datetime="{{ post.date | date_to_xmlschema }}">
       {{ post.date | date: "%Y年%m月%d日" }}
     </time>
