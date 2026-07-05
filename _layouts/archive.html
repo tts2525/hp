@@ -19,8 +19,9 @@ layout: default
         <h3 class="archive-month__title">{{ month.name }}月</h3>
         <ul class="archive-month__list">
           {% for post in month.items %}
+            {% assign post_category = post.categories[0] %}
             <li class="archive-item">
-              {% include category-label.html category=post.categories[0] %}
+              {% include category-label.html category=post_category %}
               <time>{{ post.date | date: "%d日" }}</time>
               <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
             </li>
