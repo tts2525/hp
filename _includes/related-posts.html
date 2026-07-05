@@ -1,0 +1,20 @@
+{% comment %}
+  簡易「人気記事」表示。
+  本格的なPV集計は静的サイトでは不可なので、
+  「同じタグを持つ記事」または「直近の注目記事(featuredタグ)」を代替表示する。
+  記事のFront Matterで featured: true を付けると優先的にここへ表示される。
+{% endcomment %}
+
+{% assign featured_posts = site.posts | where: "featured", true | limit: 5 %}
+
+<aside class="related-posts">
+  <h4 class="related-posts__title">注目の記事</h4>
+  <ul class="related-posts__list">
+    {% for post in featured_posts %}
+      <li>
+        {% include category-label.html category=post.categories[0] %}
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</aside>
