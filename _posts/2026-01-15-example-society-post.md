@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "『多様性』という言葉が便利すぎて逆に何も言っていない説"
+title: "『多様性』という言葉が便利すぎて逆に何も言っていな い説"
 categories: [society]
 tags: [多様性, 働き方]
 featured: false
