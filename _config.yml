@@ -4,7 +4,7 @@
 title: "TTS-Note"
 description: "趣味で運営しているNoteサイト。"
 url: "https://tts2525.github.io"
-baseurl: "/hp"                            # リポジトリ名が site/ の場合は "/site" にする
+baseurl: "/hp"
 
 lang: ja
 timezone: Asia/Tokyo
