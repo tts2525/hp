@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "国旗損壊罪に反対"
-categories: [politics]
+categories: [opinion]
 tags: [国会, 国旗, 自民党,]
 featured: true
 intro: >
