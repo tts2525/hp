@@ -1,0 +1,53 @@
+---
+layout: default
+---
+
+<section class="hero">
+  <h1 class="hero__title">{{ site.title }}</h1>
+  <p class="hero__desc">{{ site.description }}</p>
+</section>
+
+<!-- カテゴリへの入り口。まず「どっちを読むか」を選んでもらう -->
+<section class="category-nav">
+  <a href="{{ '/category/politics/' | relative_url }}" class="category-nav__card category-nav__card--politics">
+    <span class="category-nav__label">政治</span>
+    <span class="category-nav__sub">制度・選挙・政策のはなし</span>
+  </a>
+  <a href="{{ '/category/society/' | relative_url }}" class="category-nav__card category-nav__card--society">
+    <span class="category-nav__label">社会</span>
+    <span class="category-nav__sub">暮らし・世相・違和感のはなし</span>
+  </a>
+</section>
+
+<div class="home-layout">
+
+  <!-- メイン: 新着記事一覧 -->
+  <section class="home-main">
+    <h2 class="section-title">新着記事</h2>
+
+    <div class="post-list">
+      {% for post in paginator.posts %}
+        {% include post-card.html post=post %}
+      {% endfor %}
+    </div>
+
+    <!-- ページネーション -->
+    {% if paginator.total_pages > 1 %}
+      <nav class="pagination">
+        {% if paginator.previous_page %}
+          <a href="{{ paginator.previous_page_path | relative_url }}" class="pagination__link">← 新しい記事</a>
+        {% endif %}
+        <span class="pagination__current">{{ paginator.page }} / {{ paginator.total_pages }}</span>
+        {% if paginator.next_page %}
+          <a href="{{ paginator.next_page_path | relative_url }}" class="pagination__link">古い記事 →</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  </section>
+
+  <!-- サイドバー: 注目記事 -->
+  <div class="home-sidebar">
+    {% include related-posts.html %}
+  </div>
+
+</div>

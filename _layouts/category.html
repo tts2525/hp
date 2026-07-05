@@ -1,0 +1,19 @@
+---
+layout: default
+---
+{% assign cat = page.category_key %}
+{% assign cat_name = site.category_names[cat] | default: cat %}
+{% assign filtered_posts = site.categories[cat] %}
+
+<section class="category-header category-header--{{ cat }}">
+  <h1 class="category-header__title">{{ cat_name }}の記事一覧</h1>
+  <p class="category-header__count">{{ filtered_posts.size }}件の記事</p>
+</section>
+
+<div class="post-list">
+  {% for post in filtered_posts %}
+    {% include post-card.html post=post %}
+  {% else %}
+    <p class="empty-state">このカテゴリにはまだ記事がありません。</p>
+  {% endfor %}
+</div>

@@ -1,0 +1,73 @@
+---
+layout: default
+---
+<article class="post">
+
+  <!-- 記事ヘッダー -->
+  <header class="post__header">
+    <div class="post__meta">
+      {% include category-label.html category=page.categories[0] %}
+      <time class="post__date" datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%Y年%m月%d日" }}
+      </time>
+    </div>
+
+    <h1 class="post__title">{{ page.title }}</h1>
+
+    {% if page.tags.size > 0 %}
+      <div class="post__tags">
+        {% for tag in page.tags %}
+          <span class="tag">#{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  <!-- 導入文: Front Matterの intro を使う。なくてもOK -->
+  {% if page.intro %}
+    <div class="post__intro">
+      {{ page.intro }}
+    </div>
+  {% endif %}
+
+  <!-- ============================================
+       本文メイン領域: ここは完全に自由記述。
+       Markdown内で見出し(##)・引用(>)・強調(**)・
+       画像・リストなど何でも自由に使える。
+       構造をテンプレート側で強制しない。
+  ============================================ -->
+  <div class="post__body">
+    {{ content }}
+  </div>
+
+  <!-- 補足コメント(皮肉枠): Front Matterの asides を配列で書くと自動表示。
+       使わなければ何も表示されない任意領域 -->
+  {% if page.asides %}
+    <div class="post__asides">
+      <h4 class="post__asides-title">補足</h4>
+      {% for note in page.asides %}
+        <p class="aside-note">{{ note }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- 参考リンク欄: Front Matterの references を使う。任意 -->
+  {% if page.references %}
+    <div class="post__references">
+      <h4 class="post__references-title">参考リンク</h4>
+      <ul>
+        {% for ref in page.references %}
+          <li><a href="{{ ref.url }}" target="_blank" rel="noopener noreferrer">{{ ref.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <footer class="post__footer">
+    <a href="{{ '/' | relative_url }}" class="post__back">← トップへ戻る</a>
+    <a href="{{ '/category/' | append: page.categories[0] | append: '/' | relative_url }}" class="post__back">
+      {{ site.category_names[page.categories[0]] }}の記事一覧へ
+    </a>
+  </footer>
+
+</article>
