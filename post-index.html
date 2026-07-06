@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>記事生成ツール</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --text: #2b2b2b;
+    --text-secondary: #6b6b6b;
+    --text-muted: #999690;
+    --border: #e2ded4;
+    --border-strong: #cfc9ba;
+    --accent: #d98c3d;
+    --accent-bg: #fbe9d4;
+    --accent-text: #8a4f11;
+    --danger-bg: #fbe6e6;
+    --danger-text: #9c3a3a;
+    --radius: 8px;
+    --font-sans: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.7;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 24px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  textarea#post-body {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217,140,61,0.15);
+  }
+
+  .cat-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .cat-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    font-family: var(--font-sans);
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .cat-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    font-weight: 700;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .checkbox-row input {
+    width: 16px;
+    height: 16px;
+  }
+
+  .checkbox-row label {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .repeat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .add-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    cursor: pointer;
+    color: var(--text);
+  }
+
+  .add-btn:hover {
+    background: var(--bg);
+  }
+
+  .repeat-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .repeat-row input {
+    flex: 1;
+  }
+
+  .del-btn {
+    padding: 0 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .del-btn:hover {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border-color: var(--danger-text);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 24px 0;
+  }
+
+  #download-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  #download-btn:hover {
+    background: #c47a2f;
+  }
+
+  #filename-preview {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  #error-msg {
+    display: none;
+    font-size: 13px;
+    color: var(--danger-text);
+    padding: 10px 14px;
+    background: var(--danger-bg);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+  }
+
+  details {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    background: var(--surface);
+  }
+
+  summary {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  #md-preview {
+    white-space: pre-wrap;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    margin-top: 12px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>記事生成ツール</h1>
+
+  <div class="field">
+    <label>カテゴリー</label>
+    <div class="cat-group" id="cat-group">
+      <button type="button" class="cat-btn" data-cat="blog">BLOG</button>
+      <button type="button" class="cat-btn" data-cat="opinion">主張 (opinion)</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="post-date">投稿日</label>
+    <input type="date" id="post-date">
+  </div>
+
+  <div class="field">
+    <label for="post-title">タイトル</label>
+    <input type="text" id="post-title" placeholder="記事タイトル">
+  </div>
+
+  <div class="field">
+    <label for="post-slug">ファイル名スラッグ（URLに使う英数字。空欄ならタイトルから自動生成）</label>
+    <input type="text" id="post-slug" placeholder="my-post-title">
+  </div>
+
+  <div class="field">
+    <label for="post-tags">タグ（カンマ区切り）</label>
+    <input type="text" id="post-tags" placeholder="国会, 自民党">
+  </div>
+
+  <div class="checkbox-row">
+    <input type="checkbox" id="post-featured">
+    <label for="post-featured">注目記事にする（featured: true）</label>
+  </div>
+
+  <div class="field">
+    <label for="post-intro">導入文（intro / 省略可）</label>
+    <textarea id="post-intro" rows="2" placeholder="記事の導入文"></textarea>
+  </div>
+
+  <div class="field">
+    <div class="repeat-header">
+      <label style="margin:0;">補足コメント（asides / 皮肉枠・省略可）</label>
+      <button type="button" class="add-btn" id="add-aside">+ 追加</button>
+    </div>
+    <div id="asides-list"></div>
+  </div>
+
+  <div class="field">
+    <div class="repeat-header">
+      <label style="margin:0;">参考リンク（references / 省略可）</label>
+      <button type="button" class="add-btn" id="add-ref">+ 追加</button>
+    </div>
+    <div id="refs-list"></div>
+  </div>
+
+  <div class="field">
+    <label for="post-body">本文（Markdown）</label>
+    <textarea id="post-body" rows="14" placeholder="## 見出し
+
+本文をここに書く。
+
+> 引用（皮肉なひとこと等）"></textarea>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <div class="actions">
+    <button type="button" id="download-btn">ファイルをダウンロード</button>
+    <span id="filename-preview"></span>
+  </div>
+
+  <details>
+    <summary>生成されるMarkdownをプレビュー</summary>
+    <pre id="md-preview"></pre>
+  </details>
+</div>
+
+<script>
+(function(){
+  let selectedCat = 'blog';
+  const asides = [];
+  const refs = [];
+
+  const $ = (id) => document.getElementById(id);
+
+  function setDefaultDate(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    $('post-date').value = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  setDefaultDate();
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedCat = btn.dataset.cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updatePreview();
+    });
+  });
+  document.querySelector('.cat-btn[data-cat="blog"]').click();
+
+  function slugify(text){
+    return text.toString().trim().toLowerCase()
+      .replace(/[^a-z0-9\u3040-\u30ff\u4e00-\u9fff\-\s]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function renderAsides(){
+    const list = $('asides-list');
+    list.innerHTML = '';
+    asides.forEach((val, i) => {
+      const row = document.createElement('div');
+      row.className = 'repeat-row';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = val;
+      input.placeholder = 'ひとこと目';
+      input.addEventListener('input', e => { asides[i] = e.target.value; updatePreview(); });
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'del-btn';
+      del.textContent = '×';
+      del.addEventListener('click', () => { asides.splice(i,1); renderAsides(); updatePreview(); });
+      row.appendChild(input);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  function renderRefs(){
+    const list = $('refs-list');
+    list.innerHTML = '';
+    refs.forEach((val, i) => {
+      const row = document.createElement('div');
+      row.className = 'repeat-row';
+      const titleInput = document.createElement('input');
+      titleInput.type = 'text';
+      titleInput.value = val.title;
+      titleInput.placeholder = '参照元のタイトル';
+      titleInput.addEventListener('input', e => { refs[i].title = e.target.value; updatePreview(); });
+      const urlInput = document.createElement('input');
+      urlInput.type = 'text';
+      urlInput.value = val.url;
+      urlInput.placeholder = 'https://example.com';
+      urlInput.addEventListener('input', e => { refs[i].url = e.target.value; updatePreview(); });
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'del-btn';
+      del.textContent = '×';
+      del.addEventListener('click', () => { refs.splice(i,1); renderRefs(); updatePreview(); });
+      row.appendChild(titleInput);
+      row.appendChild(urlInput);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  $('add-aside').addEventListener('click', () => { asides.push(''); renderAsides(); updatePreview(); });
+  $('add-ref').addEventListener('click', () => { refs.push({title:'', url:''}); renderRefs(); updatePreview(); });
+
+  function yamlEscape(str){
+    if (str.includes(':') || str.includes('"') || str.includes('#')) {
+      return '"' + str.replace(/"/g, '\\"') + '"';
+    }
+    return str;
+  }
+
+  function buildFrontMatter(){
+    const title = $('post-title').value.trim();
+    const tags = $('post-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+    const featured = $('post-featured').checked;
+    const intro = $('post-intro').value.trim();
+
+    let fm = '---\n';
+    fm += 'layout: post\n';
+    fm += 'title: ' + yamlEscape(title || '無題') + '\n';
+    fm += 'categories: [' + selectedCat + ']\n';
+    fm += 'tags: [' + tags.join(', ') + ']\n';
+    fm += 'featured: ' + featured + '\n';
+    if (intro) {
+      fm += 'intro: >\n  ' + intro.replace(/\n/g, '\n  ') + '\n';
+    }
+    const validAsides = asides.filter(a => a.trim());
+    if (validAsides.length) {
+      fm += 'asides:\n';
+      validAsides.forEach(a => { fm += '  - ' + yamlEscape(a) + '\n'; });
+    }
+    const validRefs = refs.filter(r => r.title.trim() || r.url.trim());
+    if (validRefs.length) {
+      fm += 'references:\n';
+      validRefs.forEach(r => {
+        fm += '  - title: ' + yamlEscape(r.title) + '\n';
+        fm += '    url: ' + yamlEscape(r.url) + '\n';
+      });
+    }
+    fm += '---\n\n';
+    return fm;
+  }
+
+  function buildFilename(){
+    const date = $('post-date').value || '';
+    const slugRaw = $('post-slug').value.trim() || $('post-title').value.trim();
+    const slug = slugify(slugRaw) || 'untitled';
+    return date + '-' + slug + '.md';
+  }
+
+  function updatePreview(){
+    const fm = buildFrontMatter();
+    const body = $('post-body').value;
+    $('md-preview').textContent = fm + body;
+    $('filename-preview').textContent = '_posts/' + buildFilename();
+  }
+
+  ['post-date','post-title','post-slug','post-tags','post-featured','post-intro','post-body'].forEach(id => {
+    $(id).addEventListener('input', updatePreview);
+    $(id).addEventListener('change', updatePreview);
+  });
+
+  $('download-btn').addEventListener('click', () => {
+    const errEl = $('error-msg');
+    errEl.style.display = 'none';
+    const title = $('post-title').value.trim();
+    const date = $('post-date').value;
+    if (!title) {
+      errEl.textContent = 'タイトルを入力してください。';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!date) {
+      errEl.textContent = '投稿日を入力してください。';
+      errEl.style.display = 'block';
+      return;
+    }
+    const content = buildFrontMatter() + $('post-body').value;
+    const filename = buildFilename();
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  updatePreview();
+})();
+</script>
+</body>
+</html>
