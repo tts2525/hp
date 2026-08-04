@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>無音カット — MP3サイレンストリマー</title>
+<style>
+  :root{
+    --bg: #f2f2f7;
+    --grouped-bg: #f2f2f7;
+    --card: #ffffff;
+    --card-2: #f9f9fb;
+    --separator: rgba(60,60,67,0.13);
+    --separator-strong: rgba(60,60,67,0.22);
+    --label: #1c1c1e;
+    --label-secondary: #6c6c70;
+    --label-tertiary: #99999d;
+    --blue: #007aff;
+    --blue-press: #0060d1;
+    --green: #34c759;
+    --red: #ff3b30;
+    --orange: #ff9500;
+    --fill-track: #e4e4e9;
+    --radius-l: 20px;
+    --radius-m: 14px;
+    --radius-s: 10px;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+            "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    --mono: "SF Mono", ui-monospace, "Menlo", Consolas, monospace;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: #000000;
+      --grouped-bg: #000000;
+      --card: #1c1c1e;
+      --card-2: #232326;
+      --separator: rgba(84,84,88,0.6);
+      --separator-strong: rgba(84,84,88,0.8);
+      --label: #f2f2f7;
+      --label-secondary: #98989f;
+      --label-tertiary: #6c6c70;
+      --fill-track: #39393d;
+    }
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--grouped-bg);
+    color: var(--label);
+    font-family: var(--font);
+    min-height: 100vh;
+    padding: calc(var(--safe-top) + 12px) 0 calc(var(--safe-bottom) + 48px);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap{ max-width: 560px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---- Nav header (iOS large title) ---- */
+  .nav-header{ padding: 6px 4px 20px; }
+  .nav-header h1{
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    color: var(--label);
+  }
+  .nav-sub{
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--label-secondary);
+    margin: 0;
+  }
+
+  .chip-row{ display:flex; gap:6px; margin-top:14px; flex-wrap:wrap; }
+  .chip{
+    font-size: 12.5px;
+    font-weight: 590;
+    color: var(--blue);
+    background: rgba(0,122,255,0.12);
+    padding: 5px 11px;
+    border-radius: 100px;
+    display:flex; align-items:center; gap:5px;
+  }
+  .chip svg{ width:12px; height:12px; flex-shrink:0; }
+
+  /* ---- Grouped section ---- */
+  .section-label{
+    font-size: 13px;
+    font-weight: 590;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--label-secondary);
+    margin: 24px 4px 8px;
+  }
+  .section-label:first-of-type{ margin-top: 0; }
+
+  .card{
+    background: var(--card);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .card + .card{ margin-top: 20px; }
+
+  .row{
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--separator);
+  }
+  .row:last-child{ border-bottom: none; }
+
+  .row-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+  .row-title{ font-size: 15px; color: var(--label); font-weight: 400; }
+  .row-value{
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 590;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+  .row-hint{
+    font-size: 12.5px;
+    color: var(--label-tertiary);
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  /* ---- iOS-style slider ---- */
+  input[type=range]{
+    width: 100%;
+    height: 30px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+  }
+  input[type=range]::-webkit-slider-runnable-track{
+    height: 4px;
+    background: var(--fill-track);
+    border-radius: 2px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.06);
+    margin-top: -11px;
+    cursor: pointer;
+    border: none;
+  }
+  input[type=range]::-moz-range-track{
+    height: 4px;
+    background: var(--fill-track);
+    border-radius: 2px;
+  }
+  input[type=range]::-moz-range-thumb{
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.06);
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ---- Dropzone ---- */
+  .dropzone{
+    padding: 34px 20px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--card);
+  }
+  .dropzone.drag{ background: rgba(0,122,255,0.06); }
+  .dropzone input{ display:none; }
+  .dz-icon{
+    width: 52px; height: 52px;
+    margin: 0 auto 12px;
+    border-radius: 14px;
+    background: rgba(0,122,255,0.12);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .dz-icon svg{ width: 26px; height: 26px; color: var(--blue); }
+  .dz-main{ font-size:15.5px; font-weight: 590; color: var(--label); margin-bottom:4px; }
+  .dz-sub{ font-size:13px; color: var(--label-tertiary); }
+
+  /* ---- File list ---- */
+  .file-row{
+    padding: 14px 16px;
+  }
+  .file-top{
+    display:flex; align-items:center; gap: 10px;
+  }
+  .file-icon{
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: var(--card-2);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink: 0;
+  }
+  .file-icon svg{ width:17px; height:17px; color: var(--label-secondary); }
+  .file-icon.busy svg{ color: var(--blue); }
+  .file-icon.ok{ background: rgba(52,199,89,0.14); }
+  .file-icon.ok svg{ color: var(--green); }
+  .file-icon.err{ background: rgba(255,59,48,0.14); }
+  .file-icon.err svg{ color: var(--red); }
+
+  .file-info{ flex:1; min-width:0; }
+  .file-name{
+    font-size: 14.5px;
+    color: var(--label);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .file-status{
+    font-size: 12.5px;
+    color: var(--label-tertiary);
+    margin-top: 2px;
+  }
+  .file-status.ok{ color: var(--green); }
+  .file-status.err{ color: var(--red); }
+  .file-status.busy{ color: var(--blue); }
+
+  .bar-track{
+    margin-top: 10px;
+    height: 5px;
+    background: var(--fill-track);
+    border-radius: 3px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    width:0%;
+    background: var(--blue);
+    border-radius: 3px;
+    transition: width .25s ease;
+  }
+  .bar-fill.done{ background: var(--green); }
+  .bar-fill.error{ background: var(--red); }
+
+  .file-meta{
+    display:flex; gap:14px; margin-top:10px; flex-wrap: wrap;
+    font-size:12px; color: var(--label-tertiary);
+  }
+  .file-meta span b{ color: var(--label-secondary); font-weight:590; }
+
+  .file-dl{
+    margin-top: 12px;
+    display:inline-flex; align-items:center; gap:6px;
+    font-size: 13.5px;
+    font-weight: 590;
+    color: #ffffff;
+    text-decoration:none;
+    background: var(--blue);
+    padding: 7px 14px;
+    border-radius: 100px;
+  }
+  .file-dl:active{ background: var(--blue-press); }
+  .file-dl svg{ width:13px; height:13px; }
+
+  /* ---- Action row ---- */
+  .actions{
+    margin-top: 20px;
+    display:flex; flex-direction: column; gap:10px;
+  }
+  button{
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 590;
+    padding: 13px 20px;
+    border-radius: 100px;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    transition: opacity .15s, transform .1s;
+  }
+  button:active:not(:disabled){ transform: scale(0.98); }
+  button:disabled{ opacity:0.38; cursor:not-allowed; }
+  button.primary{
+    background: var(--blue);
+    color: #ffffff;
+  }
+  button.secondary{
+    background: var(--card-2);
+    color: var(--blue);
+  }
+  .status-line{
+    font-size: 13px;
+    color: var(--label-tertiary);
+    text-align: center;
+  }
+
+  footer{
+    margin-top: 32px;
+    padding: 0 8px;
+    font-size: 12px;
+    color: var(--label-tertiary);
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  @media (max-width: 420px){
+    .nav-header h1{ font-size: 28px; }
+  }
+
+  /* subtle fade-in for new rows */
+  @keyframes rowIn{
+    from{ opacity:0; transform: translateY(4px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .file-row{ animation: rowIn .25s ease; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="nav-header">
+    <h1>無音カット</h1>
+    <p class="nav-sub">MP3の無音区間を自動検出してカットします。処理はすべて端末内で完結し、ファイルは外部に送信されません。</p>
+    <div class="chip-row">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4Z"/></svg>サーバー送信なし</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>一括処理</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>高速処理</span>
+    </div>
+  </div>
+
+  <p class="section-label">検出設定</p>
+  <div class="card">
+    <div class="row">
+      <div class="row-head">
+        <span class="row-title">無音のしきい値</span>
+        <span class="row-value" id="threshDisplay">-45 dB</span>
+      </div>
+      <input type="range" id="threshold" min="-70" max="-20" value="-45" step="1">
+      <p class="row-hint">この値より小さい音量を「無音」として扱います。0に近いほど厳しく判定します。</p>
+    </div>
+    <div class="row">
+      <div class="row-head">
+        <span class="row-title">無音部分の残し幅</span>
+        <span class="row-value" id="keepDisplay">0.10 秒</span>
+      </div>
+      <input type="range" id="keepMs" min="0" max="1000" value="100" step="10">
+      <p class="row-hint">検出した無音区間のうち、この長さだけを残してカットします。既定は0.1秒です。</p>
+    </div>
+  </div>
+
+  <p class="section-label">ファイル</p>
+  <div class="card">
+    <div class="dropzone" id="dropzone">
+      <div class="dz-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4 7 9M12 4l5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      </div>
+      <div class="dz-main">MP3ファイルをドラッグ&ドロップ</div>
+      <div class="dz-sub">またはタップしてファイルを選択（複数可）</div>
+      <input type="file" id="fileInput" accept="audio/mpeg,.mp3" multiple>
+    </div>
+  </div>
+
+  <div class="card" id="fileListCard" style="display:none; margin-top:12px;">
+    <div class="filelist" id="fileList"></div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" id="processBtn" disabled>無音をカットする</button>
+    <button class="secondary" id="downloadAllBtn" disabled>すべてダウンロード</button>
+    <span class="status-line" id="statusLine"></span>
+  </div>
+
+  <footer>
+    処理はWeb Audio APIとWeb Worker上のMP3エンコードで行われ、画面が固まらず高速に動作します。<br>
+    出力ファイル名は入力時と同じ名前になります（上書き注意：同名でダウンロードされます）。<br>
+    開発:@tts2525 with Gemini
+  </footer>
+
+</div>
+
+<script>
+// ============================================================
+// MP3エンコード用 Web Worker（メインスレッドをブロックしない）
+// lamejs を worker 内で読み込み、エンコードのみを別スレッドで実行する。
+// ============================================================
+const workerSource = `
+self.importScripts('https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js');
+
+function floatTo16(data){
+  const out = new Int16Array(data.length);
+  for(let i=0;i<data.length;i++){
+    let s = data[i];
+    if (s > 1) s = 1; else if (s < -1) s = -1;
+    out[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+  }
+  return out;
+}
+
+self.onmessage = function(e){
+  const { left, right, sampleRate, numCh, kbps, jobId } = e.data;
+  try {
+    const mp3encoder = new lamejs.Mp3Encoder(numCh, sampleRate, kbps);
+    const sampleBlockSize = 1152;
+    const left16 = floatTo16(left);
+    const right16 = right ? floatTo16(right) : null;
+    const chunks = [];
+    let totalLen = 0;
+    const total = left16.length;
+
+    for (let i = 0; i < total; i += sampleBlockSize) {
+      const leftChunk = left16.subarray(i, i + sampleBlockSize);
+      let mp3buf;
+      if (numCh > 1) {
+        const rightChunk = right16.subarray(i, i + sampleBlockSize);
+        mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+      } else {
+        mp3buf = mp3encoder.encodeBuffer(leftChunk);
+      }
+      if (mp3buf.length > 0) {
+        chunks.push(mp3buf);
+        totalLen += mp3buf.length;
+      }
+      // 10%刻みで進捗を通知
+      if (i % (sampleBlockSize * 200) === 0) {
+        self.postMessage({ type: 'progress', jobId, ratio: i / total });
+      }
+    }
+    const end = mp3encoder.flush();
+    if (end.length > 0) { chunks.push(end); totalLen += end.length; }
+
+    const out = new Uint8Array(totalLen);
+    let pos = 0;
+    for (const c of chunks) { out.set(c, pos); pos += c.length; }
+
+    self.postMessage({ type: 'done', jobId, buffer: out.buffer }, [out.buffer]);
+  } catch (err) {
+    self.postMessage({ type: 'error', jobId, message: err && err.message ? err.message : String(err) });
+  }
+};
+`;
+
+let encoderWorker = null;
+let jobSeq = 0;
+const pendingJobs = new Map();
+
+function getWorker(){
+  if (!encoderWorker) {
+    const blob = new Blob([workerSource], { type: 'application/javascript' });
+    encoderWorker = new Worker(URL.createObjectURL(blob));
+    encoderWorker.onmessage = (e) => {
+      const { type, jobId } = e.data;
+      const job = pendingJobs.get(jobId);
+      if (!job) return;
+      if (type === 'progress') {
+        job.onProgress && job.onProgress(e.data.ratio);
+      } else if (type === 'done') {
+        pendingJobs.delete(jobId);
+        job.resolve(new Blob([e.data.buffer], { type: 'audio/mpeg' }));
+      } else if (type === 'error') {
+        pendingJobs.delete(jobId);
+        job.reject(new Error(e.data.message));
+      }
+    };
+  }
+  return encoderWorker;
+}
+
+// Transferable ArrayBuffer で送るため、getChannelData の結果はコピーして渡す
+function encodeMp3Async(audioBuffer, onProgress){
+  return new Promise((resolve, reject) => {
+    const worker = getWorker();
+    const jobId = ++jobSeq;
+    const numCh = Math.min(2, audioBuffer.numberOfChannels);
+    const left = audioBuffer.getChannelData(0).slice();
+    const right = numCh > 1 ? audioBuffer.getChannelData(1).slice() : null;
+
+    pendingJobs.set(jobId, { resolve, reject, onProgress });
+
+    const transfer = [left.buffer];
+    if (right) transfer.push(right.buffer);
+
+    worker.postMessage({
+      left, right,
+      sampleRate: audioBuffer.sampleRate,
+      numCh,
+      kbps: 128,
+      jobId
+    }, transfer);
+  });
+}
+
+(function(){
+  const thresholdEl = document.getElementById('threshold');
+  const threshDisplay = document.getElementById('threshDisplay');
+  const keepMsEl = document.getElementById('keepMs');
+  const keepDisplay = document.getElementById('keepDisplay');
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileList = document.getElementById('fileList');
+  const fileListCard = document.getElementById('fileListCard');
+  const processBtn = document.getElementById('processBtn');
+  const downloadAllBtn = document.getElementById('downloadAllBtn');
+  const statusLine = document.getElementById('statusLine');
+
+  thresholdEl.addEventListener('input', () => {
+    threshDisplay.textContent = thresholdEl.value + ' dB';
+  });
+  keepMsEl.addEventListener('input', () => {
+    keepDisplay.textContent = (parseInt(keepMsEl.value,10)/1000).toFixed(2) + ' 秒';
+  });
+
+  let entries = []; // {file, id, status, resultBlob, resultUrl}
+  let sharedAudioCtx = null;
+  function getAudioCtx(){
+    if (!sharedAudioCtx) {
+      sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return sharedAudioCtx;
+  }
+
+  function fmtBytes(n){
+    if(n < 1024) return n + ' B';
+    if(n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+    return (n/1024/1024).toFixed(2) + ' MB';
+  }
+  function fmtSec(s){
+    return s.toFixed(1) + ' 秒';
+  }
+
+  const ICONS = {
+    file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+    ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    err: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
+    dl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4 7 9M12 4l5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>'
+  };
+
+  function addFiles(fileArr){
+    const valid = fileArr.filter(f => /\.mp3$/i.test(f.name) || f.type === 'audio/mpeg');
+    if (valid.length === 0) return;
+    fileListCard.style.display = '';
+    for(const file of valid){
+      const id = Math.random().toString(36).slice(2);
+      const row = document.createElement('div');
+      row.className = 'file-row';
+      row.innerHTML = `
+        <div class="file-top">
+          <div class="file-icon" id="icon-${id}">${ICONS.file}</div>
+          <div class="file-info">
+            <div class="file-name">${escapeHtml(file.name)}</div>
+            <div class="file-status" id="st-${id}">待機中 &middot; ${fmtBytes(file.size)}</div>
+          </div>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="bar-${id}"></div></div>
+        <div class="file-meta" id="meta-${id}"></div>
+        <div id="dl-${id}"></div>
+      `;
+      fileList.appendChild(row);
+      entries.push({file, id, status:'pending'});
+    }
+    updateButtons();
+  }
+
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+  function escapeAttr(s){
+    return s.replace(/"/g,'&quot;');
+  }
+
+  function updateButtons(){
+    processBtn.disabled = entries.length === 0 || entries.some(e => e.status === 'busy');
+    downloadAllBtn.disabled = !entries.some(e => e.status === 'done');
+  }
+
+  dropzone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    addFiles(Array.from(e.target.files));
+    fileInput.value = '';
+  });
+  ['dragenter','dragover'].forEach(ev => {
+    dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.add('drag'); });
+  });
+  ['dragleave','drop'].forEach(ev => {
+    dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.remove('drag'); });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    const files = Array.from(e.dataTransfer.files);
+    addFiles(files);
+  });
+
+  // ---- Core audio processing ----
+
+  async function decodeFile(file){
+    const arrayBuf = await file.arrayBuffer();
+    const ctx = getAudioCtx();
+    const audioBuf = await ctx.decodeAudioData(arrayBuf);
+    return audioBuf;
+  }
+
+  // 無音区間を検出してトリムした新しい AudioBuffer を返す。
+  // 高速化: RMS計算をチャンネルごとの二重ループから単一パスの累積計算に変更し、
+  // Float32Array の subarray / set を使ったブロックコピーで無駄なメモリコピーを削減。
+  function trimSilence(audioBuf, thresholdDb, keepMs){
+    const numCh = audioBuf.numberOfChannels;
+    const sr = audioBuf.sampleRate;
+    const len = audioBuf.length;
+    const thresholdLinear = Math.pow(10, thresholdDb/20);
+
+    const windowSize = Math.max(1, Math.floor(sr * 0.005)); // 5ms
+    const channels = [];
+    for(let c=0;c<numCh;c++) channels.push(audioBuf.getChannelData(c));
+
+    const numWindows = Math.ceil(len / windowSize);
+    const windowIsSilent = new Uint8Array(numWindows);
+    const thresholdSq = thresholdLinear * thresholdLinear;
+
+    for(let w=0; w<numWindows; w++){
+      const start = w*windowSize;
+      const end = Math.min(len, start+windowSize);
+      let sumSq = 0;
+      const count = (end - start) * numCh;
+      for(let c=0;c<numCh;c++){
+        const data = channels[c];
+        for(let i=start;i<end;i++){
+          const v = data[i];
+          sumSq += v*v;
+        }
+      }
+      // しきい値の二乗と平均二乗を比較することで sqrt 呼び出しを省略
+      windowIsSilent[w] = (count > 0 ? sumSq/count : 0) < thresholdSq ? 1 : 0;
+    }
+
+    const keepSamples = Math.round((keepMs/1000) * sr);
+    const keepWindows = Math.max(0, Math.round(keepSamples / windowSize));
+
+    const keepMask = new Uint8Array(numWindows);
+    let i = 0;
+    while(i < numWindows){
+      if(windowIsSilent[i] === 0){
+        keepMask[i] = 1;
+        i++;
+      } else {
+        let j = i;
+        while(j < numWindows && windowIsSilent[j] === 1) j++;
+        const runLen = j - i;
+        if(runLen <= keepWindows){
+          for(let k=i;k<j;k++) keepMask[k] = 1;
+        } else {
+          const removeTotal = runLen - keepWindows;
+          const removeFront = Math.floor(removeTotal/2);
+          const removeBack = removeTotal - removeFront;
+          for(let k=i;k<i+removeFront;k++) keepMask[k] = 0;
+          for(let k=i+removeFront;k<j-removeBack;k++) keepMask[k] = 1;
+          for(let k=j-removeBack;k<j;k++) keepMask[k] = 0;
+        }
+        i = j;
+      }
+    }
+
+    // 連続する keep ウィンドウをまとめて1回の set でコピーし、コピー回数を削減
+    let outLen = 0;
+    const ranges = [];
+    {
+      let w = 0;
+      while (w < numWindows) {
+        if (keepMask[w]) {
+          const rangeStart = w * windowSize;
+          let w2 = w;
+          while (w2 < numWindows && keepMask[w2]) w2++;
+          const rangeEnd = Math.min(len, w2 * windowSize);
+          ranges.push([rangeStart, rangeEnd]);
+          outLen += (rangeEnd - rangeStart);
+          w = w2;
+        } else {
+          w++;
+        }
+      }
+    }
+    if(outLen === 0) outLen = len;
+
+    const ctx = getAudioCtx();
+    const newBuffer = ctx.createBuffer(numCh, outLen, sr);
+
+    for(let c=0;c<numCh;c++){
+      const src = channels[c];
+      const dst = newBuffer.getChannelData(c);
+      if (ranges.length === 0) {
+        dst.set(src);
+        continue;
+      }
+      let pos = 0;
+      for (const [rs, re] of ranges) {
+        dst.set(src.subarray(rs, re), pos);
+        pos += (re - rs);
+      }
+    }
+    return newBuffer;
+  }
+
+  async function processEntry(entry){
+    const iconEl = document.getElementById('icon-'+entry.id);
+    const statusEl = document.getElementById('st-'+entry.id);
+    const barEl = document.getElementById('bar-'+entry.id);
+    const metaEl = document.getElementById('meta-'+entry.id);
+    const dlEl = document.getElementById('dl-'+entry.id);
+
+    entry.status = 'busy';
+    iconEl.className = 'file-icon busy';
+    statusEl.textContent = 'デコード中…';
+    statusEl.className = 'file-status busy';
+    barEl.style.width = '10%';
+    updateButtons();
+
+    try {
+      const audioBuf = await decodeFile(entry.file);
+      barEl.style.width = '30%';
+      statusEl.textContent = '無音を検出中…';
+      // メインスレッドの描画を1フレーム分譲る（UIが固まって見えないようにする）
+      await new Promise(r => requestAnimationFrame(r));
+
+      const thresholdDb = parseFloat(thresholdEl.value);
+      const keepMs = parseFloat(keepMsEl.value);
+      const trimmed = trimSilence(audioBuf, thresholdDb, keepMs);
+      barEl.style.width = '50%';
+      statusEl.textContent = 'MP3にエンコード中…';
+
+      const blob = await encodeMp3Async(trimmed, (ratio) => {
+        const pct = 50 + Math.round(ratio * 50);
+        barEl.style.width = pct + '%';
+      });
+      barEl.style.width = '100%';
+      barEl.classList.add('done');
+
+      const origSec = audioBuf.duration;
+      const newSec = trimmed.duration;
+      metaEl.innerHTML = `<span><b>元:</b> ${fmtSec(origSec)}</span><span><b>変換後:</b> ${fmtSec(newSec)}</span><span><b>削減:</b> ${(100*(1-newSec/origSec)).toFixed(0)}%</span><span><b>サイズ:</b> ${fmtBytes(blob.size)}</span>`;
+
+      const url = URL.createObjectURL(blob);
+      dlEl.innerHTML = `<a class="file-dl" href="${url}" download="${escapeAttr(entry.file.name)}">${ICONS.dl} ダウンロード</a>`;
+
+      entry.status = 'done';
+      entry.resultBlob = blob;
+      entry.resultUrl = url;
+      iconEl.className = 'file-icon ok';
+      iconEl.innerHTML = ICONS.ok;
+      statusEl.textContent = '完了';
+      statusEl.className = 'file-status ok';
+    } catch(err){
+      console.error(err);
+      entry.status = 'error';
+      iconEl.className = 'file-icon err';
+      iconEl.innerHTML = ICONS.err;
+      statusEl.textContent = 'エラー: ' + (err.message || '処理に失敗しました');
+      statusEl.className = 'file-status err';
+      barEl.style.width = '100%';
+      barEl.classList.add('error');
+    }
+    updateButtons();
+  }
+
+  // 高速化: ファイルを直列処理する代わりに、デコード＋無音検出はメインスレッドで
+  // 順番に行いつつ、MP3エンコード（最も重い処理）は Worker に投げてパイプライン化する。
+  // ここでは実装の単純さと安定性を優先し、ファイル単位の直列実行を維持しつつ
+  // 各ステップを async にしてUIブロックを避ける方式を採用。
+  processBtn.addEventListener('click', async () => {
+    processBtn.disabled = true;
+    statusLine.textContent = '処理を開始します…';
+    const pending = entries.filter(e => e.status === 'pending' || e.status === 'error');
+    for(let i=0;i<pending.length;i++){
+      statusLine.textContent = `処理中 (${i+1}/${pending.length})…`;
+      await processEntry(pending[i]);
+    }
+    statusLine.textContent = `完了: ${entries.filter(e=>e.status==='done').length}/${entries.length} ファイル`;
+    updateButtons();
+  });
+
+  downloadAllBtn.addEventListener('click', () => {
+    entries.filter(e=>e.status==='done').forEach((e, idx) => {
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = e.resultUrl;
+        a.download = e.file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }, idx * 300);
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
