@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>情報提供ターミナル - [ SYSTEM_OVERRIDE ]</title>
+    <title>お問い合わせフォーム</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
@@ -15,8 +15,6 @@
             overflow-x: hidden;
             position: relative;
         }
-
-        /* 🌟 背景のキャンバス（マトリックス風データレイン）用 */
         #matrixRain {
             position: fixed;
             top: 0;
@@ -28,7 +26,6 @@
             pointer-events: none;
         }
 
-        /* ブラウン管のスキャンライン（強め） */
         body::after {
             content: "";
             position: fixed;
@@ -290,7 +287,7 @@
 <canvas id="matrixRain"></canvas>
 
 <div class="container">
-    <h1 data-text="情報提供ターミナル">情報提供ターミナル</h1>
+    <h1 data-text="情報提供ターミナル">お問い合わせフォーム</h1>
     <form id="infoForm" onsubmit="handleFormSubmit(this); return false;">
         <div class="form-group">
             <label for="title">タイトル [SUBJECT]<span class="required-badge">CRITICAL</span></label>
