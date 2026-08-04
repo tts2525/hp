@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>情報提供ターミナル - [ SYSTEM_OVERRIDE ]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        body {
+            font-family: 'Share Tech Mono', 'Courier New', 'Yu Gothic', 'Meiryo', sans-serif;
+            background-color: #000;
+            margin: 0;
+            padding: 40px 20px;
+            color: #0ff; 
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 🌟 背景のキャンバス（マトリックス風データレイン）用 */
+        #matrixRain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* ブラウン管のスキャンライン（強め） */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.3),
+                rgba(0, 0, 0, 0.3) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 上から下への強力なレーザースキャン */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 15px;
+            background: rgba(0, 255, 255, 0.6);
+            box-shadow: 0 0 30px #0ff, 0 0 60px #0ff;
+            animation: intenseLaser 3s linear infinite;
+            pointer-events: none;
+            z-index: 11;
+        }
+
+        @keyframes intenseLaser {
+            0% { top: -20px; opacity: 1; }
+            100% { top: 120vh; opacity: 0; }
+        }
+
+        /* フォームのコンテナ（激しい脈動と時折の揺れ） */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 15, 30, 0.9);
+            padding: 40px 30px;
+            border: 2px solid #0ff;
+            box-shadow: 0 0 15px #0ff, inset 0 0 20px rgba(0, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+            animation: containerGlitch 5s infinite, pulseBorder 1.5s infinite alternate;
+        }
+
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 10px #0ff, inset 0 0 10px #0ff; }
+            100% { box-shadow: 0 0 30px #0ff, inset 0 0 30px #0ff; border-color: #fff; }
+        }
+
+        @keyframes containerGlitch {
+            0%, 96%, 100% { transform: translateX(0) skewX(0); }
+            97% { transform: translateX(-10px) skewX(-5deg); }
+            98% { transform: translateX(10px) skewX(5deg); }
+            99% { transform: translateX(-5px) skewX(0); }
+        }
+
+        /* 上部の装飾（激しく点滅） */
+        .container::before {
+            content: "[ WARNING: UNSECURE_LINK ]";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #000;
+            padding: 0 10px;
+            color: #f00;
+            font-size: 14px;
+            letter-spacing: 1px;
+            font-family: 'Share Tech Mono', monospace;
+            animation: warningBlink 0.5s infinite;
+        }
+
+        @keyframes warningBlink {
+            0%, 49% { opacity: 1; text-shadow: 0 0 10px #f00; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* タイトルのグリッチ（色ズレ）エフェクト */
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 35px;
+            font-size: 28px;
+            letter-spacing: 4px;
+            position: relative;
+            animation: textGlitch 3s infinite;
+        }
+
+        @keyframes textGlitch {
+            0%, 100% { text-shadow: 0 0 10px #0ff; transform: translate(0); }
+            10% { text-shadow: 4px 0 #f00, -4px 0 #00f; transform: translate(-3px, 1px); }
+            15% { text-shadow: -4px 0 #0f0, 4px 0 #f0f; transform: translate(3px, -1px); }
+            20%, 90% { text-shadow: 0 0 10px #0ff; transform: translate(0); }
+            92% { transform: skew(15deg); }
+            94% { transform: skew(-15deg); }
+            96% { transform: skew(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #0ff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* カーソル高速点滅 */
+        label::before {
+            content: "> ";
+            color: #f0f;
+            animation: blinkFast 0.3s infinite;
+        }
+
+        @keyframes blinkFast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .required-badge {
+            background-color: #f00;
+            color: #fff;
+            border: 1px solid #fff;
+            box-shadow: 0 0 15px #f00;
+            font-size: 12px;
+            padding: 2px 6px;
+            margin-left: 10px;
+            vertical-align: middle;
+            animation: panicRed 0.4s infinite alternate;
+        }
+
+        @keyframes panicRed {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 25px #f00; }
+        }
+
+        .optional-badge {
+            background-color: transparent;
+            color: #ff0;
+            border: 1px solid #ff0;
+            font-size: 12px;
+            padding: 2px 6px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* 入力フォーム（ホバー・フォーカス時に荒ぶる） */
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-left: 6px solid #0ff;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: rgba(0, 50, 50, 0.2);
+            color: #fff;
+            font-family: inherit;
+            transition: all 0.1s;
+        }
+
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #f0f;
+            border-left-color: #f0f;
+            background-color: rgba(255, 0, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+            /* フォーカス時にガタガタ揺れる */
+            animation: formJitter 0.1s infinite alternate;
+        }
+
+        @keyframes formJitter {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(1px); }
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(0, 255, 255, 0.3);
+            font-size: 14px;
+        }
+
+        /* 実行ボタン（チカチカ発光） */
+        button {
+            width: 100%;
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #0ff;
+            padding: 15px;
+            border: 2px solid #0ff;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: inherit;
+            letter-spacing: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 0 5px #0ff;
+            transition: 0.2s;
+            box-shadow: 0 0 10px #0ff;
+        }
+
+        /* ボタンのノイズライン */
+        button::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%; width: 20%; height: 100%;
+            background: #fff;
+            opacity: 0.5;
+            transform: skewX(-45deg);
+            animation: buttonFlash 1.5s infinite;
+        }
+
+        @keyframes buttonFlash {
+            0% { left: -100%; }
+            10% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        button:hover {
+            background-color: #0ff;
+            color: #000;
+            box-shadow: 0 0 40px #0ff, 0 0 80px #0ff;
+            transform: scale(1.02);
+        }
+
+        button:disabled {
+            border-color: #555;
+            color: #555;
+            box-shadow: none;
+            background: transparent;
+            cursor: not-allowed;
+            animation: none;
+        }
+        button:disabled::after {
+            display: none;
+        }
+
+        #result {
+            margin-top: 25px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px currentColor;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🌟 バックグラウンドのマトリックス雨エフェクト用キャンバス -->
+<canvas id="matrixRain"></canvas>
+
+<div class="container">
+    <h1 data-text="情報提供ターミナル">情報提供ターミナル</h1>
+    <form id="infoForm" onsubmit="handleFormSubmit(this); return false;">
+        <div class="form-group">
+            <label for="title">タイトル [SUBJECT]<span class="required-badge">CRITICAL</span></label>
+            <input type="text" id="title" name="title" required placeholder="件名・タイトルを入力">
+        </div>
+        
+        <div class="form-group">
+            <label for="details">詳細内容 [PAYLOAD]<span class="required-badge">CRITICAL</span></label>
+            <textarea id="details" name="details" required placeholder="送信データを入力..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="contact">連絡先 [TRACE_ROUTE]<span class="optional-badge">OPTIONAL</span></label>
+            <input type="text" id="contact" name="contact" placeholder="Email / SNS (空欄可)">
+        </div>
+        
+        <button type="submit" id="submitBtn">送信を実行 [ EXECUTE ]</button>
+    </form>
+    <div id="result"></div>
+</div>
+
+<script>
+    // 🌟 マトリックス風 データレイン（文字の雨）のJS処理
+    const canvas = document.getElementById('matrixRain');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // 半角カナや数字を混ぜてサイバー感を出す
+    const chars = '01ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ!@#$%^&*'.split('');
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for(let x = 0; x < columns; x++) {
+        drops[x] = 1;
+    }
+
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // 軌跡を少し残して塗りつぶす
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#0ff'; // ネオンシアンの文字
+        ctx.font = fontSize + 'px "Share Tech Mono", monospace';
+        
+        for(let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            
+            // 画面下部まで行ったらランダムに上に戻す
+            if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+    // 33ミリ秒ごとに描画（約30FPS）
+    setInterval(drawMatrix, 33);
+
+    // ウィンドウサイズ変更時にキャンバスサイズを合わせる
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    // ▼▼ これ以降は元のGAS連携機能（変更なし） ▼▼
+    function handleFormSubmit(formObject) {
+        var btn = document.getElementById('submitBtn');
+        var resultDiv = document.getElementById('result');
+        
+        btn.disabled = true;
+        btn.innerText = 'OVERRIDING... [ UPLOADING ]';
+        resultDiv.innerText = '';
+
+        var gasUrl = "https://script.google.com/macros/s/AKfycbw3AerEvpQa_V4Wjzwzec9kNM9zKcrH3DCj-Te9jZK36Gm2xkJCx1JtPJ6f44qUK8CB/exec";
+
+        var formData = new FormData(formObject);
+        var params = new URLSearchParams(formData);
+
+        fetch(gasUrl, {
+            method: 'POST',
+            body: params,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text(); 
+        })
+        .then(function(text) {
+            resultDiv.style.color = "#0f0"; // 成功時はネオングリーン
+            resultDiv.innerText = "[ TRANSMISSION_SUCCESS ] " + text;
+            formObject.reset();
+            btn.disabled = false;
+            btn.innerText = '送信を実行 [ EXECUTE ]';
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            resultDiv.style.color = "#f00"; // 失敗時はネオンレッド
+            resultDiv.innerText = "[ FATAL_ERROR ] 送信に失敗。回線をチェックせよ。";
+            btn.disabled = false;
+            btn.innerText = '送信を実行 [ EXECUTE ]';
+        });
+    }
+</script>
+</body>
+</html>
