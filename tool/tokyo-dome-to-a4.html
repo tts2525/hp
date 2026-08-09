@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>東京ドーム→A4枚数換算ツール</title>
+<style>
+  :root {
+    --paper: #FAFAF7;
+    --ink: #1D3557;
+    --ink-light: #4A6180;
+    --dome-gray: #E8E6DE;
+    --shadow-tone: #8B8578;
+    --border: #DAD7CC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--paper);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 28px;
+    box-shadow: 0 2px 12px rgba(29, 53, 87, 0.06);
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin: 0 0 24px;
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .input-row label {
+    font-size: 14px;
+    color: var(--ink-light);
+    white-space: nowrap;
+  }
+  .input-row input[type="number"] {
+    flex: 1;
+    text-align: right;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    background: var(--paper);
+  }
+  .input-row input[type="number"]:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+  .unit {
+    font-size: 14px;
+    color: var(--ink-light);
+    white-space: nowrap;
+  }
+  input[type="range"] {
+    width: 100%;
+    margin: 4px 0 28px;
+    accent-color: var(--ink);
+  }
+  .result {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .result-label {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin: 0 0 6px;
+  }
+  .result-main {
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.25;
+  }
+  .result-sub {
+    font-size: 13px;
+    color: var(--shadow-tone);
+    margin: 8px 0 0;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .stat {
+    background: var(--dome-gray);
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--ink-light);
+    margin: 0 0 4px;
+  }
+  .stat-value {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .note {
+    font-size: 12px;
+    color: var(--shadow-tone);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>東京ドーム→A4枚数換算ツール</h1>
+  <p class="subtitle">東京ドーム表記はわかりにくい。A４に変換します。</p>
+
+  <div class="input-row">
+    <label for="dome-input">東京ドーム</label>
+    <input type="number" id="dome-input" value="1" min="0" step="0.1">
+    <span class="unit">個分</span>
+  </div>
+  <input type="range" id="dome-slider" min="0" max="50" value="1" step="0.5">
+
+  <div class="result">
+    <p class="result-label">A4用紙に換算すると</p>
+    <p class="result-main" id="result-main">約 749,600 枚</p>
+    <p class="result-sub" id="result-sub">積み重ねると高さ約 75m</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <p class="stat-label">面積</p>
+      <p class="stat-value" id="stat-area">46,755 ㎡</p>
+    </div>
+    <div class="stat">
+      <p class="stat-label">A4サイズ</p>
+      <p class="stat-value">0.0624 ㎡</p>
+    </div>
+    <div class="stat">
+      <p class="stat-label">紙厚の想定</p>
+      <p class="stat-value">0.1mm/枚</p>
+    </div>
+  </div>
+
+  <p class="note">東京ドームの建築面積 46,755㎡（公式発表値）を基準に、A4用紙（210mm×297mm）の面積で換算しています。積み重ね高さはコピー用紙の一般的な目安である厚さ0.1mm/枚で計算しています。</p>
+</div>
+
+<script>
+  const A4_AREA = 0.21 * 0.297;
+  const DOME_AREA = 46755;
+  const SHEET_THICKNESS_M = 0.0001;
+
+  const input = document.getElementById('dome-input');
+  const slider = document.getElementById('dome-slider');
+  const resultMain = document.getElementById('result-main');
+  const resultSub = document.getElementById('result-sub');
+  const statArea = document.getElementById('stat-area');
+
+  function formatHeight(meters) {
+    if (meters >= 1000) {
+      return `積み重ねると高さ約 ${(meters / 1000).toFixed(2)}km`;
+    }
+    return `積み重ねると高さ約 ${Math.round(meters)}m`;
+  }
+
+  function update(domeCount) {
+    const totalArea = domeCount * DOME_AREA;
+    const sheets = totalArea / A4_AREA;
+    const height = sheets * SHEET_THICKNESS_M;
+
+    resultMain.textContent = `約 ${Math.round(sheets).toLocaleString('ja-JP')} 枚`;
+    resultSub.textContent = formatHeight(height);
+    statArea.textContent = `${Math.round(totalArea).toLocaleString('ja-JP')} ㎡`;
+  }
+
+  input.addEventListener('input', () => {
+    const v = parseFloat(input.value) || 0;
+    slider.value = Math.min(Math.max(v, 0), 50);
+    update(v);
+  });
+
+  slider.addEventListener('input', () => {
+    input.value = slider.value;
+    update(parseFloat(slider.value));
+  });
+
+  update(1);
+</script>
+
+</body>
+</html>
