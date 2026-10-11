@@ -1,115 +1,14 @@
-h1 {
-    text-align: center;
-    font-size: 35;
-}
-h2 {
-    margin-top: 30px;
-}
-
-p {
-    margin-bottom: 20px;
-}
-
-.button {
-    display: inline-block;
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 18px;
-    transition: all 0.3s ease;
-    margin-right: 10px;
-}
-
-.dark .button {
-    display: inline-block;
-        background-color: #428344;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        font-size: 16px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        margin-right: 10px;
-    }
-
-.dark .buttonn {
-    display: inline-block;
-    background-color: #46417e;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 20px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    margin-right: 10px;
-}
-
-.button:hover {
-    background-color: #3704ef;
-    cursor: pointer;
-    outline: 2px solid #f60303;
-}
-.dark .button:hover {
-    background-color: #46417e;
-    cursor: pointer;
-    outline: 2px solid #f60303;
-}
-.buttonn:hover {
-    background-color: #3e8e41;
-    cursor: pointer;
-    outline: 2px solid #f60303;
-}
-
-.dark .buttonn:hover {
-    background-color: #428344;
-    cursor: pointer;
-    outline: 2px solid #f60303;
-}
-
-body {
-    text-align: center;
-    background-color: #bba7e8;
-    font-family: "Sawarabi Gothic", "Yu Gothic", "YuGothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-    transition: background-color 0.5s ease-in-out;
-}
-
-.dark {
-    background-color: #3a3838;
-    color: #fff;
-}
-
-.rinku{
-    color: #3c00ff
-}
-
-.dark .rinku {
-    color: #11ff00;
-}
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-}
-.button-prominent {
-    background-color: #007BFF;
-    /* 明るい青色 */
-    color: white;
-    /* 文字色は白 */
-    font-size: 1.1em;
-    /* 文字のサイズを10%増加 */
-    padding: 12px 24px;
-    /* パディングを増加してボタンを大きくする */
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
-    /* 影の追加 */
-    transition: transform 0.3s;
-    /* アニメーション */
-}
-
-.button-prominent:hover {
-    transform: scale(1.05);
-    /* ホバー時にわずかに大きくなる */
-}
+h1{text-align:center;font-size:35px}
+h2{margin-top:30px}
+p{margin-bottom:20px}
+.button{display:inline-block;background-color:#4CAF50;color:#fff;padding:10px 20px;text-align:center;text-decoration:none;font-size:16px;border-radius:18px;transition:all .3s ease;margin-right:10px}
+.button:hover{background-color:#3704ef;cursor:pointer;outline:2px solid #f60303}
+.button-prominent{background-color:#007BFF;font-size:1.1em;padding:12px 24px;box-shadow:3px 3px 5px rgba(0,0,0,.2);transition:transform .3s}
+.button-prominent:hover{transform:scale(1.05)}
+body{text-align:center;background-color:#bba7e8;font-family:"Sawarabi Gothic","Yu Gothic",YuGothic,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;transition:background-color .5s ease-in-out}
+.dark{background-color:#3a3838;color:#fff}
+.dark .button{background-color:#428344;border-radius:8px}
+.dark .button:hover{background-color:#46417e}
+.rinku{color:#3c00ff}
+.dark .rinku{color:#11ff00}
+input[type=checkbox]{width:20px;height:20px}
